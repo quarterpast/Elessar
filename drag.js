@@ -105,14 +105,7 @@ function Ranger(options) {
     return this;
   };
 
-  $base.on('mousemove', createPhantom).on('mouseleave', function(ev) {
-    if($base.phantom) {
-      $base.phantom.remove();
-      $base.phantom = null;
-    }
-  });
-
-  function createPhantom(ev) {
+  $base.on('mousemove', function(ev) {
     var w = options.minSize ? abnormaliseRaw(options.minSize + options.min) : 0.05;
     var val = (ev.pageX - $base.offset().left)/$base.width() - w/2;
     if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges) {
@@ -127,9 +120,13 @@ function Ranger(options) {
 
       $base.insertRangeIndex($base.phantom, $base.findGap([val,val + w]), true);
       $base.phantom.val([val,val + w]);
-      $base.phantom.on('mousemove',createPhantom);
     }
-  }
+  }).on('mouseleave', function(ev) {
+    if($base.phantom) {
+      $base.phantom.remove();
+      $base.phantom = null;
+    }
+  });
 
   if(options.values) $base.val(options.values);
 
