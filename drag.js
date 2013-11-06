@@ -11,22 +11,30 @@ function Ranger(options) {
   options.min = options.valueParse(options.min);
   options.max = options.valueParse(options.max);
 
-  function normalise(raw) {
-    return raw.map(function (value) {
-      return options.valueFormat(options.min + value * (options.max - options.min));
-    });
+  function normaliseRaw(value) {
+    return options.min + value * (options.max - options.min);
   }
 
-  function abnormalise(norm) {
-    return norm.map(function (value) {
-      return (options.valueParse(value) - options.min)/(options.max - options.min);
-    });
+  function normalise(value) {
+    return options.valueFormat(normaliseRaw(value));
+  }
+
+  function abnormaliseRaw(value) {
+    return (value - options.min)/(options.max - options.min);
+  }
+
+  function abnormalise(value) {
+    return abnormaliseRaw(options.valueParse(value));
   }
 
   $base.ranges = [];
 
   $base.addRange = function(range) {
-    var $range = Range({value: abnormalise(range), parent: $base});
+    var $range = Range({
+      value: range.map(abnormalise),
+      parent: $base,
+      snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null
+    });
     $base.ranges.push($range);
     $base.append($range);
     $range.on('changing', function(ev, nrange) {
@@ -42,7 +50,7 @@ function Ranger(options) {
   $base.val = function(ranges) {
     if(typeof ranges === 'undefined') {
       return $base.ranges.map(function(range) {
-        return normalise(range.val());
+        return range.val().map(normalise);
       });
     }
 
@@ -55,7 +63,7 @@ function Ranger(options) {
 
     ranges.forEach(function(range, i) {
       if($base.ranges[i]) {
-        $base.ranges[i].val(abnormalise(range));
+        $base.ranges[i].val(range.map(abnormalise));
       } else {
         $base.addRange(range);
       }
@@ -78,7 +86,13 @@ function Range(options) {
     if(typeof range === 'undefined') {
       return $el.range;
     }
+    var a;
 
+    if(options.snap) {
+      range = range.map(function(val) {
+        return Math.round(val / options.snap) * options.snap;
+      });
+    }
     $el.range = range;
     $el.trigger('changing', [range]);
     $el.css({
@@ -87,6 +101,8 @@ function Range(options) {
     });
 
     return $el;
+
+    function sign(x) { return x ? x < 0 ? -1 : 1 : 0; }
   };
 
   if(options.value) $el.val(options.value);
