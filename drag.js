@@ -171,11 +171,12 @@ function Range(options) {
       if(!dontApplyDelta) range[1] = delta;
     }
 
-
     if(options.minSize && range[1] - range[0] < options.minSize) {
       range[1] = range[0] + options.minSize;
     }
+
     if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
+
     $el.range = range;
     $el.trigger('changing', [range]);
 
