@@ -52,7 +52,7 @@ $('.bar').on('mousedown', function(ev) {
   }
 
   function resizeLeft(ev) {
-    var left = ev.clientX - parentOffset.left;
+    var left = ev.clientX - parentOffset.left - mouseOffset;
     var width = startPosLeft + startWidth - left;
 
     if (target && !drawing && left >= 0 && width >= 0) {
