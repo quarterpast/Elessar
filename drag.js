@@ -25,6 +25,13 @@ function Ranger(options) {
     var $range = Range({value: abnormalise(range), parent: $base});
     $base.ranges.push($range);
     $base.append($range);
+    $range.on('changing', function(ev, nrange) {
+      ev.stopPropagation();
+      $base.trigger('changing', [$base.val()]);
+    }).on('change', function(ev, nrange) {
+      ev.stopPropagation();
+      $base.trigger('change', [$base.val()]);
+    });
     return $range;
   };
 
@@ -39,8 +46,8 @@ function Ranger(options) {
       for(var i = ranges.length, l = $base.ranges.length; i < l; ++i) {
         $base.ranges[i].remove();
       }
+      $base.ranges.length = ranges.length;
     }
-    $base.ranges.length = ranges.length;
 
     ranges.forEach(function(range, i) {
       if($base.ranges[i]) {
@@ -69,6 +76,7 @@ function Range(options) {
     }
 
     $el.range = range;
+    $el.trigger('changing', [range]);
     $el.css({
       left: 100*range[0] + '%',
       minWidth: 100*(range[1] - range[0]) + '%'
@@ -118,6 +126,7 @@ function Range(options) {
     var drawing = false;
 
     $(document).on('mouseup', function() {
+      $el.trigger('change', [$el.range]);
       $(this).off('mouseup mousemove');
       $('body').removeClass('resizing dragging');
     });

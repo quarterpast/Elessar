@@ -53,7 +53,7 @@ body.dragging .handle {
 </style>
 </head>
 <body>
-
+<pre></pre>
 
 <script>
 $('body').append(Ranger({
@@ -61,7 +61,9 @@ $('body').append(Ranger({
 		[0,20],
 		[30,40]
 	]
-}));
+})).on('changing', function(ev, ranges) {
+	$('pre').html(JSON.stringify(ranges,null,2));
+});
 </script>
 </body>
 </html>
