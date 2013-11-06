@@ -46,12 +46,16 @@ $('.bar').on('mousedown', function(ev) {
   function drag(ev) {
     var left = ev.clientX - parentOffset.left - mouseOffset;
 
-    if (target && !drawing && left >= 0 && left <= parent.width() - target.width()) {
-      requestAnimationFrame(function() {
-        drawing = false;
-        target.css('left', left);
-      });
-      drawing = true;
+    if (target && !drawing) {
+      if (left >= 0 && left <= parentWidth - target.width()) {
+        requestAnimationFrame(function() {
+          drawing = false;
+          target.css('left', left);
+        });
+        drawing = true;
+      } else {
+        mouseOffset = ev.clientX - target.offset().left;
+      }
     }
   }
 
