@@ -191,6 +191,17 @@ function Range(options) {
       $('body').removeClass('resizing dragging');
     });
 
+    function drag(ev) {
+      var left = ev.clientX - parentOffset.left - mouseOffset;
+
+      if (left >= 0 && left <= parentWidth - $el.width()) {
+        var rangeOffset = left / parentWidth - $el.range[0];
+        $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
+      } else {
+        mouseOffset = ev.clientX - $el.offset().left;
+      }
+    }
+
     function resizeRight(ev) {
       var width = ev.clientX - startLeft;
 
@@ -200,17 +211,6 @@ function Range(options) {
       } else {
         $(document).trigger('mouseup');
         $el.find('.handle:first-child').trigger('mousedown');
-      }
-    }
-
-    function drag(ev) {
-      var left = ev.clientX - parentOffset.left - mouseOffset;
-
-      if (left >= 0 && left <= parentWidth - $el.width()) {
-        var rangeOffset = left / parentWidth - $el.range[0];
-        $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
-      } else {
-        mouseOffset = ev.clientX - $el.offset().left;
       }
     }
 
