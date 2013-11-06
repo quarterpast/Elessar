@@ -1,19 +1,10 @@
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
-<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
-<script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
-
-<div class="progress">
-  <div class="bar" style="width: 100px">
-    <div class="handle"></div>
-    <div class="handle"></div>
-  </div>
-    <div class="bar" style="width: 100px; left: 200px">
-    <div class="handle"></div>
-    <div class="handle"></div>
-  </div>
-</div>
-
+<script src="drag.js"></script>
 <style>
 .handle {
   display: block;
@@ -60,4 +51,12 @@ body.dragging .handle {
 	cursor: grabbing !important;
 }
 </style>
-<script src="drag.js"></script>
+</head>
+<body>
+
+
+<script>
+$('body').append(Ranger());
+</script>
+</body>
+</html>
