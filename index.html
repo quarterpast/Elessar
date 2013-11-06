@@ -1,0 +1,40 @@
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
+<script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
+
+<div class="progress">
+  <div class="bar" style="width: 100px">
+    <div class="handle"></div>
+    <div class="handle"></div>
+  </div>
+    <div class="bar" style="width: 100px">
+    <div class="handle"></div>
+    <div class="handle"></div>
+  </div>
+</div>
+
+<style>
+.handle {
+  display: block;
+  background: rgba(0,0,0,0.2);
+  height: 100%;
+  width: 5px;
+  cursor: ew-resize;
+}
+.handle:first-child {
+  float: left;
+}
+.handle:last-child {
+  float: right;
+}
+
+.bar {
+  position: absolute;
+  cursor: pointer;
+}
+.progress {
+  position: relative;
+}
+</style>
+<script src="drag.js"></script>
