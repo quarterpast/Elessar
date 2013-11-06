@@ -1,5 +1,5 @@
 $('.bar').on('mousedown', function(ev) {
-  var target;
+  var target, startLeft, startPosLeft, mouseOffset, startWidth, parent, parentOffset, parentWidth;
 
   if ($(ev.target).is('.handle:first-child')) {
     target = $(ev.currentTarget).width('auto');
@@ -15,18 +15,24 @@ $('.bar').on('mousedown', function(ev) {
     $(document).on('mousemove',drag);
   }
 
-  var startLeft = target.offset().left;
-  var startPosLeft = target.position().left;
-  var mouseOffset = ev.clientX - target.offset().left;
-  var startWidth = target.width();
-  var parent = target.parent();
-  var parentOffset = parent.offset();
-  var parentWidth = parent.width();
+  calcInitConstants();
+
+  function calcInitConstants() {
+    startLeft = target.offset().left;
+    startPosLeft = target.position().left;
+    mouseOffset = ev.clientX ? ev.clientX - target.offset().left : 0;
+    startWidth = target.width();
+    parent = target.parent();
+    parentOffset = parent.offset();
+    parentWidth = parent.width();
+  }
   
   var drawing = false;
 
   $(document).on('mouseup', function() {
-    target = null;
+    requestAnimationFrame(function() {
+      target = null;
+    });
     $(this).off('mouseup mousemove');
     $('body').removeClass('resizing dragging');
   });
@@ -34,28 +40,31 @@ $('.bar').on('mousedown', function(ev) {
   function resizeRight(ev) {
     var width = ev.clientX - startLeft;
 
-    if (target && !drawing && width <= parentWidth - startPosLeft) {
+    if (drawing || width > parentWidth - startPosLeft) return;
+    if (width >= 10) {
       requestAnimationFrame(function() {
         drawing = false;
-        target.css('min-width', width);
+        if(target) target.css('min-width', width);
       });
       drawing = true;
+    } else {
+      $(document).trigger('mouseup');
+      target.find('.handle:first-child').trigger('mousedown');
     }
   }
 
   function drag(ev) {
     var left = ev.clientX - parentOffset.left - mouseOffset;
 
-    if (target && !drawing) {
-      if (left >= 0 && left <= parentWidth - target.width()) {
-        requestAnimationFrame(function() {
-          drawing = false;
-          target.css('left', left);
-        });
-        drawing = true;
-      } else {
-        mouseOffset = ev.clientX - target.offset().left;
-      }
+    if (drawing) return;
+    if (left >= 0 && left <= parentWidth - target.width()) {
+      requestAnimationFrame(function() {
+        drawing = false;
+        if(target) target.css('left', left);
+      });
+      drawing = true;
+    } else {
+      mouseOffset = ev.clientX - target.offset().left;
     }
   }
 
@@ -63,15 +72,19 @@ $('.bar').on('mousedown', function(ev) {
     var left = ev.clientX - parentOffset.left - mouseOffset;
     var width = startPosLeft + startWidth - left;
 
-    if (target && !drawing && left >= 0 && width >= 0) {
+    if (drawing || left < 0) return;
+    if (width >= 10) {
       requestAnimationFrame(function() {
         drawing = false;
-        target.css({
+        if(target) target.css({
           minWidth: width,
           left: left
         });
       });
       drawing = true;
+    } else {
+      $(document).trigger('mouseup');
+      target.find('.handle:last-child').trigger('mousedown');
     }
   }
 });
