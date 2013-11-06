@@ -30,30 +30,37 @@ function Ranger(options) {
 
   $base.ranges = [];
 
-  $base.addRange = function(range, index) {
-    var $range = Range({
-      parent: $base,
-      snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
-      label: options.label,
-      minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
-    });
-
+  $base.findGap = function(range) {
     var newIndex;
     $base.ranges.forEach(function($r, i) {
       if($r.val()[1] < range[0]) newIndex = i + 1;
     });
 
-    $base.ranges.splice(newIndex, 0, $range);
+    return newIndex;
+  };
 
-    if($base.ranges[newIndex - 1]) {
-      $base.ranges[newIndex - 1].after($range);
+  $base.insertRangeIndex = function(range, index, avoidList) {
+    if(!avoidList) $base.ranges.splice(index, 0, range);
+
+    if($base.ranges[index - 1]) {
+      $base.ranges[index - 1].after(range);
     } else {
-      $base.prepend($range);
+      $base.prepend(range);
     }
+  };
 
+  $base.addRange = function(range) {
+    var $range = Range({
+      parent: $base,
+      snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
+      label: options.label,
+      minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null
+    });
+
+    $base.insertRangeIndex($range, $base.findGap(range));
     $range.val(range);
 
-    $range.on('changing', function(ev, n$range) {
+    $range.on('changing', function(ev, nrange) {
       ev.stopPropagation();
       $base.trigger('changing', [$base.val()]);
     }).on('change', function(ev, nrange) {
@@ -98,20 +105,22 @@ function Ranger(options) {
     return this;
   };
 
-  $base.on('click', function(ev) {
+  $base.on('mousemove', function(ev) {
+    var w = options.minSize ? abnormaliseRaw(options.minSize + options.min) : 0.05;
+    var val = (ev.pageX - $base.offset().left)/$base.width() - w/2;
     if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges) {
-      var val = (ev.pageX - $base.offset().left)/$base.width();
-      $base.addRange([val, val]);
+      if($base.phantom) $base.phantom.remove();
+      $base.phantom = Range({
+        parent: $base,
+        snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
+        label: "+",
+        minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
+        phantom: true
+      });
+
+      $base.insertRangeIndex($base.phantom, $base.findGap([val,val + w]), true);
+      $base.phantom.val([val,val + w]);
     }
-  }).on('mousemove', function(ev) {
-    var val = ev.pageX - $base.offset().left;
-    // if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges) {
-    //   if(!$base.phantom) {
-    //     $base.phantom = Range({
-    //       value: [val,val]
-    //     })
-    //   }
-    // }
   }).on('mouseleave', function(ev) {
     if($base.phantom) {
       $base.phantom.remove();
@@ -126,9 +135,13 @@ function Ranger(options) {
 
 function Range(options) {
   var $el = $('<div class=bar>')
-    .append('<div class=handle>')
-    .append('<span class=barlabel>')
-    .append('<div class=handle>');
+    .append('<span class=barlabel>');
+
+  if(!options.phantom) {
+    $el.prepend('<div class=handle>').append('<div class=handle>');
+  } else {
+    $el.addClass('phantom');
+  }
 
   if(typeof options.label === 'function') {
     $el.on('changing', function(ev, range) {
@@ -197,71 +210,80 @@ function Range(options) {
 
   if(options.value) $el.val(options.value);
 
-  $el.on('mousedown', function(ev) {
-    if ($(ev.target).is('.handle:first-child')) {
-      $('body').addClass('resizing');
-      $(document).on('mousemove',resizeLeft);
-    } else if ($(ev.target).is('.handle:last-child')) {
-      $('body').addClass('resizing');
-      $(document).on('mousemove',resizeRight);
-    } else {
-      $('body').addClass('dragging');
-      $(document).on('mousemove',drag);
-    }
+  if(!options.phantom) {
 
-    var startLeft = $el.offset().left,
-        startPosLeft = $el.position().left,
-        mouseOffset = ev.clientX ? ev.clientX - $el.offset().left : 0,
-        startWidth = $el.width(),
-        parent = options.parent,
-        parentOffset = parent.offset(),
-        parentWidth = parent.width();
+    $el.on('mousedown', function(ev) {
+      if ($(ev.target).is('.handle:first-child')) {
+        $('body').addClass('resizing');
+        $(document).on('mousemove',resizeLeft);
+      } else if ($(ev.target).is('.handle:last-child')) {
+        $('body').addClass('resizing');
+        $(document).on('mousemove',resizeRight);
+      } else {
+        $('body').addClass('dragging');
+        $(document).on('mousemove',drag);
+      }
 
-    $(document).on('mouseup', function() {
-      $el.trigger('change', [$el.range]);
-      $(this).off('mouseup mousemove');
-      $('body').removeClass('resizing dragging');
+      var startLeft = $el.offset().left,
+          startPosLeft = $el.position().left,
+          mouseOffset = ev.clientX ? ev.clientX - $el.offset().left : 0,
+          startWidth = $el.width(),
+          parent = options.parent,
+          parentOffset = parent.offset(),
+          parentWidth = parent.width();
+
+      $(document).on('mouseup', function() {
+        $el.trigger('change', [$el.range]);
+        $(this).off('mouseup mousemove');
+        $('body').removeClass('resizing dragging');
+      });
+
+      function drag(ev) {
+        var left = ev.clientX - parentOffset.left - mouseOffset;
+
+        if (left >= 0 && left <= parentWidth - $el.width()) {
+          var rangeOffset = left / parentWidth - $el.range[0];
+          $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
+        } else {
+          mouseOffset = ev.clientX - $el.offset().left;
+        }
+      }
+
+      function resizeRight(ev) {
+        var width = ev.clientX - startLeft;
+
+        if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
+        if (width >= 10) {
+          $el.val([$el.range[0], $el.range[0] + width / parentWidth], true);
+        } else {
+          $(document).trigger('mouseup');
+          $el.find('.handle:first-child').trigger('mousedown');
+        }
+      }
+
+      function resizeLeft(ev) {
+        var left = ev.clientX - parentOffset.left - mouseOffset;
+        var width = startPosLeft + startWidth - left;
+
+        if (left < 0) {
+          left = 0;
+          width = startPosLeft + startWidth;
+        }
+        if (width >= 10) {
+          $el.val([left / parentWidth, $el.range[1]], true);
+        } else {
+          $(document).trigger('mouseup');
+          $el.find('.handle:last-child').trigger('mousedown');
+        }
+      }
     });
+  } else {
+    $el.on('click', function() {
+      options.parent.addRange($el.val());
+      $el.remove();
+    });
+  }
 
-    function drag(ev) {
-      var left = ev.clientX - parentOffset.left - mouseOffset;
-
-      if (left >= 0 && left <= parentWidth - $el.width()) {
-        var rangeOffset = left / parentWidth - $el.range[0];
-        $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
-      } else {
-        mouseOffset = ev.clientX - $el.offset().left;
-      }
-    }
-
-    function resizeRight(ev) {
-      var width = ev.clientX - startLeft;
-
-      if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
-      if (width >= 10) {
-        $el.val([$el.range[0], $el.range[0] + width / parentWidth], true);
-      } else {
-        $(document).trigger('mouseup');
-        $el.find('.handle:first-child').trigger('mousedown');
-      }
-    }
-
-    function resizeLeft(ev) {
-      var left = ev.clientX - parentOffset.left - mouseOffset;
-      var width = startPosLeft + startWidth - left;
-
-      if (left < 0) {
-        left = 0;
-        width = startPosLeft + startWidth;
-      }
-      if (width >= 10) {
-        $el.val([left / parentWidth, $el.range[1]], true);
-      } else {
-        $(document).trigger('mouseup');
-        $el.find('.handle:last-child').trigger('mousedown');
-      }
-    }
-  });
 
   return $el;
 }
