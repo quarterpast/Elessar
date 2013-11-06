@@ -29,6 +29,9 @@
 	cursor: -webkit-grab;
 	cursor: -moz-grab;
 	cursor: grab;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .phantom {
 	background-color: transparent;
@@ -38,6 +41,8 @@
 }
 .progress {
   position: relative;
+  height: 30px;
+  line-height: 30px;
 }
 body.resizing, body.dragging {
   -webkit-touch-callout: none;
@@ -60,13 +65,20 @@ body.dragging .handle {
 	cursor: -moz-grabbing !important;
 	cursor: grabbing !important;
 }
+.container {
+	margin-top: 100px;
+}
 </style>
 </head>
 <body>
+
+<div class="container">
+	
 <pre class="changing"></pre>
+</div>
 
 <script>
-$('body').prepend(r = Ranger({
+$('.container').prepend(r = Ranger({
 	min: moment().startOf('day').format('LLLL'),
 	max: moment().endOf('day').format('LLLL'),
 	valueFormat: function(ts) {
@@ -86,13 +98,13 @@ $('body').prepend(r = Ranger({
 		],
 	],
 	label: function(a){return JSON.stringify(a)},
-	snap: 1000 * 60 * 60,
+	snap: 1000 * 60 * 15,
 	maxRanges: 3,
 	minSize: 1000 * 60 * 60
 })).on('changing', function(ev, ranges) {
 	$('pre.changing').html(JSON.stringify(ranges,null,2));
 }).on('change', function(ev, ranges) {
-	$('body').append($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
+	$('.container').append($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
 });
 </script>
 </body>
