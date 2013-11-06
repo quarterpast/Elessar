@@ -50,6 +50,16 @@ function Ranger(options) {
     return $range;
   };
 
+  $base.prevRange = function(range) {
+    var idx = range.index();
+    if(idx >= 0) return $base.ranges[idx - 1];
+  };
+
+  $base.nextRange = function(range) {
+    var idx = range.index();
+    if(idx >= 0) return $base.ranges[idx + 1];
+  };
+
   $base.val = function(ranges) {
     if(typeof ranges === 'undefined') {
       return $base.ranges.map(function(range) {
@@ -111,17 +121,28 @@ function Range(options) {
   var drawing = false;
   $el.range = [];
 
-  $el.val = function(range) {
+  $el.val = function(range, dontApplyDelta) {
     if(typeof range === 'undefined') {
       return $el.range;
     }
-    var a;
+    var next = options.parent.nextRange($el),
+        prev = options.parent.prevRange($el),
+        delta = range[1] - range[0];
 
     if(options.snap) {
       range = range.map(function(val) {
         return Math.round(val / options.snap) * options.snap;
       });
     }
+    if (next && next.val()[0] < range[1]) {
+      range[1] = next.val()[0];
+      if(!dontApplyDelta) range[0] = range[1] - delta;
+    }
+    if (prev && prev.val()[1] > range[0]) {
+      range[0] = prev.val()[1];
+      if(!dontApplyDelta) range[1] = range[0] - delta;
+    }
+
     if(options.minSize && range[1] - range[0] < options.minSize) return $el;
     if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
     $el.range = range;
@@ -164,10 +185,6 @@ function Range(options) {
         parentOffset = parent.offset(),
         parentWidth = parent.width();
 
-    var nextLeft = $el.next().length ? $el.next().offset().left : Infinity,
-        prevRight = $el.prev().length ? $el.prev().offset().left + $el.prev().width() : -Infinity;
-
-
     $(document).on('mouseup', function() {
       $el.trigger('change', [$el.range]);
       $(this).off('mouseup mousemove');
@@ -178,9 +195,8 @@ function Range(options) {
       var width = ev.clientX - startLeft;
 
       if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
-      if (nextLeft && startLeft + width >= nextLeft) width = nextLeft - startLeft;
       if (width >= 10) {
-        $el.val([$el.range[0], $el.range[0] + width / parentWidth]);
+        $el.val([$el.range[0], $el.range[0] + width / parentWidth], true);
       } else {
         $(document).trigger('mouseup');
         $el.find('.handle:first-child').trigger('mousedown');
@@ -190,8 +206,6 @@ function Range(options) {
     function drag(ev) {
       var left = ev.clientX - parentOffset.left - mouseOffset;
 
-      if (nextLeft && left + startWidth >= nextLeft) left = nextLeft - startWidth;
-      if (prevRight && left <= prevRight) left = prevRight;
       if (left >= 0 && left <= parentWidth - $el.width()) {
         var rangeOffset = left / parentWidth - $el.range[0];
         $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
@@ -208,12 +222,8 @@ function Range(options) {
         left = 0;
         width = startPosLeft + startWidth;
       }
-      if (prevRight && left <= prevRight) {
-        left = prevRight;
-        width = startPosLeft + startWidth - left;
-      }
       if (width >= 10) {
-        $el.val([left / parentWidth, $el.range[1]]);
+        $el.val([left / parentWidth, $el.range[1]], true);
       } else {
         $(document).trigger('mouseup');
         $el.find('.handle:last-child').trigger('mousedown');
