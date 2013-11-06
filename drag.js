@@ -278,9 +278,11 @@ function Range(options) {
       }
     });
   } else {
-    $el.on('click', function() {
-      options.parent.addRange($el.val());
+    $el.on('mousedown', function(ev) {
+      var startX = ev.pageX;
+      var newRange = options.parent.addRange($el.val());
       $el.remove();
+      newRange.find('.handle:first-child').trigger('mousedown');
     });
   }
 
