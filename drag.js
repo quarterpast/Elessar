@@ -23,7 +23,22 @@ $('.bar').on('mousedown', function(ev) {
       parentOffset = parent.offset(),
       parentWidth = parent.width();
 
-  
+  var nextLeft, prevRight;
+
+  target.siblings('.bar').each(function() {
+    var $this = $(this), off = $this.offset(), width = $this.width();
+    if(off.left > startLeft + startWidth) { // to the right of current bar
+      if(!nextLeft || off.left < nextLeft) { // no next or closer to current than next
+        nextLeft = off.left;
+      }
+    }
+    if(off.left + width < startLeft) { // to the left of current bar
+      if(!prevRight || off.left + width > prevRight) { // no prev or closer to current than prev
+        prevRight = off.left + width;
+      }
+    }
+  });
+
   var drawing = false;
 
   $(document).on('mouseup', function() {
@@ -38,6 +53,7 @@ $('.bar').on('mousedown', function(ev) {
     var width = ev.clientX - startLeft;
 
     if (drawing || width > parentWidth - startPosLeft) return;
+    if (nextLeft && startLeft + width >= nextLeft) return;
     if (width >= 10) {
       requestAnimationFrame(function() {
         drawing = false;
@@ -54,6 +70,8 @@ $('.bar').on('mousedown', function(ev) {
     var left = ev.clientX - parentOffset.left - mouseOffset;
 
     if (drawing) return;
+    if (nextLeft && left + startWidth >= nextLeft) return;
+    if (prevRight && left <= prevRight) return;
     if (left >= 0 && left <= parentWidth - target.width()) {
       requestAnimationFrame(function() {
         drawing = false;
@@ -70,6 +88,7 @@ $('.bar').on('mousedown', function(ev) {
     var width = startPosLeft + startWidth - left;
 
     if (drawing || left < 0) return;
+    if (prevRight && left <= prevRight) return;
     if (width >= 10) {
       requestAnimationFrame(function() {
         drawing = false;
