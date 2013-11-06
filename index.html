@@ -56,7 +56,12 @@ body.dragging .handle {
 
 
 <script>
-$('body').append(Ranger());
+$('body').append(Ranger({
+	values: [
+		[0,20],
+		[30,40]
+	]
+}));
 </script>
 </body>
 </html>

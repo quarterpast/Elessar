@@ -1,17 +1,83 @@
-function Ranger() {
-  var $base = $('<div class=progress>');
+Ranger.defaults = {
+  min: 0,
+  max: 100
+};
 
-  $base
-    .append(Range().css({width:100, left:100}))
-    .append(Range().css({width:100, left:300}));
+function Ranger(options) {
+  var $base = $('<div class=progress>');
+  options = $.extend({}, Ranger.defaults, options);
+
+  function normalise(raw) {
+    return raw.map(function (value) {
+      return options.min + value * (options.max - options.min);
+    });
+  }
+
+  function abnormalise(norm) {
+    return norm.map(function (value) {
+      return (value - options.min)/(options.max - options.min);
+    });
+  }
+
+  $base.ranges = [];
+
+  $base.addRange = function(range) {
+    var $range = Range({value: abnormalise(range), parent: $base});
+    $base.ranges.push($range);
+    $base.append($range);
+    return $range;
+  };
+
+  $base.val = function(ranges) {
+    if(typeof ranges === 'undefined') {
+      return $base.ranges.map(function(range) {
+        return normalise(range.val());
+      });
+    }
+
+    if($base.ranges.length > ranges.length) {
+      for(var i = ranges.length, l = $base.ranges.length; i < l; ++i) {
+        $base.ranges[i].remove();
+      }
+    }
+    $base.ranges.length = ranges.length;
+
+    ranges.forEach(function(range, i) {
+      if($base.ranges[i]) {
+        $base.ranges[i].val(abnormalise(range));
+      } else {
+        $base.addRange(range);
+      }
+    });
+
+    return this;
+  };
+
+  if(options.values) $base.val(options.values);
 
   return $base;
 }
 
-function Range() {
+function Range(options) {
   var $el = $('<div class=bar>')
     .append('<div class=handle>')
     .append('<div class=handle>');
+
+  $el.val = function(range) {
+    if(typeof range === 'undefined') {
+      return $el.range;
+    }
+
+    $el.range = range;
+    $el.css({
+      left: 100*range[0] + '%',
+      width: 100*(range[1] - range[0]) + '%'
+    });
+
+    return $el;
+  };
+
+  if(options.value) $el.val(options.value);
 
   $el.on('mousedown', function(ev) {
     var target;
