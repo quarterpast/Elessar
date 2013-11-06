@@ -88,7 +88,7 @@ $('.bar').on('mousedown', function(ev) {
     var left = ev.clientX - parentOffset.left - mouseOffset;
     var width = startPosLeft + startWidth - left;
 
-    if (drawing)
+    if (drawing) return;
     if (left < 0) {
       left = 0;
       width = startPosLeft + startWidth;
