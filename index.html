@@ -76,6 +76,7 @@ $('body').append(Ranger({
 			moment().startOf('day').add(3, 'hours').format('LLLL')
 		],
 	],
+	labels: ["hello", function(a){return JSON.stringify(a)}],
 	snap: 1000 * 60 * 10
 })).on('changing', function(ev, ranges) {
 	$('pre').html(JSON.stringify(ranges,null,2));

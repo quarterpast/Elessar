@@ -2,7 +2,8 @@ Ranger.defaults = {
   min: 0,
   max: 100,
   valueFormat: function(a) {return a;},
-  valueParse: function(a) {return a;}
+  valueParse: function(a) {return a;},
+  labels: []
 };
 
 function Ranger(options) {
@@ -15,25 +16,26 @@ function Ranger(options) {
     return options.min + value * (options.max - options.min);
   }
 
-  function normalise(value) {
+  $base.normalise = function (value) {
     return options.valueFormat(normaliseRaw(value));
-  }
+  };
 
   function abnormaliseRaw(value) {
     return (value - options.min)/(options.max - options.min);
   }
 
-  function abnormalise(value) {
+  $base.abnormalise = function (value) {
     return abnormaliseRaw(options.valueParse(value));
-  }
+  };
 
   $base.ranges = [];
 
-  $base.addRange = function(range) {
+  $base.addRange = function(range, index) {
     var $range = Range({
-      value: range.map(abnormalise),
+      value: range.map($base.abnormalise),
       parent: $base,
-      snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null
+      snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
+      label: options.labels[index]
     });
     $base.ranges.push($range);
     $base.append($range);
@@ -50,7 +52,7 @@ function Ranger(options) {
   $base.val = function(ranges) {
     if(typeof ranges === 'undefined') {
       return $base.ranges.map(function(range) {
-        return range.val().map(normalise);
+        return range.val().map($base.normalise);
       });
     }
 
@@ -63,9 +65,9 @@ function Ranger(options) {
 
     ranges.forEach(function(range, i) {
       if($base.ranges[i]) {
-        $base.ranges[i].val(range.map(abnormalise));
+        $base.ranges[i].val(range.map($base.abnormalise));
       } else {
-        $base.addRange(range);
+        $base.addRange(range, i);
       }
     });
 
@@ -80,7 +82,16 @@ function Ranger(options) {
 function Range(options) {
   var $el = $('<div class=bar>')
     .append('<div class=handle>')
+    .append('<span class=barlabel>')
     .append('<div class=handle>');
+
+  if(typeof options.label === 'function') {
+    $el.on('changing', function(ev, range) {
+      $el.find('.barlabel').text(options.label.call($el,range.map(options.parent.normalise)));
+    });
+  } else {
+    $el.find('.barlabel').text(options.label);
+  }
 
   $el.val = function(range) {
     if(typeof range === 'undefined') {
