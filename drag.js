@@ -1,21 +1,25 @@
 Ranger.defaults = {
   min: 0,
-  max: 100
+  max: 100,
+  valueFormat: function(a) {return a;},
+  valueParse: function(a) {return a;}
 };
 
 function Ranger(options) {
   var $base = $('<div class=progress>');
   options = $.extend({}, Ranger.defaults, options);
+  options.min = options.valueParse(options.min);
+  options.max = options.valueParse(options.max);
 
   function normalise(raw) {
     return raw.map(function (value) {
-      return options.min + value * (options.max - options.min);
+      return options.valueFormat(options.min + value * (options.max - options.min));
     });
   }
 
   function abnormalise(norm) {
     return norm.map(function (value) {
-      return (value - options.min)/(options.max - options.min);
+      return (options.valueParse(value) - options.min)/(options.max - options.min);
     });
   }
 

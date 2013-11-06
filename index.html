@@ -4,6 +4,7 @@
 <head>
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+<script src="http://momentjs.com/downloads/moment.min.js"></script>
 <script src="drag.js"></script>
 <style>
 .handle {
@@ -57,9 +58,23 @@ body.dragging .handle {
 
 <script>
 $('body').append(Ranger({
+	min: moment().startOf('day').format('LLLL'),
+	max: moment().endOf('day').format('LLLL'),
+	valueFormat: function(ts) {
+		return moment(ts).format('LLLL');
+	},
+	valueParse: function(date) {
+		return moment(date).valueOf();
+	},
 	values: [
-		[0,20],
-		[30,40]
+		[
+			moment().startOf('day').format('LLLL'),
+			moment().startOf('day').add(1, 'hours').format('LLLL')
+		],
+		[
+			moment().startOf('day').add(2, 'hours').format('LLLL'),
+			moment().startOf('day').add(3, 'hours').format('LLLL')
+		],
 	]
 })).on('changing', function(ev, ranges) {
 	$('pre').html(JSON.stringify(ranges,null,2));
