@@ -103,6 +103,8 @@ function Range(options) {
     $el.find('.barlabel').text(options.label);
   }
 
+  var drawing = false;
+
   $el.val = function(range) {
     if(typeof range === 'undefined') {
       return $el.range;
@@ -116,10 +118,14 @@ function Range(options) {
     }
     $el.range = range;
     $el.trigger('changing', [range]);
-    $el.css({
-      left: 100*range[0] + '%',
-      minWidth: 100*(range[1] - range[0]) + '%'
+    requestAnimationFrame(function() {
+      drawing = false;
+      $el.css({
+        left: 100*range[0] + '%',
+        minWidth: 100*(range[1] - range[0]) + '%'
+      });
     });
+    drawing = true;
 
     return $el;
 
@@ -164,8 +170,6 @@ function Range(options) {
       }
     });
 
-    var drawing = false;
-
     $(document).on('mouseup', function() {
       $el.trigger('change', [$el.range]);
       $(this).off('mouseup mousemove');
@@ -179,12 +183,8 @@ function Range(options) {
       if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
       if (nextLeft && startLeft + width >= nextLeft) width = nextLeft - startLeft;
       if (width >= 10) {
-        requestAnimationFrame(function() {
-          drawing = false;
-          var right = width / parentWidth;
-          $el.val([$el.range[0], $el.range[0] + right]);
-        });
-        drawing = true;
+        var right = width / parentWidth;
+        $el.val([$el.range[0], $el.range[0] + right]);
       } else {
         $(document).trigger('mouseup');
         $el.find('.handle:first-child').trigger('mousedown');
@@ -198,12 +198,8 @@ function Range(options) {
       if (nextLeft && left + startWidth >= nextLeft) left = nextLeft - startWidth;
       if (prevRight && left <= prevRight) left = prevRight;
       if (left >= 0 && left <= parentWidth - $el.width()) {
-        requestAnimationFrame(function() {
-          drawing = false;
-          var rangeOffset = left / parentWidth - $el.range[0];
-          $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
-        });
-        drawing = true;
+        var rangeOffset = left / parentWidth - $el.range[0];
+        $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
       } else {
         mouseOffset = ev.clientX - $el.offset().left;
       }
@@ -223,12 +219,8 @@ function Range(options) {
         width = startPosLeft + startWidth - left;
       }
       if (width >= 10) {
-        requestAnimationFrame(function() {
-          drawing = false;
-          var lRel = left / parentWidth;
-          $el.val([lRel, $el.range[1]]);
-        });
-        drawing = true;
+        var lRel = left / parentWidth;
+        $el.val([lRel, $el.range[1]]);
       } else {
         $(document).trigger('mouseup');
         $el.find('.handle:last-child').trigger('mousedown');
