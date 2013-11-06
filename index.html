@@ -99,12 +99,11 @@ $('.container').prepend(r = Ranger({
 	],
 	label: function(a){return JSON.stringify(a)},
 	snap: 1000 * 60 * 15,
-	maxRanges: 3,
 	minSize: 1000 * 60 * 60
 })).on('changing', function(ev, ranges) {
 	$('pre.changing').html(JSON.stringify(ranges,null,2));
 }).on('change', function(ev, ranges) {
-	$('.container').append($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
+	$('pre.changing').after($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
 });
 </script>
 </body>
