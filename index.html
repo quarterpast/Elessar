@@ -60,7 +60,7 @@ body.dragging .handle {
 <pre></pre>
 
 <script>
-$('body').append(Ranger({
+$('body').append(r = Ranger({
 	min: moment().startOf('day').format('LLLL'),
 	max: moment().endOf('day').format('LLLL'),
 	valueFormat: function(ts) {
@@ -75,12 +75,14 @@ $('body').append(Ranger({
 			moment().startOf('day').add(1, 'hours').format('LLLL')
 		],
 		[
-			moment().startOf('day').add(2, 'hours').format('LLLL'),
-			moment().startOf('day').add(3, 'hours').format('LLLL')
+			moment().startOf('day').add(1.5, 'hours').format('LLLL'),
+			moment().startOf('day').add(3.5, 'hours').format('LLLL')
 		],
 	],
-	labels: ["hello", function(a){return JSON.stringify(a)}],
-	snap: 1000 * 60 * 10
+	label: function(a){return JSON.stringify(a)},
+	snap: 1000 * 60 * 60,
+	maxRanges: 3,
+	
 })).on('changing', function(ev, ranges) {
 	$('pre').html(JSON.stringify(ranges,null,2));
 });

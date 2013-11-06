@@ -3,7 +3,7 @@ Ranger.defaults = {
   max: 100,
   valueFormat: function(a) {return a;},
   valueParse: function(a) {return a;},
-  labels: []
+  maxRanges: Infinity
 };
 
 function Ranger(options) {
@@ -31,15 +31,15 @@ function Ranger(options) {
   $base.ranges = [];
 
   $base.addRange = function(range, index) {
-    var $range = Range({
-      value: range.map($base.abnormalise),
+    $range = Range({
+      value: range,
       parent: $base,
       snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
-      label: options.labels[index]
+      label: options.label
     });
     $base.ranges.push($range);
     $base.append($range);
-    $range.on('changing', function(ev, nrange) {
+    $range.on('changing', function(ev, n$range) {
       ev.stopPropagation();
       $base.trigger('changing', [$base.val()]);
     }).on('change', function(ev, nrange) {
@@ -67,12 +67,22 @@ function Ranger(options) {
       if($base.ranges[i]) {
         $base.ranges[i].val(range.map($base.abnormalise));
       } else {
-        $base.addRange(range, i);
+        $base.addRange(range.map($base.abnormalise));
       }
     });
 
     return this;
   };
+
+  $base.on('click', function(ev) {
+    if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges) {
+      var mid = ev.pageX - $base.offset().left;
+      var left = (mid - $base.width() / 25) / $base.width();
+      var right = (mid + $base.width() / 25) / $base.width();
+
+      $base.addRange([left, right]);
+    }
+  });
 
   if(options.values) $base.val(options.values);
 
