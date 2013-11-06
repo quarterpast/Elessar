@@ -57,6 +57,10 @@ function Ranger(options) {
       });
     }
 
+    ranges.sort(function(range1, range2) {
+      return $base.abnormalise(range1[0]) - $base.abnormalise(range2[0]);
+    });
+
     if($base.ranges.length > ranges.length) {
       for(var i = ranges.length, l = $base.ranges.length; i < l; ++i) {
         $base.ranges[i].remove();
@@ -160,21 +164,9 @@ function Range(options) {
         parentOffset = parent.offset(),
         parentWidth = parent.width();
 
-    var nextLeft, prevRight;
+    var nextLeft = $el.next().length ? $el.next().offset().left : Infinity,
+        prevRight = $el.prev().length ? $el.prev().offset().left + $el.prev().width() : -Infinity;
 
-    $el.siblings('.bar').each(function() {
-      var $this = $(this), off = $this.offset(), width = $this.width();
-      if(off.left >= startLeft + startWidth) { // to the right of current bar
-        if(!nextLeft || off.left <= nextLeft) { // no next or closer to current than next
-          nextLeft = off.left;
-        }
-      }
-      if(off.left + width <= startLeft) { // to the left of current bar
-        if(!prevRight || off.left + width >= prevRight) { // no prev or closer to current than prev
-          prevRight = off.left + width;
-        }
-      }
-    });
 
     $(document).on('mouseup', function() {
       $el.trigger('change', [$el.range]);
