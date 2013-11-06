@@ -82,7 +82,7 @@ $('body').append(r = Ranger({
 	label: function(a){return JSON.stringify(a)},
 	snap: 1000 * 60 * 60,
 	maxRanges: 3,
-	
+	minSize: 1000 * 60 * 60
 })).on('changing', function(ev, ranges) {
 	$('pre').html(JSON.stringify(ranges,null,2));
 });

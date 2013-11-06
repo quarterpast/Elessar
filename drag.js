@@ -35,7 +35,8 @@ function Ranger(options) {
       value: range,
       parent: $base,
       snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
-      label: options.label
+      label: options.label,
+      minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
     });
     $base.ranges.push($range);
     $base.append($range);
@@ -117,6 +118,7 @@ function Range(options) {
         return Math.round(val / options.snap) * options.snap;
       });
     }
+    if(options.minSize && range[1] - range[0] < options.minSize) return $el;
     if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
     $el.range = range;
     $el.trigger('changing', [range]);
