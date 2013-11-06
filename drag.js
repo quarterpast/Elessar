@@ -104,6 +104,7 @@ function Range(options) {
   }
 
   var drawing = false;
+  $el.range = [];
 
   $el.val = function(range) {
     if(typeof range === 'undefined') {
@@ -116,8 +117,11 @@ function Range(options) {
         return Math.round(val / options.snap) * options.snap;
       });
     }
+    if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
     $el.range = range;
     $el.trigger('changing', [range]);
+
+    if (drawing) return $el;
     requestAnimationFrame(function() {
       drawing = false;
       $el.css({
@@ -179,12 +183,10 @@ function Range(options) {
     function resizeRight(ev) {
       var width = ev.clientX - startLeft;
 
-      if (drawing) return;
       if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
       if (nextLeft && startLeft + width >= nextLeft) width = nextLeft - startLeft;
       if (width >= 10) {
-        var right = width / parentWidth;
-        $el.val([$el.range[0], $el.range[0] + right]);
+        $el.val([$el.range[0], $el.range[0] + width / parentWidth]);
       } else {
         $(document).trigger('mouseup');
         $el.find('.handle:first-child').trigger('mousedown');
@@ -194,7 +196,6 @@ function Range(options) {
     function drag(ev) {
       var left = ev.clientX - parentOffset.left - mouseOffset;
 
-      if (drawing) return;
       if (nextLeft && left + startWidth >= nextLeft) left = nextLeft - startWidth;
       if (prevRight && left <= prevRight) left = prevRight;
       if (left >= 0 && left <= parentWidth - $el.width()) {
@@ -209,7 +210,6 @@ function Range(options) {
       var left = ev.clientX - parentOffset.left - mouseOffset;
       var width = startPosLeft + startWidth - left;
 
-      if (drawing) return;
       if (left < 0) {
         left = 0;
         width = startPosLeft + startWidth;
@@ -219,8 +219,7 @@ function Range(options) {
         width = startPosLeft + startWidth - left;
       }
       if (width >= 10) {
-        var lRel = left / parentWidth;
-        $el.val([lRel, $el.range[1]]);
+        $el.val([left / parentWidth, $el.range[1]]);
       } else {
         $(document).trigger('mouseup');
         $el.find('.handle:last-child').trigger('mousedown');
