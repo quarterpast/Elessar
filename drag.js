@@ -1,5 +1,5 @@
 $('.bar').on('mousedown', function(ev) {
-  var target, startLeft, startPosLeft, mouseOffset, startWidth, parent, parentOffset, parentWidth;
+  var target;
 
   if ($(ev.target).is('.handle:first-child')) {
     target = $(ev.currentTarget).width('auto');
@@ -15,17 +15,14 @@ $('.bar').on('mousedown', function(ev) {
     $(document).on('mousemove',drag);
   }
 
-  calcInitConstants();
+  var startLeft = target.offset().left,
+      startPosLeft = target.position().left,
+      mouseOffset = ev.clientX ? ev.clientX - target.offset().left : 0,
+      startWidth = target.width(),
+      parent = target.parent(),
+      parentOffset = parent.offset(),
+      parentWidth = parent.width();
 
-  function calcInitConstants() {
-    startLeft = target.offset().left;
-    startPosLeft = target.position().left;
-    mouseOffset = ev.clientX ? ev.clientX - target.offset().left : 0;
-    startWidth = target.width();
-    parent = target.parent();
-    parentOffset = parent.offset();
-    parentWidth = parent.width();
-  }
   
   var drawing = false;
 
