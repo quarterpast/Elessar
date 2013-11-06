@@ -31,15 +31,28 @@ function Ranger(options) {
   $base.ranges = [];
 
   $base.addRange = function(range, index) {
-    $range = Range({
-      value: range,
+    var $range = Range({
       parent: $base,
       snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
       label: options.label,
       minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
     });
-    $base.ranges.push($range);
-    $base.append($range);
+
+    var newIndex;
+    $base.ranges.forEach(function($r, i) {
+      if($r.val()[1] < range[0]) newIndex = i + 1;
+    });
+
+    $base.ranges.splice(newIndex, 0, $range);
+
+    if($base.ranges[newIndex - 1]) {
+      $base.ranges[newIndex - 1].after($range);
+    } else {
+      $base.prepend($range);
+    }
+
+    $range.val(range);
+
     $range.on('changing', function(ev, n$range) {
       ev.stopPropagation();
       $base.trigger('changing', [$base.val()]);
@@ -67,10 +80,6 @@ function Ranger(options) {
       });
     }
 
-    ranges.sort(function(range1, range2) {
-      return $base.abnormalise(range1[0]) - $base.abnormalise(range2[0]);
-    });
-
     if($base.ranges.length > ranges.length) {
       for(var i = ranges.length, l = $base.ranges.length; i < l; ++i) {
         $base.ranges[i].remove();
@@ -91,11 +100,22 @@ function Ranger(options) {
 
   $base.on('click', function(ev) {
     if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges) {
-      var mid = ev.pageX - $base.offset().left;
-      var left = (mid - $base.width() / 25) / $base.width();
-      var right = (mid + $base.width() / 25) / $base.width();
-
-      $base.addRange([left, right]);
+      var val = (ev.pageX - $base.offset().left)/$base.width();
+      $base.addRange([val, val]);
+    }
+  }).on('mousemove', function(ev) {
+    var val = ev.pageX - $base.offset().left;
+    // if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges) {
+    //   if(!$base.phantom) {
+    //     $base.phantom = Range({
+    //       value: [val,val]
+    //     })
+    //   }
+    // }
+  }).on('mouseleave', function(ev) {
+    if($base.phantom) {
+      $base.phantom.remove();
+      $base.phantom = null;
     }
   });
 
@@ -152,7 +172,9 @@ function Range(options) {
     }
 
 
-    if(options.minSize && range[1] - range[0] < options.minSize) return $el;
+    if(options.minSize && range[1] - range[0] < options.minSize) {
+      range[1] = range[0] + options.minSize;
+    }
     if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
     $el.range = range;
     $el.trigger('changing', [range]);
