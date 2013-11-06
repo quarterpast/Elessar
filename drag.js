@@ -140,8 +140,17 @@ function Range(options) {
     }
     if (prev && prev.val()[1] > range[0]) {
       range[0] = prev.val()[1];
-      if(!dontApplyDelta) range[1] = range[0] - delta;
+      if(!dontApplyDelta) range[1] = range[0] + delta;
     }
+    if (range[1] >= 1) {
+      range[1] = 1;
+      if(!dontApplyDelta) range[0] = 1 - delta;
+    }
+    if (range[0] <= 0) {
+      range[0] = 0;
+      if(!dontApplyDelta) range[1] = delta;
+    }
+
 
     if(options.minSize && range[1] - range[0] < options.minSize) return $el;
     if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
