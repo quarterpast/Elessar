@@ -3,12 +3,15 @@ $('.bar').on('mousedown', function(ev) {
 
   if ($(ev.target).is('.handle:first-child')) {
     target = $(ev.currentTarget).width('auto');
+    $('body').addClass('resizing');
     $(document).on('mousemove',resizeLeft);
   } else if ($(ev.target).is('.handle:last-child')) {
     target = $(ev.currentTarget).width('auto');
+    $('body').addClass('resizing');
     $(document).on('mousemove',resizeRight);
   } else {
     target = $(this);
+    $('body').addClass('dragging');
     $(document).on('mousemove',drag);
   }
 
@@ -25,6 +28,7 @@ $('.bar').on('mousedown', function(ev) {
   $(document).on('mouseup', function() {
     target = null;
     $(this).off('mouseup mousemove');
+    $('body').removeClass('resizing dragging');
   });
 
   function resizeRight(ev) {
