@@ -27,13 +27,13 @@ $('.bar').on('mousedown', function(ev) {
 
   target.siblings('.bar').each(function() {
     var $this = $(this), off = $this.offset(), width = $this.width();
-    if(off.left > startLeft + startWidth) { // to the right of current bar
-      if(!nextLeft || off.left < nextLeft) { // no next or closer to current than next
+    if(off.left >= startLeft + startWidth) { // to the right of current bar
+      if(!nextLeft || off.left <= nextLeft) { // no next or closer to current than next
         nextLeft = off.left;
       }
     }
-    if(off.left + width < startLeft) { // to the left of current bar
-      if(!prevRight || off.left + width > prevRight) { // no prev or closer to current than prev
+    if(off.left + width <= startLeft) { // to the left of current bar
+      if(!prevRight || off.left + width >= prevRight) { // no prev or closer to current than prev
         prevRight = off.left + width;
       }
     }
@@ -52,8 +52,9 @@ $('.bar').on('mousedown', function(ev) {
   function resizeRight(ev) {
     var width = ev.clientX - startLeft;
 
-    if (drawing || width > parentWidth - startPosLeft) return;
-    if (nextLeft && startLeft + width >= nextLeft) return;
+    if (drawing) return;
+    if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
+    if (nextLeft && startLeft + width >= nextLeft) width = nextLeft - startLeft;
     if (width >= 10) {
       requestAnimationFrame(function() {
         drawing = false;
@@ -70,8 +71,8 @@ $('.bar').on('mousedown', function(ev) {
     var left = ev.clientX - parentOffset.left - mouseOffset;
 
     if (drawing) return;
-    if (nextLeft && left + startWidth >= nextLeft) return;
-    if (prevRight && left <= prevRight) return;
+    if (nextLeft && left + startWidth >= nextLeft) left = nextLeft - startWidth;
+    if (prevRight && left <= prevRight) left = prevRight;
     if (left >= 0 && left <= parentWidth - target.width()) {
       requestAnimationFrame(function() {
         drawing = false;
@@ -87,8 +88,15 @@ $('.bar').on('mousedown', function(ev) {
     var left = ev.clientX - parentOffset.left - mouseOffset;
     var width = startPosLeft + startWidth - left;
 
-    if (drawing || left < 0) return;
-    if (prevRight && left <= prevRight) return;
+    if (drawing)
+    if (left < 0) {
+      left = 0;
+      width = startPosLeft + startWidth;
+    }
+    if (prevRight && left <= prevRight) {
+      left = prevRight;
+      width = startPosLeft + startWidth - left;
+    }
     if (width >= 10) {
       requestAnimationFrame(function() {
         drawing = false;
