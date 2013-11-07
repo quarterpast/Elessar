@@ -125,7 +125,7 @@ function Ranger(options) {
       });
 
       $base.insertRangeIndex($base.phantom, $base.findGap([val,val + w]), true);
-      $base.phantom.val([val,val + w]);
+      $base.phantom.val([val,val + w], {trigger: false});
     }
   }).on('mouseleave', $base.removePhantom);
 
@@ -155,10 +155,15 @@ function Range(options) {
   var drawing = false;
   $el.range = [];
 
-  $el.val = function(range, dontApplyDelta) {
+  $el.val = function(range, valOpts) {
     if(typeof range === 'undefined') {
       return $el.range;
     }
+    valOpts  = $.extend({},{
+      dontApplyDelta: false,
+      trigger: true
+    },valOpts || {});
+
     var next = options.parent.nextRange($el),
         prev = options.parent.prevRange($el),
         delta = range[1] - range[0];
@@ -174,19 +179,19 @@ function Range(options) {
     }
     if (next && next.val()[0] < range[1]) {
       range[1] = next.val()[0];
-      if(!dontApplyDelta) range[0] = range[1] - delta;
+      if(!valOpts.dontApplyDelta) range[0] = range[1] - delta;
     }
     if (prev && prev.val()[1] > range[0]) {
       range[0] = prev.val()[1];
-      if(!dontApplyDelta) range[1] = range[0] + delta;
+      if(!valOpts.dontApplyDelta) range[1] = range[0] + delta;
     }
     if (range[1] >= 1) {
       range[1] = 1;
-      if(!dontApplyDelta) range[0] = 1 - delta;
+      if(!valOpts.dontApplyDelta) range[0] = 1 - delta;
     }
     if (range[0] <= 0) {
       range[0] = 0;
-      if(!dontApplyDelta) range[1] = delta;
+      if(!valOpts.dontApplyDelta) range[1] = delta;
     }
 
     if(options.minSize && range[1] - range[0] < options.minSize) {
@@ -196,7 +201,7 @@ function Range(options) {
     if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
 
     $el.range = range;
-    $el.trigger('changing', [range]);
+    if(valOpts.trigger) $el.triggerHandler('changing', [range]);
 
     if (drawing) return $el;
     requestAnimationFrame(function() {
@@ -263,7 +268,7 @@ function Range(options) {
 
         if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
         if (width >= 10) {
-          $el.val([$el.range[0], $el.range[0] + width / parentWidth], true);
+          $el.val([$el.range[0], $el.range[0] + width / parentWidth], {dontApplyDelta: true});
         } else {
           $(document).trigger('mouseup');
           $el.find('.handle:first-child').trigger('mousedown');
@@ -279,7 +284,7 @@ function Range(options) {
           width = startPosLeft + startWidth;
         }
         if (width >= 10) {
-          $el.val([left / parentWidth, $el.range[1]], true);
+          $el.val([left / parentWidth, $el.range[1]], {dontApplyDelta: true});
         } else {
           $(document).trigger('mouseup');
           $el.find('.handle:last-child').trigger('mousedown');
