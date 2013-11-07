@@ -112,6 +112,12 @@ function Ranger(options) {
     }
   };
 
+  $base.calcGap = function(index) {
+    var start = $base.ranges[index - 1] ? $base.ranges[index - 1].val()[1] : 0;
+    var end = $base.ranges[index] ? $base.ranges[index].val()[0] : 1;
+    return normaliseRaw(end) - normaliseRaw(start);
+  };
+
   $base.on('mousemove', function(ev) {
     var w = options.minSize ? abnormaliseRaw(options.minSize + options.min) : 0.05;
     var val = (ev.pageX - $base.offset().left)/$base.width() - w/2;
@@ -123,9 +129,12 @@ function Ranger(options) {
         minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
         phantom: true
       });
+      var idx = $base.findGap([val,val + w]);
 
-      $base.insertRangeIndex($base.phantom, $base.findGap([val,val + w]), true);
-      $base.phantom.val([val,val + w], {trigger: false});
+      if(!options.minSize || $base.calcGap(idx) > options.minSize) {
+        $base.insertRangeIndex($base.phantom, idx, true);
+        $base.phantom.val([val,val + w], {trigger: false});
+      }
     }
   }).on('mouseleave', $base.removePhantom);
 
