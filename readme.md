@@ -65,7 +65,7 @@ bar.val([[0,30], [40,68]]); //=> bar: RangeBar
 Event that triggers constantly as the value changes. Useful for reactively triggering things in your UI.
 
 ### ``.on('change' function(values))``
-Event that triggers after the user has finished changing a range. Useful for say updateing a Backbone model.
+Event that triggers after the user has finished changing a range. Useful for updating a Backbone model.
 
 Licence
 -------
