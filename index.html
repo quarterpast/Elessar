@@ -2,11 +2,20 @@
 <html>
 <head>
 <script src="bower_components/requirejs/require.js"></script>
-<link rel="stylesheet" type="text/css" href="bower_components/elessar/elessar.css">
+<link rel="stylesheet" href="bower_components/flatstrap/assets/css/bootstrap.css">
+<link rel="stylesheet" href="bower_components/flatstrap/assets/css/bootstrap-responsive.css">
+<link rel="stylesheet" href="bower_components/elessar/elessar.css">
 </head>
 <body>
 
-<pre class="changing"></pre>
+<header class="container">
+  <h1>Elessar</h1>
+  <h2>Draggable multiple range sliders</h2>
+</header>
+
+<div class="container" role="main">
+  <pre class="changing"></pre>
+</div>
 
 <script>
 require.config({
@@ -18,7 +27,7 @@ require.config({
 });
 require(['jquery', 'elessar/rangebar', 'moment'],
 function($, RangeBar, moment) {
-  $('body').prepend(r = RangeBar({
+  $('[role=main]').prepend(r = RangeBar({
     min: moment().startOf('day').format('LLLL'),
     max: moment().endOf('day').format('LLLL'),
     valueFormat: function(ts) {
@@ -39,7 +48,9 @@ function($, RangeBar, moment) {
     ],
     label: function(a){return JSON.stringify(a)},
     snap: 1000 * 60 * 15,
-    minSize: 1000 * 60 * 60
+    minSize: 1000 * 60 * 60,
+    barClass: 'progress',
+    rangeClass: 'bar'
   })).on('changing', function(ev, ranges) {
     $('pre.changing').html(JSON.stringify(ranges,null,2));
   }).on('change', function(ev, ranges) {
