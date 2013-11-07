@@ -1,8 +1,8 @@
 (function(root, definition) {
   if (typeof define === 'function' && define.amd) {
-    define(['jquery'], definition);
+    define(['jquery','es5-shim'], definition);
   } else if (typeof exports === 'object') {
-    module.exports = definition(require('jquery-browser/lib/jquery'));
+    module.exports = definition(require('jquery-browser/lib/jquery'), require('es5-shim'));
   } else {
     root.Range = definition(jQuery);
   }

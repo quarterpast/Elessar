@@ -1,6 +1,6 @@
 {
   "name": "elessar",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Draggable multiple range sliders",
   "authors": [
     "Matt Brennan <matt@anqagroup.com>"
@@ -15,7 +15,8 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~2.0.3"
+    "jquery": "~2.0.3",
+    "es5-shim": "~2.1.0"
   },
   "devDependencies": {
     "requirejs": "~2.1.9",

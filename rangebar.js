@@ -1,8 +1,8 @@
 (function(root, definition) {
   if (typeof define === 'function' && define.amd) {
-    define(['jquery','elessar/range'], definition);
+    define(['jquery','elessar/range','es5-shim'], definition);
   } else if (typeof exports === 'object') {
-    module.exports = definition(require('jquery-browser/lib/jquery'), './range');
+    module.exports = definition(require('jquery-browser/lib/jquery'), require('./range'), require('es5-shim'));
   } else {
     root.RangeBar = definition(jQuery, Range);
   }
