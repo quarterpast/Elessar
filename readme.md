@@ -2,6 +2,7 @@ Elessar
 =======
 
 Draggable multiple range sliders
+![elessar draggable range demo](demo.gif)
 
 Installation
 ------------
