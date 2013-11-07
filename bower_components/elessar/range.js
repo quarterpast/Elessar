@@ -11,6 +11,8 @@
     var $el = $('<div class="elessar-range">')
       .append('<span class="elessar-barlabel">');
 
+    if(options.rangeClass) $el.addClass(options.rangeClass);
+
     if(!options.phantom) {
       $el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
     } else {

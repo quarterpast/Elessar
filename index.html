@@ -5,6 +5,25 @@
 <link rel="stylesheet" href="bower_components/flatstrap/assets/css/bootstrap.css">
 <link rel="stylesheet" href="bower_components/flatstrap/assets/css/bootstrap-responsive.css">
 <link rel="stylesheet" href="bower_components/elessar/elessar.css">
+<link href='http://fonts.googleapis.com/css?family=Roboto:400,100' rel='stylesheet' type='text/css'>
+<style>
+body {
+  font-family: Roboto, sans-serif;
+}
+
+h1, h2 {
+  font-family: Roboto, sans-serif;
+  font-weight: 100;
+}
+
+h1 {
+  font-size: 60px;
+}
+
+.elessar-handle {
+  opacity: 0.1;
+}
+</style>
 </head>
 <body>
 
@@ -52,9 +71,9 @@ function($, RangeBar, moment) {
     barClass: 'progress',
     rangeClass: 'bar'
   })).on('changing', function(ev, ranges) {
-    $('pre.changing').html(JSON.stringify(ranges,null,2));
+    $('pre.changing').html('changing '+JSON.stringify(ranges,null,2));
   }).on('change', function(ev, ranges) {
-    $('pre.changing').after($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
+    $('pre.changing').after($('<pre>').html('changed '+JSON.stringify(ranges,null,2)));
   });
 });
 </script>
