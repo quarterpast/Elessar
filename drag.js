@@ -225,7 +225,7 @@ function Range(options) {
     $el.on('mouseenter', function(ev) {
       options.parent.removePhantom();
     }).on('mousedown', function(ev) {
-      if(ev.which !== 1) return;
+      if('which' in ev && ev.which !== 1) return;
 
       if ($(ev.target).is('.handle:first-child')) {
         $('body').addClass('resizing');
