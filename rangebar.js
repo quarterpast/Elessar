@@ -21,6 +21,8 @@
     options.min = options.valueParse(options.min);
     options.max = options.valueParse(options.max);
 
+    if(options.barClass) $base.addClass(options.barClass);
+
     function normaliseRaw(value) {
       return options.min + value * (options.max - options.min);
     }
@@ -63,6 +65,7 @@
         parent: $base,
         snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
         label: options.label,
+        rangeClass: options.rangeClass,
         minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null
       });
 
@@ -136,6 +139,7 @@
           snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
           label: "+",
           minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
+          rangeClass: options.rangeClass,
           phantom: true
         });
         var idx = $base.findGap([val,val + w]);
