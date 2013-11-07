@@ -77,7 +77,7 @@ function Ranger(options) {
 
   $base.nextRange = function(range) {
     var idx = range.index();
-    if(idx >= 0) return $base.ranges[idx + 1];
+    if(idx >= 0) return $base.ranges[range.is('.phantom') ? idx : idx + 1];
   };
 
   $base.val = function(ranges) {
