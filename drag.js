@@ -33,7 +33,7 @@ function Ranger(options) {
   $base.findGap = function(range) {
     var newIndex;
     $base.ranges.forEach(function($r, i) {
-      if($r.val()[1] < range[0]) newIndex = i + 1;
+      if($r.val()[0] < range[0] && $r.val()[1] < range[1]) newIndex = i + 1;
     });
 
     return newIndex;
@@ -167,6 +167,10 @@ function Range(options) {
       range = range.map(function(val) {
         return Math.round(val / options.snap) * options.snap;
       });
+    }
+    if (next && next.val()[0] <= range[1] && prev && prev.val()[1] >= range[0]) {
+      range[1] = next.val()[0];
+      range[0] = prev.val()[1];
     }
     if (next && next.val()[0] < range[1]) {
       range[1] = next.val()[0];
