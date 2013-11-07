@@ -6,6 +6,8 @@
 <link rel="stylesheet" href="bower_components/flatstrap/assets/css/bootstrap-responsive.css">
 <link rel="stylesheet" href="bower_components/elessar/elessar.css">
 <link href='http://fonts.googleapis.com/css?family=Roboto:400,100' rel='stylesheet' type='text/css'>
+
+<title>Elessar: draggable multiple range sliders</title>
 <style>
 body {
   font-family: Roboto, sans-serif;
@@ -65,7 +67,9 @@ function($, RangeBar, moment) {
         moment().startOf('day').add(3.5, 'hours').format('LLLL')
       ],
     ],
-    label: function(a){return JSON.stringify(a)},
+    label: function(a){
+      return moment(a[1]).from(a[0], true);
+    },
     snap: 1000 * 60 * 15,
     minSize: 1000 * 60 * 60,
     barClass: 'progress',
