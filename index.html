@@ -5,68 +5,7 @@
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="range.js"></script>
 <script src="rangebar.js"></script>
-<style>
-.elessar-handle {
-  display: block;
-  background: black;
-  height: 100%;
-  width: 5px;
-  cursor: ew-resize;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-}
-.elessar-handle:first-child {
-  left: 0;
-}
-.elessar-handle:last-child {
-  right: 0;
-}
-.elessar-range {
-  position: absolute;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
-  cursor: grab;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  background: blue;
-  width: 0;
-}
-.elessar-phantom {
-  background-color: transparent;
-  background: rgba(0,0,0,0.5);
-  color: white;
-  cursor: pointer !important;
-}
-.elessar-rangebar {
-  position: relative;
-  height: 30px;
-  line-height: 30px;
-  background: #ccc;
-}
-body.elessar-resizing, body.elessar-dragging {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-body.elessar-resizing,
-body.elessar-resizing .bar,
-body.elessar-resizing .handle {
-  cursor: ew-resize !important;
-
-}
-body.elessar-dragging,
-body.elessar-dragging .bar,
-body.elessar-dragging .handle {
-  cursor: -webkit-grabbing !important;
-  cursor: -moz-grabbing !important;
-  cursor: grabbing !important;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="elessar.css">
 </head>
 <body>
 
