@@ -220,6 +220,8 @@ function Range(options) {
     $el.on('mouseenter', function(ev) {
       options.parent.removePhantom();
     }).on('mousedown', function(ev) {
+      if(ev.which !== 1) return;
+
       if ($(ev.target).is('.handle:first-child')) {
         $('body').addClass('resizing');
         $(document).on('mousemove',resizeLeft);
@@ -286,10 +288,12 @@ function Range(options) {
     });
   } else {
     $el.on('mousedown', function(ev) {
-      var startX = ev.pageX;
-      var newRange = options.parent.addRange($el.val());
-      $el.remove();
-      newRange.find('.handle:first-child').trigger('mousedown');
+      if(ev.which === 1) { // left mouse button
+        var startX = ev.pageX;
+        var newRange = options.parent.addRange($el.val());
+        $el.remove();
+        newRange.find('.handle:first-child').trigger('mousedown');
+      }
     });
   }
 
