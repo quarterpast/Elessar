@@ -5,7 +5,8 @@
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
 <script src="http://momentjs.com/downloads/moment.min.js"></script>
-<script src="drag.js"></script>
+<script src="range.js"></script>
+<script src="rangebar.js"></script>
 <style>
 .handle {
   display: block;
@@ -78,7 +79,7 @@ body.dragging .handle {
 </div>
 
 <script>
-$('.container').prepend(r = Ranger({
+$('.container').prepend(r = RangeBar({
 	min: moment().startOf('day').format('LLLL'),
 	max: moment().endOf('day').format('LLLL'),
 	valueFormat: function(ts) {
