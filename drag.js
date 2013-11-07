@@ -131,7 +131,7 @@ function Ranger(options) {
       });
       var idx = $base.findGap([val,val + w]);
 
-      if(!options.minSize || $base.calcGap(idx) > options.minSize) {
+      if(!options.minSize || $base.calcGap(idx) >= options.minSize) {
         $base.insertRangeIndex($base.phantom, idx, true);
         $base.phantom.val([val,val + w], {trigger: false});
       }
