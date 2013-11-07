@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
 <head>
-<script src="bower_components/requirejs/require.js"></script>
-<link rel="stylesheet" type="text/css" href="bower_components/elessar/elessar.css">
+<script src="../bower_components/requirejs/require.js"></script>
+<link rel="stylesheet" type="text/css" href="../elessar.css">
 </head>
 <body>
 
@@ -11,9 +11,9 @@
 <script>
 require.config({
   paths: {
-    "jquery": "bower_components/jquery/jquery",
-    "elessar": "bower_components/elessar",
-    "moment": 'bower_components/moment/moment'
+    "jquery": "../bower_components/jquery/jquery",
+    "elessar": "../",
+    "moment": '../bower_components/moment/moment'
   }
 });
 require(['jquery', 'elessar/rangebar', 'moment'],

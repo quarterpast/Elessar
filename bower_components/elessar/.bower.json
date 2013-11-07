@@ -1,0 +1,35 @@
+{
+  "name": "elessar",
+  "version": "1.0.0",
+  "authors": [
+    "Matt Brennan <matt@anqagroup.com>"
+  ],
+  "description": "Draggable multiple range sliders",
+  "main": "rangebar.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.0.3"
+  },
+  "devDependencies": {
+    "requirejs": "~2.1.9",
+    "moment": "~2.4.0"
+  },
+  "homepage": "https://github.com/quarterto/Elessar",
+  "_release": "1.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.0",
+    "commit": "52d47dfd77a26ce6520ac8f52caff6d94150df35"
+  },
+  "_source": "git://github.com/quarterto/Elessar.git",
+  "_target": "~1.0.0",
+  "_originalSource": "elessar",
+  "_direct": true
+}
