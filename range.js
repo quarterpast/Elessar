@@ -122,7 +122,7 @@
         $(document).on('mouseup', function() {
           $el.trigger('change', [$el.range]);
           $(this).off('mouseup mousemove');
-          $('body').removeClass('resizing dragging');
+          $('body').removeClass('elessar-resizing elessar-dragging');
         });
 
         function drag(ev) {
