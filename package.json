@@ -1,12 +1,12 @@
 {
   "name": "elessar",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Draggable multiple range sliders",
   "main": "rangebar.js",
   "author": "Matt Brennan <matt@anqagroup.com>",
   "license": "MIT",
   "dependencies": {
-    "jquery-browser": "~1.10.2-1",
+    "jquery-browser": ">=1.8",
     "es5-shim": "~2.1.0"
   },
   "devDependencies": {
