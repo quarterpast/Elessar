@@ -24,6 +24,18 @@
   white-space: nowrap;
   background: blue;
   width: 0;
+  z-index: 10;
+}
+.elessar-label {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  border-left: 1px solid #999;
+  padding-left: 10px;
+}
+.elessar-readonly {
+  opacity: 0.6;
+  cursor: default !important;
 }
 .elessar-phantom {
   background-color: transparent;

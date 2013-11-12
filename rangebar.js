@@ -12,7 +12,9 @@
     max: 100,
     valueFormat: function(a) {return a;},
     valueParse: function(a) {return a;},
-    maxRanges: Infinity
+    maxRanges: Infinity,
+    readonly: false,
+    bgLabels: 0
   };
 
   function RangeBar(options) {
@@ -66,7 +68,8 @@
         snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
         label: options.label,
         rangeClass: options.rangeClass,
-        minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null
+        minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
+        readonly: options.readonly
       });
 
       $base.insertRangeIndex($range, $base.findGap(range));
@@ -92,13 +95,7 @@
       if(idx >= 0) return $base.ranges[range.is('.elessar-phantom') ? idx : idx + 1];
     };
 
-    $base.val = function(ranges) {
-      if(typeof ranges === 'undefined') {
-        return $base.ranges.map(function(range) {
-          return range.val().map($base.normalise);
-        });
-      }
-
+    function setVal(ranges) {
       if($base.ranges.length > ranges.length) {
         for(var i = ranges.length, l = $base.ranges.length; i < l; ++i) {
           $base.ranges[i].remove();
@@ -115,6 +112,17 @@
       });
 
       return this;
+    }
+
+    $base.val = function(ranges) {
+      if(typeof ranges === 'undefined') {
+        return $base.ranges.map(function(range) {
+          return range.val().map($base.normalise);
+        });
+      }
+
+      if(!options.readonly) setVal(ranges);
+      return this;
     };
 
     $base.removePhantom = function() {
@@ -130,10 +138,22 @@
       return normaliseRaw(end) - normaliseRaw(start);
     };
 
+    $base.addLabel = function(pos) {
+      var cent = pos * 100, val = $base.normalise(pos);
+      var $el = $('<span class="elessar-label">').css('left', cent+'%').text(val);
+      if(1 - pos < 0.05) {
+        $el.css({
+          left: '',
+          right: 0
+        });
+      }
+      return $el.appendTo($base);
+    };
+
     $base.on('mousemove', function(ev) {
       var w = options.minSize ? abnormaliseRaw(options.minSize + options.min) : 0.05;
       var val = (ev.pageX - $base.offset().left)/$base.width() - w/2;
-      if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing')) {
+      if(ev.target === ev.currentTarget && $base.ranges.length < options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !options.readonly) {
         if(!$base.phantom) $base.phantom = Range({
           parent: $base,
           snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
@@ -151,7 +171,11 @@
       }
     }).on('mouseleave', $base.removePhantom);
 
-    if(options.values) $base.val(options.values);
+    if(options.values) setVal(options.values);
+
+    for(var i = 0; i < options.bgLabels; ++i) {
+      $base.addLabel(i / options.bgLabels);
+    }
 
     return $base;
   }
