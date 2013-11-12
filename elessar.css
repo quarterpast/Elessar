@@ -25,6 +25,10 @@
   background: blue;
   width: 0;
 }
+.elessar-readonly {
+  opacity: 0.6;
+  cursor: default !important;
+}
 .elessar-phantom {
   background-color: transparent;
   background: rgba(0,0,0,0.5);
