@@ -37,13 +37,15 @@ Options
 ```javascript
 RangeBar({
   values: [], // array of value pairs; each pair is the min and max of the range it creates
+  readonly: false, // whether this bar is read-only
   min: 0, // value at start of bar
   max: 100, // value at end of bar
   valueFormat: function(a) {return a;}, // formats a value on the bar for output
   valueParse: function(a) {return a;}, // parses an output value for the bar
   snap: 0, // clamps range ends to multiples of this value (in bar units)
   minSize: 0, // smallest allowed range (in bar units)
-  maxRanges: Infinity // maximum number of ranges allowed on the bar
+  maxRanges: Infinity, // maximum number of ranges allowed on the bar
+  bgLabels: 0 // number of value labels to write in the background of the bar
 });
 ```
 
