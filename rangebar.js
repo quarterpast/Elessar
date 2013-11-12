@@ -13,7 +13,8 @@
     valueFormat: function(a) {return a;},
     valueParse: function(a) {return a;},
     maxRanges: Infinity,
-    readonly: false
+    readonly: false,
+    bgLabels: 0
   };
 
   function RangeBar(options) {
@@ -137,6 +138,18 @@
       return normaliseRaw(end) - normaliseRaw(start);
     };
 
+    $base.addLabel = function(pos) {
+      var cent = pos * 100, val = $base.normalise(pos);
+      var $el = $('<span class="elessar-label">').css('left', cent+'%').text(val);
+      if(1 - pos < 0.05) {
+        $el.css({
+          left: '',
+          right: 0
+        });
+      }
+      return $el.appendTo($base);
+    };
+
     $base.on('mousemove', function(ev) {
       var w = options.minSize ? abnormaliseRaw(options.minSize + options.min) : 0.05;
       var val = (ev.pageX - $base.offset().left)/$base.width() - w/2;
@@ -159,6 +172,10 @@
     }).on('mouseleave', $base.removePhantom);
 
     if(options.values) setVal(options.values);
+
+    for(var i = 0; i < options.bgLabels; ++i) {
+      $base.addLabel(i / options.bgLabels);
+    }
 
     return $base;
   }
