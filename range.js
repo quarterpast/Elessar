@@ -13,10 +13,14 @@
 
     if(options.rangeClass) $el.addClass(options.rangeClass);
 
-    if(!options.phantom) {
-      $el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
+    if(!options.readonly) {
+      if(!options.phantom) {
+        $el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
+      } else {
+        $el.addClass('elessar-phantom');
+      }
     } else {
-      $el.addClass('elessar-phantom');
+      $el.addClass('elessar-readonly');
     }
 
     if(typeof options.label === 'function') {
@@ -34,6 +38,7 @@
       if(typeof range === 'undefined') {
         return $el.range;
       }
+
       valOpts  = $.extend({},{
         dontApplyDelta: false,
         trigger: true
@@ -95,86 +100,88 @@
 
     if(options.value) $el.val(options.value);
 
-    if(!options.phantom) {
+    if(!options.readonly) {
+      if(!options.phantom) {
 
-      $el.on('mouseenter', function(ev) {
-        options.parent.removePhantom();
-      }).on('mousedown', function(ev) {
-        if('which' in ev && ev.which !== 1) return;
+        $el.on('mouseenter', function(ev) {
+          options.parent.removePhantom();
+        }).on('mousedown', function(ev) {
+          if('which' in ev && ev.which !== 1) return;
 
-        if ($(ev.target).is('.elessar-handle:first-child')) {
-          $('body').addClass('elessar-resizing');
-          $(document).on('mousemove',resizeLeft);
-        } else if ($(ev.target).is('.elessar-handle:last-child')) {
-          $('body').addClass('elessar-resizing');
-          $(document).on('mousemove',resizeRight);
-        } else {
-          $('body').addClass('elessar-dragging');
-          $(document).on('mousemove',drag);
-        }
+          if ($(ev.target).is('.elessar-handle:first-child')) {
+            $('body').addClass('elessar-resizing');
+            $(document).on('mousemove',resizeLeft);
+          } else if ($(ev.target).is('.elessar-handle:last-child')) {
+            $('body').addClass('elessar-resizing');
+            $(document).on('mousemove',resizeRight);
+          } else {
+            $('body').addClass('elessar-dragging');
+            $(document).on('mousemove',drag);
+          }
 
-        var startLeft = $el.offset().left,
-            startPosLeft = $el.position().left,
-            mouseOffset = ev.clientX ? ev.clientX - $el.offset().left : 0,
-            startWidth = $el.width(),
-            parent = options.parent,
-            parentOffset = parent.offset(),
-            parentWidth = parent.width();
+          var startLeft = $el.offset().left,
+              startPosLeft = $el.position().left,
+              mouseOffset = ev.clientX ? ev.clientX - $el.offset().left : 0,
+              startWidth = $el.width(),
+              parent = options.parent,
+              parentOffset = parent.offset(),
+              parentWidth = parent.width();
 
-        $(document).on('mouseup', function() {
-          $el.trigger('change', [$el.range]);
-          $(this).off('mouseup mousemove');
-          $('body').removeClass('elessar-resizing elessar-dragging');
+          $(document).on('mouseup', function() {
+            $el.trigger('change', [$el.range]);
+            $(this).off('mouseup mousemove');
+            $('body').removeClass('elessar-resizing elessar-dragging');
+          });
+
+          function drag(ev) {
+            var left = ev.clientX - parentOffset.left - mouseOffset;
+
+            if (left >= 0 && left <= parentWidth - $el.width()) {
+              var rangeOffset = left / parentWidth - $el.range[0];
+              $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
+            } else {
+              mouseOffset = ev.clientX - $el.offset().left;
+            }
+          }
+
+          function resizeRight(ev) {
+            var width = ev.clientX - startLeft;
+
+            if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
+            if (width >= 10) {
+              $el.val([$el.range[0], $el.range[0] + width / parentWidth], {dontApplyDelta: true});
+            } else {
+              $(document).trigger('mouseup');
+              $el.find('.elessar-handle:first-child').trigger('mousedown');
+            }
+          }
+
+          function resizeLeft(ev) {
+            var left = ev.clientX - parentOffset.left - mouseOffset;
+            var width = startPosLeft + startWidth - left;
+
+            if (left < 0) {
+              left = 0;
+              width = startPosLeft + startWidth;
+            }
+            if (width >= 10) {
+              $el.val([left / parentWidth, $el.range[1]], {dontApplyDelta: true});
+            } else {
+              $(document).trigger('mouseup');
+              $el.find('.elessar-handle:last-child').trigger('mousedown');
+            }
+          }
         });
-
-        function drag(ev) {
-          var left = ev.clientX - parentOffset.left - mouseOffset;
-
-          if (left >= 0 && left <= parentWidth - $el.width()) {
-            var rangeOffset = left / parentWidth - $el.range[0];
-            $el.val([left / parentWidth, $el.range[1] + rangeOffset]);
-          } else {
-            mouseOffset = ev.clientX - $el.offset().left;
+      } else {
+        $el.on('mousedown', function(ev) {
+          if(ev.which === 1) { // left mouse button
+            var startX = ev.pageX;
+            var newRange = options.parent.addRange($el.val());
+            $el.remove();
+            newRange.find('.elessar-handle:first-child').trigger('mousedown');
           }
-        }
-
-        function resizeRight(ev) {
-          var width = ev.clientX - startLeft;
-
-          if (width > parentWidth - startPosLeft) width = parentWidth - startPosLeft;
-          if (width >= 10) {
-            $el.val([$el.range[0], $el.range[0] + width / parentWidth], {dontApplyDelta: true});
-          } else {
-            $(document).trigger('mouseup');
-            $el.find('.elessar-handle:first-child').trigger('mousedown');
-          }
-        }
-
-        function resizeLeft(ev) {
-          var left = ev.clientX - parentOffset.left - mouseOffset;
-          var width = startPosLeft + startWidth - left;
-
-          if (left < 0) {
-            left = 0;
-            width = startPosLeft + startWidth;
-          }
-          if (width >= 10) {
-            $el.val([left / parentWidth, $el.range[1]], {dontApplyDelta: true});
-          } else {
-            $(document).trigger('mouseup');
-            $el.find('.elessar-handle:last-child').trigger('mousedown');
-          }
-        }
-      });
-    } else {
-      $el.on('mousedown', function(ev) {
-        if(ev.which === 1) { // left mouse button
-          var startX = ev.pageX;
-          var newRange = options.parent.addRange($el.val());
-          $el.remove();
-          newRange.find('.elessar-handle:first-child').trigger('mousedown');
-        }
-      });
+        });
+      }
     }
 
 
