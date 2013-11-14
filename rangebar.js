@@ -183,7 +183,7 @@
         indicatorClass: options.indicatorClass
       });
       indicator.val($base.abnormalise(options.indicator($base, indicator, function() {
-          indicator.val($base.abnormalise(options.indicator($base, indicator, function(){})));
+        indicator.val($base.abnormalise(options.indicator($base, indicator)));
       })));
       $base.append(indicator);
     }
