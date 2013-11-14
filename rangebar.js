@@ -62,7 +62,7 @@
       }
     };
 
-    $base.addRange = function(range) {
+    $base.addRange = function(range, data) {
       var $range = Range({
         parent: $base,
         snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
@@ -74,6 +74,10 @@
 
       if (options.data) {
         $range.data(options.data.call($range, $base));
+      }
+
+      if (data) {
+        $range.data(data);
       }
 
       $base.insertRangeIndex($range, $base.findGap(range));
