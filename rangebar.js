@@ -186,7 +186,7 @@
     }
 
     if(options.indicator) {
-      var indicator = new Indicator({
+      var indicator = $base.indicator = new Indicator({
         parent: $base,
         indicatorClass: options.indicatorClass
       });
