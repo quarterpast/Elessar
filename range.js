@@ -1,12 +1,12 @@
 (function(root, definition) {
   if (typeof define === 'function' && define.amd) {
-    define(['jquery','es5-shim'], definition);
+    define(['jquery','elessar/raf','es5-shim'], definition);
   } else if (typeof exports === 'object') {
-    module.exports = definition(require('jquery-browser/lib/jquery'), require('es5-shim'));
+    module.exports = definition(require('jquery-browser/lib/jquery'), require('./raf'), require('es5-shim'));
   } else {
-    root.Range = definition(jQuery);
+    root.Range = definition(jQuery, requestAnimationFrame);
   }
-})(this, function($) {
+})(this, function($, requestAnimationFrame) {
   function Range(options) {
     var $el = $('<div class="elessar-range">')
       .append('<span class="elessar-barlabel">');
@@ -49,9 +49,8 @@
           delta = range[1] - range[0];
 
       if(options.snap) {
-        range = range.map(function(val) {
-          return Math.round(val / options.snap) * options.snap;
-        });
+        range = range.map(snap);
+        delta = snap(delta);
       }
       if (next && next.val()[0] <= range[1] && prev && prev.val()[1] >= range[0]) {
         range[1] = next.val()[0];
@@ -95,7 +94,8 @@
 
       return $el;
 
-      function sign(x) { return x ? x < 0 ? -1 : 1 : 0; }
+      function snap(val) { return Math.round(val / options.snap) * options.snap; }
+      function sign(x)   { return x ? x < 0 ? -1 : 1 : 0; }
     };
 
     if(options.value) $el.val(options.value);
