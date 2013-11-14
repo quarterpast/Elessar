@@ -4,6 +4,7 @@
 <script src="http://momentjs.com/downloads/moment.min.js"></script>
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="../range.js"></script>
+<script src="../indicator.js"></script>
 <script src="../rangebar.js"></script>
 <link rel="stylesheet" type="text/css" href="../elessar.css">
 </head>
@@ -34,7 +35,10 @@ $('body').prepend(r = RangeBar({
   label: function(a){return JSON.stringify(a)},
   snap: 1000 * 60 * 15,
   minSize: 1000 * 60 * 60,
-  bgLabels: 4
+  bgLabels: 4,
+  indicator: function(bar, indicator) {
+    return moment().format('LLLL');
+  }
 })).on('changing', function(ev, ranges, changed) {
   console.log(changed);
   $('pre.changing').html(JSON.stringify(ranges,null,2));
