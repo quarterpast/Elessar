@@ -182,14 +182,10 @@
         parent: $base,
         indicatorClass: options.indicatorClass
       });
-      indicator.val($base.abnormalise(options.indicator($base, indicator)));
+      indicator.val($base.abnormalise(options.indicator($base, indicator, function() {
+          indicator.val($base.abnormalise(options.indicator($base, indicator, function(){})));
+      })));
       $base.append(indicator);
-
-      if(options.indicatorRecalculate) {
-        options.indicatorRecalculate(function() {
-          indicator.val($base.abnormalise(options.indicator($base, indicator)));
-        });
-      }
     }
 
     return $base;
