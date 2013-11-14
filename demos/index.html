@@ -14,7 +14,7 @@
 <script>
 $('body').prepend(r = RangeBar({
   min: moment().startOf('day').format('LLLL'),
-  max: moment().endOf('day').format('LLLL'),
+  max: moment().startOf('day').add(1, 'day').format('LLLL'),
   valueFormat: function(ts) {
     return moment(ts).format('LLLL');
   },
@@ -29,6 +29,10 @@ $('body').prepend(r = RangeBar({
     [
       moment().startOf('day').add(1.5, 'hours').format('LLLL'),
       moment().startOf('day').add(3.5, 'hours').format('LLLL')
+    ],
+    [
+      moment().endOf('day').subtract(1.5, 'hours').format('LLLL'),
+      moment().endOf('day').subtract(1, 'minute').format('LLLL')
     ],
   ],
   label: function(a){return JSON.stringify(a)},
