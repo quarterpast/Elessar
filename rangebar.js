@@ -75,12 +75,12 @@
       $base.insertRangeIndex($range, $base.findGap(range));
       $range.val(range);
 
-      $range.on('changing', function(ev, nrange) {
+      $range.on('changing', function(ev, nrange, changed) {
         ev.stopPropagation();
-        $base.trigger('changing', [$base.val()]);
-      }).on('change', function(ev, nrange) {
+        $base.trigger('changing', [$base.val(), changed]);
+      }).on('change', function(ev, nrange, changed) {
         ev.stopPropagation();
-        $base.trigger('change', [$base.val()]);
+        $base.trigger('change', [$base.val(), changed]);
       });
       return $range;
     };
