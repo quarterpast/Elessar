@@ -64,11 +64,11 @@ Updates the ranges in the bar with the values. Returns the bar, for chaining.
 bar.val([[0,30], [40,68]]); //=> bar: RangeBar
 ```
 
-### ``.on('changing' function(values))``
-Event that triggers constantly as the value changes. Useful for reactively triggering things in your UI.
+### ``.on('changing' function(values, range))``
+Event that triggers constantly as the value changes. Useful for reactively triggering things in your UI. Callback is passed the current values of the ranges and the range element that is changing.
 
-### ``.on('change' function(values))``
-Event that triggers after the user has finished changing a range. Useful for updating a Backbone model.
+### ``.on('change' function(values, range))``
+Event that triggers after the user has finished changing a range. Useful for updating a Backbone model. Callback is passed the current values of the ranges and the range element that has changed.
 
 Licence
 -------

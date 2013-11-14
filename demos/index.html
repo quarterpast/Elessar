@@ -35,9 +35,11 @@ $('body').prepend(r = RangeBar({
   snap: 1000 * 60 * 15,
   minSize: 1000 * 60 * 60,
   bgLabels: 4
-})).on('changing', function(ev, ranges) {
+})).on('changing', function(ev, ranges, changed) {
+  console.log(changed);
   $('pre.changing').html(JSON.stringify(ranges,null,2));
-}).on('change', function(ev, ranges) {
+}).on('change', function(ev, ranges, changed) {
+  console.log(changed);
   $('pre.changing').after($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
 });
 </script>
