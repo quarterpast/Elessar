@@ -37,7 +37,10 @@ $('body').prepend(r = RangeBar({
   minSize: 1000 * 60 * 60,
   bgLabels: 4,
   indicator: function(bar, indicator) {
-    return moment().format('LLLL');
+    return moment().hours(Math.floor(24 * Math.random())).format('LLLL');
+  },
+  indicatorRecalculate: function(cb) {
+    setInterval(cb, 500);
   }
 })).on('changing', function(ev, ranges, changed) {
   console.log(changed);

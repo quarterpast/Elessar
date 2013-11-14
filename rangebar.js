@@ -184,6 +184,12 @@
       });
       indicator.val($base.abnormalise(options.indicator($base, indicator)));
       $base.append(indicator);
+
+      if(options.indicatorRecalculate) {
+        options.indicatorRecalculate(function() {
+          indicator.val($base.abnormalise(options.indicator($base, indicator)));
+        });
+      }
     }
 
     return $base;
