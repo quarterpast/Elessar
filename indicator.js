@@ -1,12 +1,12 @@
 (function(root, definition) {
   if (typeof define === 'function' && define.amd) {
-    define(['jquery','es5-shim'], definition);
+    define(['jquery','elessar/raf','es5-shim'], definition);
   } else if (typeof exports === 'object') {
-    module.exports = definition(require('jquery-browser/lib/jquery'), require('es5-shim'));
+    module.exports = definition(require('jquery-browser/lib/jquery'), require('./raf'), require('es5-shim'));
   } else {
-    root.Indicator = definition(jQuery);
+    root.Indicator = definition(jQuery, requestAnimationFrame);
   }
-})(this, function($) {
+})(this, function($, requestAnimationFrame) {
   function Indicator(options) {
     var $el = $('<div class="elessar-indicator">');
 
