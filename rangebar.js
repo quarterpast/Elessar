@@ -1,12 +1,12 @@
 (function(root, definition) {
   if (typeof define === 'function' && define.amd) {
-    define(['jquery','elessar/range','es5-shim'], definition);
+    define(['jquery','elessar/range','elessar/indicator','es5-shim'], definition);
   } else if (typeof exports === 'object') {
-    module.exports = definition(require('jquery-browser/lib/jquery'), require('./range'), require('es5-shim'));
+    module.exports = definition(require('jquery-browser/lib/jquery'), require('./range'), require('./indicator'), require('es5-shim'));
   } else {
-    root.RangeBar = definition(jQuery, Range);
+    root.RangeBar = definition(jQuery, Range, Indicator);
   }
-})(this, function($, Range) {
+})(this, function($, Range, Indicator) {
   RangeBar.defaults = {
     min: 0,
     max: 100,
@@ -175,6 +175,17 @@
 
     for(var i = 0; i < options.bgLabels; ++i) {
       $base.addLabel(i / options.bgLabels);
+    }
+
+    if(options.indicator) {
+      var indicator = new Indicator({
+        parent: $base,
+        indicatorClass: options.indicatorClass
+      });
+      indicator.val($base.abnormalise(options.indicator($base, indicator, function() {
+        indicator.val($base.abnormalise(options.indicator($base, indicator)));
+      })));
+      $base.append(indicator);
     }
 
     return $base;
