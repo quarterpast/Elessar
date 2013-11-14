@@ -72,6 +72,10 @@
         readonly: options.readonly
       });
 
+      if (options.data) {
+        $range.data(options.data.call($range, $base));
+      }
+
       $base.insertRangeIndex($range, $base.findGap(range));
       $range.val(range);
 
