@@ -81,7 +81,7 @@
       if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
 
       $el.range = range;
-      if(valOpts.trigger) $el.triggerHandler('changing', [range]);
+      if(valOpts.trigger) $el.triggerHandler('changing', [range, $el]);
 
       if (drawing) return $el;
       requestAnimationFrame(function() {
@@ -128,7 +128,7 @@
               parentWidth = parent.width();
 
           $(document).on('mouseup', function() {
-            $el.trigger('change', [$el.range]);
+            $el.trigger('change', [$el.range, $el]);
             $(this).off('mouseup mousemove');
             $('body').removeClass('elessar-resizing elessar-dragging');
           });
