@@ -45,7 +45,8 @@ RangeBar({
   snap: 0, // clamps range ends to multiples of this value (in bar units)
   minSize: 0, // smallest allowed range (in bar units)
   maxRanges: Infinity, // maximum number of ranges allowed on the bar
-  bgLabels: 0 // number of value labels to write in the background of the bar
+  bgLabels: 0, // number of value labels to write in the background of the bar
+  indicator: null // pass a function(RangeBar, Indicator, Function?) Value to calculate where to put a current indicator, calling the function whenever you want the position to be recalculated
 });
 ```
 

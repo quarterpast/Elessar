@@ -3,7 +3,9 @@
 <head>
 <script src="http://momentjs.com/downloads/moment.min.js"></script>
 <script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="../raf.js"></script>
 <script src="../range.js"></script>
+<script src="../indicator.js"></script>
 <script src="../rangebar.js"></script>
 <link rel="stylesheet" type="text/css" href="../elessar.css">
 </head>
@@ -14,7 +16,7 @@
 <script>
 $('body').prepend(r = RangeBar({
   min: moment().startOf('day').format('LLLL'),
-  max: moment().endOf('day').format('LLLL'),
+  max: moment().startOf('day').add(1, 'day').format('LLLL'),
   valueFormat: function(ts) {
     return moment(ts).format('LLLL');
   },
@@ -30,11 +32,19 @@ $('body').prepend(r = RangeBar({
       moment().startOf('day').add(1.5, 'hours').format('LLLL'),
       moment().startOf('day').add(3.5, 'hours').format('LLLL')
     ],
+    [
+      moment().endOf('day').subtract(1.5, 'hours').format('LLLL'),
+      moment().endOf('day').subtract(1, 'minute').format('LLLL')
+    ],
   ],
   label: function(a){return JSON.stringify(a)},
   snap: 1000 * 60 * 15,
   minSize: 1000 * 60 * 60,
-  bgLabels: 4
+  bgLabels: 4,
+  indicator: function(bar, indicator, recalc) {
+    if(recalc) setInterval(recalc, 500);
+    return moment().hours(Math.floor(24 * Math.random())).format('LLLL');
+  }
 })).on('changing', function(ev, ranges, changed) {
   console.log(changed);
   $('pre.changing').html(JSON.stringify(ranges,null,2));
