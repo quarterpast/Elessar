@@ -182,12 +182,12 @@
             var startX = ev.pageX;
             var newRange = options.parent.addRange($el.val());
             $el.remove();
+            options.parent.trigger('addrange', [newRange.val(), newRange]);
             newRange.find('.elessar-handle:first-child').trigger('mousedown');
           }
         });
       }
     }
-
 
     return $el;
   }
