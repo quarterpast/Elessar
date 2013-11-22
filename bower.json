@@ -16,7 +16,8 @@
   ],
   "dependencies": {
     "jquery": ">=1.8",
-    "es5-shim": "~2.1.0"
+    "es5-shim": "~2.1.0",
+    "estira": "~0.0.0"
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
