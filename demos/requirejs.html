@@ -12,12 +12,12 @@
 require.config({
   paths: {
     "jquery": "../bower_components/jquery/jquery",
-    "elessar": "../",
+    "elessar": "../dist/elessar",
     "moment": '../bower_components/moment/moment',
     "es5-shim": "../bower_components/es5-shim/es5-shim"
   }
 });
-require(['jquery', 'elessar/rangebar', 'moment'],
+require(['jquery', 'elessar', 'moment'],
 function($, RangeBar, moment) {
   $('body').prepend(r = RangeBar({
     min: moment().startOf('day').format('LLLL'),

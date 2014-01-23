@@ -5,7 +5,7 @@
   "authors": [
     "Matt Brennan <matt@anqagroup.com>"
   ],
-  "main": "rangebar.js",
+  "main": "dist/elessar.min.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
