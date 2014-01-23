@@ -8,9 +8,9 @@ min: dist/elessar.min.js
 dist/%.min.js: dist/%.js
 	node_modules/.bin/uglifyjs2 $< -o $@
 
-dist/elessar.js: $(DEPS)
+dist/%.js: $(DEPS)
 	mkdir -p dist
-	node_modules/.bin/browserify --standalone $(MODULE_NAME) $(ENTRY_FILE) -o $@
+	node_modules/.bin/browserify --standalone $(MODULE_NAME) --ignore jquery $(ENTRY_FILE) -o $@
 
 .PHONY: clean deps
 
