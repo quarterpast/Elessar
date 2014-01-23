@@ -10,11 +10,11 @@ dist/%.min.js: dist/%.js
 
 dist/%.js: $(DEPS)
 	mkdir -p dist
-	node_modules/.bin/browserify     \
-		--transform browserify-shim    \
-		--standalone $(MODULE_NAME)    \
-		--exclude jquery $(ENTRY_FILE) \
-		-o $@
+	node_modules/.bin/browserify  \
+		--transform browserify-shim \
+		--standalone $(MODULE_NAME) \
+		--exclude jquery            \
+		$(ENTRY_FILE) -o $@
 
 .PHONY: clean deps
 
