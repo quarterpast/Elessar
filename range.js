@@ -31,7 +31,7 @@
       $el.find('.elessar-barlabel').text(options.label);
     }
 
-    var drawing = false;
+    var drawing = false, hasChanged = false;
     $el.range = [];
 
     $el.val = function(range, valOpts) {
@@ -80,7 +80,10 @@
       if($el.range[0] === range[0] && $el.range[1] === range[1]) return $el;
 
       $el.range = range;
-      if(valOpts.trigger) $el.triggerHandler('changing', [range, $el]);
+      if(valOpts.trigger) {
+        $el.triggerHandler('changing', [range, $el]);
+        hasChanged = true;
+      }
 
       if (drawing) return $el;
       requestAnimationFrame(function() {
@@ -106,6 +109,7 @@
         $el.on('mouseenter', function(ev) {
           options.parent.removePhantom();
         }).on('mousedown', function(ev) {
+          hasChanged = false;
           if('which' in ev && ev.which !== 1) return;
 
           if ($(ev.target).is('.elessar-handle:first-child')) {
@@ -128,7 +132,7 @@
               parentWidth = parent.width();
 
           $(document).on('mouseup', function() {
-            $el.trigger('change', [$el.range, $el]);
+            if(hasChanged) $el.trigger('change', [$el.range, $el]);
             $(this).off('mouseup mousemove');
             $('body').removeClass('elessar-resizing elessar-dragging');
           });
