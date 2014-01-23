@@ -1,34 +1,27 @@
-(function(root, definition) {
-  if (typeof define === 'function' && define.amd) {
-    define(['jquery','elessar/raf','es5-shim'], definition);
-  } else if (typeof exports === 'object') {
-    module.exports = definition(require('jquery-browser/lib/jquery'), require('./raf'), require('es5-shim'));
-  } else {
-    root.Indicator = definition(jQuery, requestAnimationFrame);
-  }
-})(this, function($, requestAnimationFrame) {
-  function Indicator(options) {
-    var $el = $('<div class="elessar-indicator">');
+var $ = require('jquery');
+var requestAnimationFrame = require('./raf');
 
-    if(options.indicatorClass) $el.addClass(options.indicatorClass);
+function Indicator(options) {
+  var $el = $('<div class="elessar-indicator">');
 
-    var drawing = false;
+  if(options.indicatorClass) $el.addClass(options.indicatorClass);
 
-    $el.val = function(pos) {
-      if (drawing) return $el;
-      requestAnimationFrame(function() {
-        drawing = false;
-        $el.css({left: 100*pos + '%'});
-      });
-      drawing = true;
+  var drawing = false;
 
-      return $el;
-    };
-
-    if(options.value) $el.val(options.value);
+  $el.val = function(pos) {
+    if (drawing) return $el;
+    requestAnimationFrame(function() {
+      drawing = false;
+      $el.css({left: 100*pos + '%'});
+    });
+    drawing = true;
 
     return $el;
-  }
+  };
 
-  return Indicator;
-});
+  if(options.value) $el.val(options.value);
+
+  return $el;
+}
+
+module.exports = Indicator;
