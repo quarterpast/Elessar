@@ -1,6 +1,6 @@
 ENTRY_FILE="rangebar.js"
 MODULE_NAME="RangeBar"
-DEPS := $(shell node_modules/.bin/module-deps $(ENTRY_FILE) | node_modules/.bin/jsonpath '$$..id')
+DEPS := $(shell node_modules/.bin/browserify --deps $(ENTRY_FILE) | node_modules/.bin/jsonpath '$$..id')
 
 all: dist/elessar.js
 min: dist/elessar.min.js
