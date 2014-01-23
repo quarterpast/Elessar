@@ -24,4 +24,4 @@ function Indicator(options) {
   return $el;
 }
 
-return Indicator;
+module.exports = Indicator;

@@ -11,6 +11,10 @@
   },
   "devDependencies": {
     "browserify": "~3.24.1",
-    "uglify-js2": "~2.1.11"
+    "uglify-js2": "~2.1.11",
+    "browserify-shim": "~3.2.2"
+  },
+  "browserify-shim": {
+    "jquery": "global:jQuery"
   }
 }
