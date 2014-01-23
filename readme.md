@@ -6,7 +6,7 @@ Draggable multiple range sliders
 
 Installation
 ------------
-Elessar is available via npm and Bower:
+Elessar is available via npm and Bower, and as [standalone files](/dist):
 
 ```
 npm install elessar
@@ -14,6 +14,7 @@ npm install elessar
 ```
 bower install elessar
 ```
+
 
 Using
 -----
@@ -23,11 +24,10 @@ Elessar exports as a CommonJS (Node) module, an AMD module, or a browser global:
 var RangeBar = require('elessar');
 ```
 ```javascript
-require(['elessar/rangebar'], function(RangeBar) { ... });
+require(['elessar'], function(RangeBar) { ... });
 ```
 ```html
-<script src="path/to/elessar/range.js"></script>
-<script src="path/to/elessar/rangebar.js"></script>
+<script src="path/to/elessar.js"></script>
 ```
 
 ```RangeBar``` is a function which takes an options object and returns a jQuery element, ready to be inserted into the DOM.
