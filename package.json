@@ -13,9 +13,23 @@
   "devDependencies": {
     "browserify": "~3.24.1",
     "uglify-js2": "~2.1.11",
-    "browserify-shim": "~3.2.2"
+    "browserify-shim": "~3.2.2",
+    "externalities": "0.0.0",
+    "JSONPathCLI": "~0.1.1"
   },
   "browserify-shim": {
     "jquery": "global:jQuery"
+  },
+  "externalities": {
+    "jquery": {
+      "commonjs": "jquery",
+      "requirejs": "jquery",
+      "globarvar": "jQuery"
+    },
+    "estira": {
+      "commonjs": "estira",
+      "requirejs": "estira",
+      "globarvar": "Base"
+    }
   }
 }
