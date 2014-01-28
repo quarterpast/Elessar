@@ -32,34 +32,33 @@
             function (require, module, exports) {
                 var requestAnimationFrame = require('./raf');
                 require('es5-shim');
-                var Element = Base.extend({
-                        initialize: function (html) {
-                            this.$el = $(html);
-                            this.$el.data(this.constructor.displayName.toLowerCase(), this);
-                        },
-                        draw: function (css) {
-                            var self = this;
-                            if (this.drawing)
-                                return this.$el;
-                            requestAnimationFrame(function () {
-                                self.drawing = false;
-                                self.$el.css(css);
-                            });
-                            this.drawing = true;
+                var Element = Base.extend(function initialize(html) {
+                        this.$el = $(html);
+                        this.$el.data(this.constructor.displayName.toLowerCase(), this);
+                    }, function draw(css) {
+                        var self = this;
+                        if (this.drawing)
                             return this.$el;
-                        },
-                        on: function () {
-                            return this.$el.on.apply(this.$el, arguments);
-                        },
-                        one: function () {
-                            return this.$el.one.apply(this.$el, arguments);
-                        },
-                        off: function () {
-                            return this.$el.off.apply(this.$el, arguments);
-                        },
-                        trigger: function () {
-                            return this.$el.trigger.apply(this.$el, arguments);
-                        }
+                        requestAnimationFrame(function () {
+                            self.drawing = false;
+                            self.$el.css(css);
+                        });
+                        this.drawing = true;
+                        return this.$el;
+                    }, function on() {
+                        this.$el.on.apply(this.$el, arguments);
+                        return this;
+                    }, function one() {
+                        this.$el.one.apply(this.$el, arguments);
+                        return this;
+                    }, function off() {
+                        this.$el.off.apply(this.$el, arguments);
+                        return this;
+                    }, function trigger() {
+                        this.$el.trigger.apply(this.$el, arguments);
+                        return this;
+                    }, function remove() {
+                        this.$el.remove();
                     });
                 module.exports = Element;
             },
@@ -71,18 +70,15 @@
         2: [
             function (require, module, exports) {
                 var Element = require('./element');
-                var Indicator = Element.extend({
-                        initialize: function (options) {
-                            this.super$.initialize.call(this, '<div class="elessar-indicator">');
-                            if (options.indicatorClass)
-                                this.$el.addClass(options.indicatorClass);
-                            if (options.value)
-                                this.val(options.value);
-                        },
-                        val: function (pos) {
-                            this.draw({ left: 100 * pos + '%' });
-                            return this;
-                        }
+                var Indicator = Element.extend(function initialize(options) {
+                        initialize.super$.call(this, '<div class="elessar-indicator">');
+                        if (options.indicatorClass)
+                            this.$el.addClass(options.indicatorClass);
+                        if (options.value)
+                            this.val(options.value);
+                    }, function val(pos) {
+                        this.draw({ left: 100 * pos + '%' });
+                        return this;
                     });
                 module.exports = Indicator;
             },
@@ -91,25 +87,22 @@
         3: [
             function (require, module, exports) {
                 var Range = require('./range');
-                var Phantom = Range.extend({
-                        initialize: function (options) {
-                            this.super$.initialize.call(this, $.extend({
-                                readonly: true,
-                                label: '+'
-                            }, options));
-                            this.$el.addClass('elessar-phantom');
-                        },
-                        mousedown: function (ev) {
-                            if (ev.which === 1) {
-                                var startX = ev.pageX;
-                                var newRange = options.parent.addRange($el.val());
-                                $el.remove();
-                                this.options.parent.trigger('addrange', [
-                                    newRange.val(),
-                                    newRange
-                                ]);
-                                newRange.find('.elessar-handle:first-child').trigger('mousedown');
-                            }
+                var Phantom = Range.extend(function initialize(options) {
+                        initialize.super$.call(this, $.extend({
+                            readonly: true,
+                            label: '+'
+                        }, options));
+                        this.$el.addClass('elessar-phantom');
+                    }, function mousedown(ev) {
+                        if (ev.which === 1) {
+                            var startX = ev.pageX;
+                            var newRange = options.parent.addRange($el.val());
+                            $el.remove();
+                            this.options.parent.trigger('addrange', [
+                                newRange.val(),
+                                newRange
+                            ]);
+                            newRange.find('.elessar-handle:first-child').trigger('mousedown');
                         }
                     });
                 module.exports = Phantom;
@@ -145,159 +138,153 @@
             function (require, module, exports) {
                 var Element = require('./element');
                 require('es5-shim');
-                var Range = Element.extend({
-                        initialize: function (options) {
-                            var self = this;
-                            this.super$.initialize.call(this, '<div class="elessar-range"><span class="elessar-barlabel">');
-                            this.options = options;
-                            if (this.options.rangeClass)
-                                this.$el.addClass(this.options.rangeClass);
-                            if (!this.options.readonly) {
-                                this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
-                            } else {
-                                this.$el.addClass('elessar-readonly');
-                            }
-                            if (typeof this.options.label === 'function') {
-                                this.on('changing', function (ev, range) {
-                                    self.$el.find('.elessar-barlabel').text(this.options.label.call(self, range.map(this.options.parent.normalise)));
-                                });
-                            } else {
-                                this.$el.find('.elessar-barlabel').text(this.options.label);
-                            }
-                            this.range = [];
-                            this.hasChanged = false;
-                            if (this.options.value)
-                                this.val(this.options.value);
-                        },
-                        val: function (range, valOpts) {
-                            if (typeof range === 'undefined') {
-                                return this.range;
-                            }
-                            valOpts = $.extend({}, {
-                                dontApplyDelta: false,
-                                trigger: true
-                            }, valOpts || {});
-                            var next = this.parent.nextRange($el), prev = this.parent.prevRange($el), delta = range[1] - range[0];
-                            if (this.options.snap) {
-                                range = range.map(snap);
-                                delta = snap(delta);
-                            }
-                            if (next && next.val()[0] <= range[1] && prev && prev.val()[1] >= range[0]) {
-                                range[1] = next.val()[0];
-                                range[0] = prev.val()[1];
-                            }
-                            if (next && next.val()[0] < range[1]) {
-                                range[1] = next.val()[0];
-                                if (!valOpts.dontApplyDelta)
-                                    range[0] = range[1] - delta;
-                            }
-                            if (prev && prev.val()[1] > range[0]) {
-                                range[0] = prev.val()[1];
-                                if (!valOpts.dontApplyDelta)
-                                    range[1] = range[0] + delta;
-                            }
-                            if (range[1] >= 1) {
-                                range[1] = 1;
-                                if (!valOpts.dontApplyDelta)
-                                    range[0] = 1 - delta;
-                            }
-                            if (range[0] <= 0) {
-                                range[0] = 0;
-                                if (!valOpts.dontApplyDelta)
-                                    range[1] = delta;
-                            }
-                            if (this.options.minSize && range[1] - range[0] < this.options.minSize) {
-                                range[1] = range[0] + this.options.minSize;
-                            }
-                            if ($el.range[0] === range[0] && $el.range[1] === range[1])
-                                return $el;
-                            $el.range = range;
-                            if (valOpts.trigger) {
-                                $el.triggerHandler('changing', [
-                                    range,
-                                    $el
-                                ]);
-                                hasChanged = true;
-                            }
-                            this.draw({
-                                left: 100 * range[0] + '%',
-                                minWidth: 100 * (range[1] - range[0]) + '%'
+                var Range = Element.extend(function initialize(options) {
+                        var self = this;
+                        initialize.super$.call(this, '<div class="elessar-range"><span class="elessar-barlabel">');
+                        this.options = options;
+                        this.parent = options.parent;
+                        if (this.options.rangeClass)
+                            this.$el.addClass(this.options.rangeClass);
+                        if (!this.options.readonly) {
+                            this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
+                        } else {
+                            this.$el.addClass('elessar-readonly');
+                        }
+                        if (typeof this.options.label === 'function') {
+                            this.on('changing', function (ev, range) {
+                                self.$el.find('.elessar-barlabel').text(self.options.label.call(self, range.map($.proxy(self.parent.normalise, self.parent))));
                             });
-                            return this;
-                            function snap(val) {
-                                return Math.round(val / this.options.snap) * this.options.snap;
-                            }
-                            function sign(x) {
-                                return x ? x < 0 ? -1 : 1 : 0;
-                            }
-                        },
-                        mousedown: function (ev) {
-                            this.hasChanged = false;
-                            if ('which' in ev && ev.which !== 1)
-                                return;
-                            if ($(ev.target).is('.elessar-handle:first-child')) {
-                                $('body').addClass('elessar-resizing');
-                                $(document).on('mousemove', this.resizeLeft.bind(this));
-                            } else if ($(ev.target).is('.elessar-handle:last-child')) {
-                                $('body').addClass('elessar-resizing');
-                                $(document).on('mousemove', this.resizeRight.bind(this));
-                            } else {
-                                $('body').addClass('elessar-dragging');
-                                $(document).on('mousemove', this.drag.bind(this));
-                            }
-                            var startLeft = $el.offset().left, startPosLeft = $el.position().left, mouseOffset = ev.clientX ? ev.clientX - $el.offset().left : 0, startWidth = $el.width(), parent = this.options.parent, parentOffset = parent.offset(), parentWidth = parent.width();
-                            $(document).on('mouseup', function () {
-                                if (hasChanged)
-                                    $el.trigger('change', [
-                                        $el.range,
-                                        $el
-                                    ]);
-                                $(this).off('mouseup mousemove');
-                                $('body').removeClass('elessar-resizing elessar-dragging');
-                            });
-                        },
-                        drag: function (ev) {
-                            var left = ev.clientX - parentOffset.left - mouseOffset;
-                            if (left >= 0 && left <= parentWidth - this.$el.width()) {
-                                var rangeOffset = left / parentWidth - this.$el.range[0];
-                                this.$el.val([
-                                    left / parentWidth,
-                                    this.$el.range[1] + rangeOffset
+                        } else {
+                            this.$el.find('.elessar-barlabel').text(this.options.label);
+                        }
+                        this.range = [];
+                        this.hasChanged = false;
+                        if (this.options.value)
+                            this.val(this.options.value);
+                    }, function val(range, valOpts) {
+                        if (typeof range === 'undefined') {
+                            return this.range;
+                        }
+                        valOpts = $.extend({}, {
+                            dontApplyDelta: false,
+                            trigger: true
+                        }, valOpts || {});
+                        var next = this.parent.nextRange(this.$el), prev = this.parent.prevRange(this.$el), delta = range[1] - range[0], self = this;
+                        if (this.options.snap) {
+                            range = range.map(snap);
+                            delta = snap(delta);
+                        }
+                        if (next && next.val()[0] <= range[1] && prev && prev.val()[1] >= range[0]) {
+                            range[1] = next.val()[0];
+                            range[0] = prev.val()[1];
+                        }
+                        if (next && next.val()[0] < range[1]) {
+                            range[1] = next.val()[0];
+                            if (!valOpts.dontApplyDelta)
+                                range[0] = range[1] - delta;
+                        }
+                        if (prev && prev.val()[1] > range[0]) {
+                            range[0] = prev.val()[1];
+                            if (!valOpts.dontApplyDelta)
+                                range[1] = range[0] + delta;
+                        }
+                        if (range[1] >= 1) {
+                            range[1] = 1;
+                            if (!valOpts.dontApplyDelta)
+                                range[0] = 1 - delta;
+                        }
+                        if (range[0] <= 0) {
+                            range[0] = 0;
+                            if (!valOpts.dontApplyDelta)
+                                range[1] = delta;
+                        }
+                        if (this.options.minSize && range[1] - range[0] < this.options.minSize) {
+                            range[1] = range[0] + this.options.minSize;
+                        }
+                        if (this.range[0] === range[0] && this.range[1] === range[1])
+                            return this.$el;
+                        this.range = range;
+                        if (valOpts.trigger) {
+                            this.$el.triggerHandler('changing', [
+                                range,
+                                this.$el
+                            ]);
+                            hasChanged = true;
+                        }
+                        this.draw({
+                            left: 100 * range[0] + '%',
+                            minWidth: 100 * (range[1] - range[0]) + '%'
+                        });
+                        return this;
+                        function snap(val) {
+                            return Math.round(val / self.options.snap) * self.options.snap;
+                        }
+                        function sign(x) {
+                            return x ? x < 0 ? -1 : 1 : 0;
+                        }
+                    }, function mousedown(ev) {
+                        this.hasChanged = false;
+                        if ('which' in ev && ev.which !== 1)
+                            return;
+                        if ($(ev.target).is('.elessar-handle:first-child')) {
+                            $('body').addClass('elessar-resizing');
+                            $(document).on('mousemove', this.resizeLeft.bind(this));
+                        } else if ($(ev.target).is('.elessar-handle:last-child')) {
+                            $('body').addClass('elessar-resizing');
+                            $(document).on('mousemove', this.resizeRight.bind(this));
+                        } else {
+                            $('body').addClass('elessar-dragging');
+                            $(document).on('mousemove', this.drag.bind(this));
+                        }
+                        var startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = ev.clientX ? ev.clientX - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.offset(), parentWidth = parent.width();
+                        $(document).on('mouseup', function () {
+                            if (hasChanged)
+                                this.$el.trigger('change', [
+                                    this.range,
+                                    this.$el
                                 ]);
-                            } else {
-                                mouseOffset = ev.clientX - this.$el.offset().left;
-                            }
-                        },
-                        resizeRight: function (ev) {
-                            var width = ev.clientX - startLeft;
-                            if (width > parentWidth - startPosLeft)
-                                width = parentWidth - startPosLeft;
-                            if (width >= 10) {
-                                $el.val([
-                                    $el.range[0],
-                                    $el.range[0] + width / parentWidth
-                                ], { dontApplyDelta: true });
-                            } else {
-                                $(document).trigger('mouseup');
-                                $el.find('.elessar-handle:first-child').trigger('mousedown');
-                            }
-                        },
-                        resizeLeft: function (ev) {
-                            var left = ev.clientX - parentOffset.left - mouseOffset;
-                            var width = startPosLeft + startWidth - left;
-                            if (left < 0) {
-                                left = 0;
-                                width = startPosLeft + startWidth;
-                            }
-                            if (width >= 10) {
-                                $el.val([
-                                    left / parentWidth,
-                                    $el.range[1]
-                                ], { dontApplyDelta: true });
-                            } else {
-                                $(document).trigger('mouseup');
-                                $el.find('.elessar-handle:last-child').trigger('mousedown');
-                            }
+                            $(this).off('mouseup mousemove');
+                            $('body').removeClass('elessar-resizing elessar-dragging');
+                        });
+                    }, function drag(ev) {
+                        var left = ev.clientX - parentOffset.left - mouseOffset;
+                        if (left >= 0 && left <= parentWidth - this.$el.width()) {
+                            var rangeOffset = left / parentWidth - this.range[0];
+                            this.$el.val([
+                                left / parentWidth,
+                                this.range[1] + rangeOffset
+                            ]);
+                        } else {
+                            mouseOffset = ev.clientX - this.$el.offset().left;
+                        }
+                    }, function resizeRight(ev) {
+                        var width = ev.clientX - startLeft;
+                        if (width > parentWidth - startPosLeft)
+                            width = parentWidth - startPosLeft;
+                        if (width >= 10) {
+                            this.$el.val([
+                                this.range[0],
+                                this.range[0] + width / parentWidth
+                            ], { dontApplyDelta: true });
+                        } else {
+                            $(document).trigger('mouseup');
+                            this.$el.find('.elessar-handle:first-child').trigger('mousedown');
+                        }
+                    }, function resizeLeft(ev) {
+                        var left = ev.clientX - parentOffset.left - mouseOffset;
+                        var width = startPosLeft + startWidth - left;
+                        if (left < 0) {
+                            left = 0;
+                            width = startPosLeft + startWidth;
+                        }
+                        if (width >= 10) {
+                            this.$el.val([
+                                left / parentWidth,
+                                this.range[1]
+                            ], { dontApplyDelta: true });
+                        } else {
+                            $(document).trigger('mouseup');
+                            this.$el.find('.elessar-handle:last-child').trigger('mousedown');
                         }
                     });
                 module.exports = Range;
@@ -313,193 +300,178 @@
                 var Range = require('./range');
                 var Phantom = require('./phantom');
                 var Indicator = require('./indicator');
-                var RangeBar = Element.extend({
-                        initialize: function (options) {
-                            this.super$.initialize.call(this, '<div class="elessar-rangebar">');
-                            this.options = $.extend({}, RangeBar.defaults, options);
-                            this.options.min = options.valueParse(options.min);
-                            this.options.max = options.valueParse(options.max);
-                            if (this.options.barClass)
-                                this.$el.addClass(this.options.barClass);
-                            this.ranges = [];
-                            this.on('mousemove', $.proxy(this.mousemove, this));
-                            this.on('mouseleave', $.proxy(this.removePhantom, this));
-                            if (options.values)
-                                setVal(options.values);
-                            for (var i = 0; i < options.bgLabels; ++i) {
-                                this.addLabel(i / options.bgLabels);
-                            }
-                            if (options.indicator) {
-                                var indicator = this.indicator = new Indicator({
-                                        parent: this,
-                                        indicatorClass: options.indicatorClass
-                                    });
-                                indicator.val(this.abnormalise(options.indicator(this, indicator, function () {
-                                    indicator.val(this.abnormalise(options.indicator(this, indicator)));
-                                })));
-                                this.$el.append(indicator);
-                            }
-                        },
-                        normaliseRaw: function (value) {
-                            return this.options.min + value * (this.options.max - this.options.min);
-                        },
-                        normalise: function (value) {
-                            return this.options.valueFormat(this.normaliseRaw(value));
-                        },
-                        abnormaliseRaw: function (value) {
-                            return (value - this.options.min) / (this.options.max - this.options.min);
-                        },
-                        abnormalise: function (value) {
-                            return this.abnormaliseRaw(this.options.valueParse(value));
-                        },
-                        findGap: function (range) {
-                            var newIndex;
-                            this.ranges.forEach(function ($r, i) {
-                                if ($r.val()[0] < range[0] && $r.val()[1] < range[1])
-                                    newIndex = i + 1;
-                            });
-                            return newIndex;
-                        },
-                        insertRangeIndex: function (range, index, avoidList) {
-                            if (!avoidList)
-                                this.ranges.splice(index, 0, range);
-                            if (this.ranges[index - 1]) {
-                                this.ranges[index - 1].after(range);
-                            } else {
-                                this.prepend(range);
-                            }
-                        },
-                        addRange: function (range, data) {
-                            var $range = Range({
-                                    parent: this,
-                                    snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
-                                    label: options.label,
-                                    rangeClass: options.rangeClass,
-                                    minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
-                                    readonly: options.readonly
-                                });
-                            if (options.data) {
-                                $range.data(options.data.call($range, this));
-                            }
-                            if (data) {
-                                $range.data(data);
-                            }
-                            this.insertRangeIndex($range, this.findGap(range));
-                            $range.val(range);
-                            $range.on('changing', function (ev, nrange, changed) {
-                                ev.stopPropagation();
-                                this.trigger('changing', [
-                                    this.val(),
-                                    changed
-                                ]);
-                            }).on('change', function (ev, nrange, changed) {
-                                ev.stopPropagation();
-                                this.trigger('change', [
-                                    this.val(),
-                                    changed
-                                ]);
-                            });
-                            return $range;
-                        },
-                        prevRange: function (range) {
-                            var idx = range.index();
-                            if (idx >= 0)
-                                return this.ranges[idx - 1];
-                        },
-                        nextRange: function (range) {
-                            var idx = range.index();
-                            if (idx >= 0)
-                                return this.ranges[range instanceof Phantom ? idx : idx + 1];
-                        },
-                        setVal: function (ranges) {
-                            if (this.ranges.length > ranges.length) {
-                                for (var i = ranges.length, l = this.ranges.length; i < l; ++i) {
-                                    this.ranges[i].remove();
-                                }
-                                this.ranges.length = ranges.length;
-                            }
-                            ranges.forEach(function (range, i) {
-                                if (this.ranges[i]) {
-                                    this.ranges[i].val(range.map(this.abnormalise));
-                                } else {
-                                    this.addRange(range.map(this.abnormalise));
-                                }
-                            });
-                            return this;
-                        },
-                        val: function (ranges) {
-                            if (typeof ranges === 'undefined') {
-                                return this.ranges.map(function (range) {
-                                    return range.val().map(this.normalise);
-                                });
-                            }
-                            if (!options.readonly)
-                                setVal(ranges);
-                            return this;
-                        },
-                        removePhantom: function () {
-                            if (this.phantom) {
-                                this.phantom.remove();
-                                this.phantom = null;
-                            }
-                        },
-                        calcGap: function (index) {
-                            var start = this.ranges[index - 1] ? this.ranges[index - 1].val()[1] : 0;
-                            var end = this.ranges[index] ? this.ranges[index].val()[0] : 1;
-                            return normaliseRaw(end) - normaliseRaw(start);
-                        },
-                        addLabel: function (pos) {
-                            var cent = pos * 100, val = this.normalise(pos);
-                            var $el = $('<span class="elessar-label">').css('left', cent + '%').text(val);
-                            if (1 - pos < 0.05) {
-                                $el.css({
-                                    left: '',
-                                    right: 0
-                                });
-                            }
-                            return $el.appendTo(this.$el);
-                        },
-                        mousemove: function (ev) {
-                            var w = options.minSize ? abnormaliseRaw(options.minSize + options.min) : 0.05;
-                            var val = (ev.pageX - this.offset().left) / this.width() - w / 2;
-                            if (ev.target === ev.currentTarget && this.ranges.length < options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !options.readonly) {
-                                if (!this.phantom)
-                                    this.phantom = Range({
-                                        parent: this,
-                                        snap: options.snap ? abnormaliseRaw(options.snap + options.min) : null,
-                                        label: '+',
-                                        minSize: options.minSize ? abnormaliseRaw(options.minSize + options.min) : null,
-                                        rangeClass: options.rangeClass,
-                                        phantom: true
-                                    });
-                                var idx = this.findGap([
-                                        val,
-                                        val + w
-                                    ]);
-                                if (!options.minSize || this.calcGap(idx) >= options.minSize) {
-                                    this.insertRangeIndex(this.phantom, idx, true);
-                                    this.phantom.val([
-                                        val,
-                                        val + w
-                                    ], { trigger: false });
-                                }
-                            }
+                var RangeBar = Element.extend(function initialize(options) {
+                        initialize.super$.call(this, '<div class="elessar-rangebar">');
+                        this.options = $.extend({}, RangeBar.defaults, options);
+                        this.options.min = options.valueParse(options.min);
+                        this.options.max = options.valueParse(options.max);
+                        if (this.options.barClass)
+                            this.$el.addClass(this.options.barClass);
+                        this.ranges = [];
+                        this.on('mousemove', $.proxy(this.mousemove, this));
+                        this.on('mouseleave', $.proxy(this.removePhantom, this));
+                        if (options.values)
+                            this.setVal(options.values);
+                        for (var i = 0; i < options.bgLabels; ++i) {
+                            this.addLabel(i / options.bgLabels);
                         }
-                    }, {
-                        defaults: {
-                            min: 0,
-                            max: 100,
-                            valueFormat: function (a) {
-                                return a;
-                            },
-                            valueParse: function (a) {
-                                return a;
-                            },
-                            maxRanges: Infinity,
-                            readonly: false,
-                            bgLabels: 0
+                        var self = this;
+                        if (options.indicator) {
+                            var indicator = this.indicator = new Indicator({
+                                    parent: this,
+                                    indicatorClass: options.indicatorClass
+                                });
+                            indicator.val(this.abnormalise(options.indicator(this, indicator, function () {
+                                indicator.val(self.abnormalise(options.indicator(self, indicator)));
+                            })));
+                            this.$el.append(indicator);
+                        }
+                    }, function normaliseRaw(value) {
+                        return this.options.min + value * (this.options.max - this.options.min);
+                    }, function normalise(value) {
+                        return this.options.valueFormat(this.normaliseRaw(value));
+                    }, function abnormaliseRaw(value) {
+                        return (value - this.options.min) / (this.options.max - this.options.min);
+                    }, function abnormalise(value) {
+                        return this.abnormaliseRaw(this.options.valueParse(value));
+                    }, function findGap(range) {
+                        var newIndex;
+                        this.ranges.forEach(function ($r, i) {
+                            if ($r.val()[0] < range[0] && $r.val()[1] < range[1])
+                                newIndex = i + 1;
+                        });
+                        return newIndex;
+                    }, function insertRangeIndex(range, index, avoidList) {
+                        if (!avoidList)
+                            this.ranges.splice(index, 0, range);
+                        if (this.ranges[index - 1]) {
+                            this.ranges[index - 1].$el.after(range);
+                        } else {
+                            this.$el.prepend(range.$el);
+                        }
+                    }, function addRange(range, data) {
+                        var $range = Range({
+                                parent: this,
+                                snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
+                                label: this.options.label,
+                                rangeClass: this.options.rangeClass,
+                                minSize: this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : null,
+                                readonly: this.options.readonly
+                            });
+                        if (this.options.data) {
+                            $range.data(this.options.data.call($range, this));
+                        }
+                        if (data) {
+                            $range.data(data);
+                        }
+                        this.insertRangeIndex($range, this.findGap(range));
+                        $range.val(range);
+                        var self = this;
+                        $range.on('changing', function (ev, nrange, changed) {
+                            ev.stopPropagation();
+                            self.trigger('changing', [
+                                self.val(),
+                                changed
+                            ]);
+                        }).on('change', function (ev, nrange, changed) {
+                            ev.stopPropagation();
+                            self.trigger('change', [
+                                self.val(),
+                                changed
+                            ]);
+                        });
+                        return $range;
+                    }, function prevRange(range) {
+                        var idx = range.index();
+                        if (idx >= 0)
+                            return this.ranges[idx - 1];
+                    }, function nextRange(range) {
+                        var idx = range.index();
+                        if (idx >= 0)
+                            return this.ranges[range instanceof Phantom ? idx : idx + 1];
+                    }, function setVal(ranges) {
+                        if (this.ranges.length > ranges.length) {
+                            for (var i = ranges.length, l = this.ranges.length; i < l; ++i) {
+                                this.ranges[i].remove();
+                            }
+                            this.ranges.length = ranges.length;
+                        }
+                        var self = this;
+                        ranges.forEach(function (range, i) {
+                            if (self.ranges[i]) {
+                                self.ranges[i].val(range.map($.proxy(self.abnormalise, self)));
+                            } else {
+                                self.addRange(range.map($.proxy(self.abnormalise, self)));
+                            }
+                        });
+                        return this;
+                    }, function val(ranges) {
+                        var self = this;
+                        if (typeof ranges === 'undefined') {
+                            return this.ranges.map(function (range) {
+                                return range.val().map($.proxy(self.normalise, self));
+                            });
+                        }
+                        if (!this.options.readonly)
+                            this.setVal(ranges);
+                        return this;
+                    }, function removePhantom() {
+                        if (this.phantom) {
+                            this.phantom.remove();
+                            this.phantom = null;
+                        }
+                    }, function calcGap(index) {
+                        var start = this.ranges[index - 1] ? this.ranges[index - 1].val()[1] : 0;
+                        var end = this.ranges[index] ? this.ranges[index].val()[0] : 1;
+                        return this.normaliseRaw(end) - this.normaliseRaw(start);
+                    }, function addLabel(pos) {
+                        var cent = pos * 100, val = this.normalise(pos);
+                        var $el = $('<span class="elessar-label">').css('left', cent + '%').text(val);
+                        if (1 - pos < 0.05) {
+                            $el.css({
+                                left: '',
+                                right: 0
+                            });
+                        }
+                        return $el.appendTo(this.$el);
+                    }, function mousemove(ev) {
+                        var w = this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : 0.05;
+                        var val = (ev.pageX - this.$el.offset().left) / this.$el.width() - w / 2;
+                        if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.options.readonly) {
+                            if (!this.phantom)
+                                this.phantom = Phantom({
+                                    parent: this,
+                                    snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
+                                    label: '+',
+                                    minSize: this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : null,
+                                    rangeClass: this.options.rangeClass
+                                });
+                            var idx = this.findGap([
+                                    val,
+                                    val + w
+                                ]);
+                            if (!this.options.minSize || this.calcGap(idx) >= this.options.minSize) {
+                                this.insertRangeIndex(this.phantom, idx, true);
+                                this.phantom.val([
+                                    val,
+                                    val + w
+                                ], { trigger: false });
+                            }
                         }
                     });
+                RangeBar.defaults = {
+                    min: 0,
+                    max: 100,
+                    valueFormat: function (a) {
+                        return a;
+                    },
+                    valueParse: function (a) {
+                        return a;
+                    },
+                    maxRanges: Infinity,
+                    readonly: false,
+                    bgLabels: 0
+                };
                 module.exports = RangeBar;
             },
             {
