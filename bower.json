@@ -17,10 +17,13 @@
   "dependencies": {
     "jquery": ">=1.8",
     "es5-shim": "~2.1.0",
-    "estira": "~0.0.1"
+    "estira": "0.2"
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
     "moment": "~2.4.0"
+  },
+  "resolutions": {
+    "estira": "0.2"
   }
 }
