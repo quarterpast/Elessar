@@ -96,14 +96,15 @@
                     }, function mousedown(ev) {
                         if (ev.which === 1) {
                             var startX = ev.pageX;
-                            var newRange = options.parent.addRange($el.val());
-                            $el.remove();
+                            var newRange = this.options.parent.addRange(this.val());
+                            this.remove();
                             this.options.parent.trigger('addrange', [
                                 newRange.val(),
                                 newRange
                             ]);
-                            newRange.find('.elessar-handle:first-child').trigger('mousedown');
+                            newRange.$el.find('.elessar-handle:first-child').trigger('mousedown');
                         }
+                    }, function removePhantom() {
                     });
                 module.exports = Phantom;
             },
@@ -161,10 +162,10 @@
                         this.hasChanged = false;
                         if (this.options.value)
                             this.val(this.options.value);
-                        this.on('mouseenter', function () {
-                            self.parent.removePhantom();
-                        });
+                        this.on('mouseenter', $.proxy(this.removePhantom, this));
                         this.on('mousedown', $.proxy(this.mousedown, this));
+                    }, function removePhantom() {
+                        this.parent.removePhantom();
                     }, function val(range, valOpts) {
                         if (typeof range === 'undefined') {
                             return this.range;
