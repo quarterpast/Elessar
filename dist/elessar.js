@@ -345,7 +345,7 @@
                         if (!avoidList)
                             this.ranges.splice(index, 0, range);
                         if (this.ranges[index - 1]) {
-                            this.ranges[index - 1].$el.after(range);
+                            this.ranges[index - 1].$el.after(range.$el);
                         } else {
                             this.$el.prepend(range.$el);
                         }
