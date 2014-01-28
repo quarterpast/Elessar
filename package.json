@@ -8,28 +8,29 @@
   "dependencies": {
     "es5-shim": "~2.1.0",
     "jquery": "~1.11.0-rc1",
-    "estira": "0.0.0"
+    "estira": "0.0.1"
   },
   "devDependencies": {
     "browserify": "~3.24.1",
     "uglify-js2": "~2.1.11",
     "browserify-shim": "~3.2.2",
-    "externalities": "0.0.0",
+    "externalities": "~0.1.6",
     "JSONPathCLI": "~0.1.1"
   },
   "browserify-shim": {
     "jquery": "global:jQuery"
   },
   "externalities": {
+    "globalExport": "RangeBar",
     "jquery": {
       "commonjs": "jquery",
       "requirejs": "jquery",
-      "globarvar": "jQuery"
+      "globalvar": "jQuery"
     },
     "estira": {
       "commonjs": "estira",
       "requirejs": "estira",
-      "globarvar": "Base"
+      "globalvar": "Base"
     }
   }
 }
