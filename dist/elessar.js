@@ -34,7 +34,7 @@
                 require('es5-shim');
                 var Element = Base.extend(function initialize(html) {
                         this.$el = $(html);
-                        this.$el.data(this.constructor.displayName.toLowerCase(), this);
+                        this.$el.data('element', this);
                     }, function draw(css) {
                         var self = this;
                         if (this.drawing)
