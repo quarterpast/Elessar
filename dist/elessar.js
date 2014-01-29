@@ -288,28 +288,28 @@
                             }
                         };
                     }, function resizeRight(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
+                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width(), minWidth = this.options.minSize * parentWidth;
                         return function (ev) {
-                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup';
+                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                             ev.stopPropagation();
                             ev.preventDefault();
                             var width = getEvtX('clientX', ev) - startLeft;
                             if (width > parentWidth - startPosLeft)
                                 width = parentWidth - startPosLeft;
-                            if (width >= 10) {
+                            if (width >= minWidth) {
                                 self.val([
                                     self.range[0],
                                     self.range[0] + width / parentWidth
                                 ], { dontApplyDelta: true });
-                            } else {
+                            } else if (width <= 10) {
                                 $(document).trigger(opposite);
-                                self.$el.find('.elessar-handle:first-child').trigger(ev.type);
+                                self.$el.find('.elessar-handle:first-child').trigger(subsequent);
                             }
                         };
                     }, function resizeLeft(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
+                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width(), minWidth = this.options.minSize * parentWidth;
                         return function (ev) {
-                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup';
+                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                             ev.stopPropagation();
                             ev.preventDefault();
                             var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
@@ -319,14 +319,14 @@
                                 left = 0;
                                 width = startPosLeft + startWidth;
                             }
-                            if (width >= 10) {
+                            if (width >= minWidth) {
                                 self.val([
                                     left / parentWidth,
                                     self.range[1]
                                 ], { dontApplyDelta: true });
-                            } else {
+                            } else if (width <= 10) {
                                 $(document).trigger(opposite);
-                                self.$el.find('.elessar-handle:last-child').trigger(ev.type);
+                                self.$el.find('.elessar-handle:last-child').trigger(subsequent);
                             }
                         };
                     });
