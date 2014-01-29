@@ -63,11 +63,20 @@
                 module.exports = Element;
             },
             {
-                './raf': 4,
-                'es5-shim': 8
+                './raf': 5,
+                'es5-shim': 9
             }
         ],
         2: [
+            function (require, module, exports) {
+                var has = Object.prototype.hasOwnProperty;
+                module.exports = function getEvtX(prop, event) {
+                    return has.call(event, prop) ? event[prop] : event.originalEvent && has.call(event.originalEvent, 'touches') ? event.originalEvent.touches[0][prop] : 0;
+                };
+            },
+            {}
+        ],
+        3: [
             function (require, module, exports) {
                 var Element = require('./element');
                 var Indicator = Element.extend(function initialize(options) {
@@ -84,9 +93,10 @@
             },
             { './element': 1 }
         ],
-        3: [
+        4: [
             function (require, module, exports) {
                 var Range = require('./range');
+                var requestAnimationFrame = require('./raf');
                 var Phantom = Range.extend(function initialize(options) {
                         initialize.super$.call(this, $.extend({
                             readonly: true,
@@ -102,15 +112,20 @@
                                 newRange.val(),
                                 newRange
                             ]);
-                            newRange.$el.find('.elessar-handle:first-child').trigger('mousedown');
+                            requestAnimationFrame(function () {
+                                newRange.$el.find('.elessar-handle:first-child').trigger(ev.type);
+                            });
                         }
                     }, function removePhantom() {
                     });
                 module.exports = Phantom;
             },
-            { './range': 5 }
+            {
+                './raf': 5,
+                './range': 6
+            }
         ],
-        4: [
+        5: [
             function (require, module, exports) {
                 var lastTime = 0;
                 var vendors = [
@@ -135,9 +150,10 @@
             },
             {}
         ],
-        5: [
+        6: [
             function (require, module, exports) {
                 var Element = require('./element');
+                var getEvtX = require('./evtx');
                 require('es5-shim');
                 var Range = Element.extend(function initialize(options) {
                         var self = this;
@@ -163,7 +179,7 @@
                         if (this.options.value)
                             this.val(this.options.value);
                         this.on('mouseenter', $.proxy(this.removePhantom, this));
-                        this.on('mousedown', $.proxy(this.mousedown, this));
+                        this.on('mousedown touchstart', $.proxy(this.mousedown, this));
                     }, function removePhantom() {
                         this.parent.removePhantom();
                     }, function val(range, valOpts) {
@@ -228,33 +244,39 @@
                             return x ? x < 0 ? -1 : 1 : 0;
                         }
                     }, function mousedown(ev) {
+                        ev.stopPropagation();
+                        ev.preventDefault();
                         this.hasChanged = false;
-                        if ('which' in ev && ev.which !== 1)
+                        if (ev.which > 1)
                             return;
                         if ($(ev.target).is('.elessar-handle:first-child')) {
                             $('body').addClass('elessar-resizing');
-                            $(document).on('mousemove', this.resizeLeft(ev));
+                            $(document).on('mousemove touchmove', this.resizeLeft(ev));
                         } else if ($(ev.target).is('.elessar-handle:last-child')) {
                             $('body').addClass('elessar-resizing');
-                            $(document).on('mousemove', this.resizeRight(ev));
+                            $(document).on('mousemove touchmove', this.resizeRight(ev));
                         } else {
                             $('body').addClass('elessar-dragging');
-                            $(document).on('mousemove', this.drag(ev));
+                            $(document).on('mousemove touchmove', this.drag(ev));
                         }
                         var self = this;
-                        $(document).on('mouseup', function () {
+                        $(document).on('mouseup touchend', function (ev) {
+                            ev.stopPropagation();
+                            ev.preventDefault();
                             if (hasChanged)
                                 self.trigger('change', [
                                     self.range,
                                     self.$el
                                 ]);
-                            $(document).off('mouseup mousemove');
+                            $(document).off('mouseup mousemove touchend touchmove');
                             $('body').removeClass('elessar-resizing elessar-dragging');
                         });
                     }, function drag(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = origEv.clientX ? origEv.clientX - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
+                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
                         return function (ev) {
-                            var left = ev.clientX - parentOffset.left - mouseOffset;
+                            ev.stopPropagation();
+                            ev.preventDefault();
+                            var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
                             if (left >= 0 && left <= parentWidth - startWidth) {
                                 var rangeOffset = left / parentWidth - self.range[0];
                                 self.val([
@@ -262,13 +284,16 @@
                                     self.range[1] + rangeOffset
                                 ]);
                             } else {
-                                mouseOffset = ev.clientX - self.$el.offset().left;
+                                mouseOffset = getEvtX('clientX', ev) - self.$el.offset().left;
                             }
                         };
                     }, function resizeRight(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = origEv.clientX ? origEv.clientX - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
+                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
                         return function (ev) {
-                            var width = ev.clientX - startLeft;
+                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup';
+                            ev.stopPropagation();
+                            ev.preventDefault();
+                            var width = getEvtX('clientX', ev) - startLeft;
                             if (width > parentWidth - startPosLeft)
                                 width = parentWidth - startPosLeft;
                             if (width >= 10) {
@@ -277,15 +302,19 @@
                                     self.range[0] + width / parentWidth
                                 ], { dontApplyDelta: true });
                             } else {
-                                $(document).trigger('mouseup');
-                                self.$el.find('.elessar-handle:first-child').trigger('mousedown');
+                                $(document).trigger(opposite);
+                                self.$el.find('.elessar-handle:first-child').trigger(ev.type);
                             }
                         };
                     }, function resizeLeft(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = origEv.clientX ? origEv.clientX - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
+                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
                         return function (ev) {
-                            var left = ev.clientX - parentOffset.left - mouseOffset;
+                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup';
+                            ev.stopPropagation();
+                            ev.preventDefault();
+                            var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
                             var width = startPosLeft + startWidth - left;
+                            console.log(left, width);
                             if (left < 0) {
                                 left = 0;
                                 width = startPosLeft + startWidth;
@@ -296,8 +325,8 @@
                                     self.range[1]
                                 ], { dontApplyDelta: true });
                             } else {
-                                $(document).trigger('mouseup');
-                                self.$el.find('.elessar-handle:last-child').trigger('mousedown');
+                                $(document).trigger(opposite);
+                                self.$el.find('.elessar-handle:last-child').trigger(ev.type);
                             }
                         };
                     });
@@ -305,15 +334,17 @@
             },
             {
                 './element': 1,
-                'es5-shim': 8
+                './evtx': 2,
+                'es5-shim': 9
             }
         ],
-        6: [
+        7: [
             function (require, module, exports) {
                 var Element = require('./element');
                 var Range = require('./range');
                 var Phantom = require('./phantom');
                 var Indicator = require('./indicator');
+                var getEvtX = require('./evtx');
                 var RangeBar = Element.extend(function initialize(options) {
                         initialize.super$.call(this, '<div class="elessar-rangebar">');
                         this.options = $.extend({}, RangeBar.defaults, options);
@@ -322,8 +353,8 @@
                         if (this.options.barClass)
                             this.$el.addClass(this.options.barClass);
                         this.ranges = [];
-                        this.on('mousemove', $.proxy(this.mousemove, this));
-                        this.on('mouseleave', $.proxy(this.removePhantom, this));
+                        this.on('mousemove touchmove', $.proxy(this.mousemove, this));
+                        this.on('mouseleave touchleave', $.proxy(this.removePhantom, this));
                         if (options.values)
                             this.setVal(options.values);
                         for (var i = 0; i < options.bgLabels; ++i) {
@@ -450,7 +481,7 @@
                         return $el.appendTo(this.$el);
                     }, function mousemove(ev) {
                         var w = this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : 0.05;
-                        var val = (ev.pageX - this.$el.offset().left) / this.$el.width() - w / 2;
+                        var val = (getEvtX('pageX', ev) - this.$el.offset().left) / this.$el.width() - w / 2;
                         if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.options.readonly) {
                             if (!this.phantom)
                                 this.phantom = Phantom({
@@ -490,17 +521,18 @@
             },
             {
                 './element': 1,
-                './indicator': 2,
-                './phantom': 3,
-                './range': 5
+                './evtx': 2,
+                './indicator': 3,
+                './phantom': 4,
+                './range': 6
             }
         ],
-        7: [
+        8: [
             function (require, module, exports) {
             },
             {}
         ],
-        8: [
+        9: [
             function (require, module, exports) {
                 (function (definition) {
                     if (typeof define == 'function') {
@@ -1207,5 +1239,5 @@
             },
             {}
         ]
-    }, {}, [6])(6);
+    }, {}, [7])(7);
 })
