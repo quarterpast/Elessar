@@ -178,7 +178,7 @@
                         this.hasChanged = false;
                         if (this.options.value)
                             this.val(this.options.value);
-                        this.on('mouseenter', $.proxy(this.removePhantom, this));
+                        this.on('mouseenter touchstart', $.proxy(this.removePhantom, this));
                         this.on('mousedown touchstart', $.proxy(this.mousedown, this));
                     }, function removePhantom() {
                         this.parent.removePhantom();
