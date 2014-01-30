@@ -59,6 +59,9 @@
   line-height: 30px;
   background: #ccc;
 }
+.elessar-delete-confirm {
+  background: red;
+}
 body.elessar-resizing, body.elessar-dragging {
   -webkit-touch-callout: none;
   -webkit-user-select: none;

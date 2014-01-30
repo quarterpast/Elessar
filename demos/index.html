@@ -3,10 +3,8 @@
 <head>
 <script src="http://momentjs.com/downloads/moment.min.js"></script>
 <script src="http://code.jquery.com/jquery.min.js"></script>
-<script src="../raf.js"></script>
-<script src="../range.js"></script>
-<script src="../indicator.js"></script>
-<script src="../rangebar.js"></script>
+<script src="https://rawgithub.com/quarterto/Estira/master/index.js"></script>
+<script src="../dist/elessar.js"></script>
 <link rel="stylesheet" type="text/css" href="../elessar.css">
 </head>
 <body>
@@ -14,7 +12,7 @@
 <pre class="changing"></pre>
 
 <script>
-$('body').prepend(r = RangeBar({
+$('body').prepend(RangeBar({
   min: moment().startOf('day').format('LLLL'),
   max: moment().startOf('day').add(1, 'day').format('LLLL'),
   valueFormat: function(ts) {
@@ -45,13 +43,13 @@ $('body').prepend(r = RangeBar({
     if(recalc) setInterval(recalc, 500);
     return moment().hours(Math.floor(24 * Math.random())).format('LLLL');
   }
-})).on('changing', function(ev, ranges, changed) {
+}).on('changing', function(ev, ranges, changed) {
   console.log(changed);
   $('pre.changing').html(JSON.stringify(ranges,null,2));
 }).on('change', function(ev, ranges, changed) {
   console.log(changed);
   $('pre.changing').after($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));
-});
+}).$el);
 </script>
 </body>
 </html>
