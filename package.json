@@ -15,7 +15,9 @@
     "uglify-js2": "~2.1.11",
     "browserify-shim": "~3.2.2",
     "externalities": "~0.1.6",
-    "JSONPathCLI": "~0.1.1"
+    "JSONPathCLI": "~0.1.1",
+    "derequire": "~0.6.0",
+    "through": "~2.3.4"
   },
   "browserify-shim": {
     "jquery": "global:jQuery"

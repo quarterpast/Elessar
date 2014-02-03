@@ -29,9 +29,9 @@
         return s;
     }({
         1: [
-            function (require, module, exports) {
-                var requestAnimationFrame = require('./raf');
-                require('es5-shim');
+            function (_dereq_, module, exports) {
+                var requestAnimationFrame = _dereq_('./raf');
+                _dereq_('es5-shim');
                 var Element = Base.extend(function initialize(html) {
                         this.$el = $(html);
                         this.$el.data('element', this);
@@ -68,7 +68,7 @@
             }
         ],
         2: [
-            function (require, module, exports) {
+            function (_dereq_, module, exports) {
                 var has = Object.prototype.hasOwnProperty;
                 module.exports = function getEvtX(prop, event) {
                     return has.call(event, prop) ? event[prop] : event.originalEvent && has.call(event.originalEvent, 'touches') ? event.originalEvent.touches[0][prop] : 0;
@@ -77,8 +77,8 @@
             {}
         ],
         3: [
-            function (require, module, exports) {
-                var Element = require('./element');
+            function (_dereq_, module, exports) {
+                var Element = _dereq_('./element');
                 var Indicator = Element.extend(function initialize(options) {
                         initialize.super$.call(this, '<div class="elessar-indicator">');
                         if (options.indicatorClass)
@@ -94,9 +94,9 @@
             { './element': 1 }
         ],
         4: [
-            function (require, module, exports) {
-                var Range = require('./range');
-                var requestAnimationFrame = require('./raf');
+            function (_dereq_, module, exports) {
+                var Range = _dereq_('./range');
+                var requestAnimationFrame = _dereq_('./raf');
                 var Phantom = Range.extend(function initialize(options) {
                         initialize.super$.call(this, $.extend({
                             readonly: true,
@@ -126,7 +126,7 @@
             }
         ],
         5: [
-            function (require, module, exports) {
+            function (_dereq_, module, exports) {
                 var lastTime = 0;
                 var vendors = [
                         'webkit',
@@ -151,10 +151,10 @@
             {}
         ],
         6: [
-            function (require, module, exports) {
-                var Element = require('./element');
-                var getEvtX = require('./evtx');
-                require('es5-shim');
+            function (_dereq_, module, exports) {
+                var Element = _dereq_('./element');
+                var getEvtX = _dereq_('./evtx');
+                _dereq_('es5-shim');
                 var Range = Element.extend(function initialize(options) {
                         var self = this;
                         initialize.super$.call(this, '<div class="elessar-range"><span class="elessar-barlabel">');
@@ -357,12 +357,12 @@
             }
         ],
         7: [
-            function (require, module, exports) {
-                var Element = require('./element');
-                var Range = require('./range');
-                var Phantom = require('./phantom');
-                var Indicator = require('./indicator');
-                var getEvtX = require('./evtx');
+            function (_dereq_, module, exports) {
+                var Element = _dereq_('./element');
+                var Range = _dereq_('./range');
+                var Phantom = _dereq_('./phantom');
+                var Indicator = _dereq_('./indicator');
+                var getEvtX = _dereq_('./evtx');
                 var RangeBar = Element.extend(function initialize(options) {
                         initialize.super$.call(this, '<div class="elessar-rangebar">');
                         this.options = $.extend({}, RangeBar.defaults, options);
@@ -554,12 +554,12 @@
             }
         ],
         8: [
-            function (require, module, exports) {
+            function (_dereq_, module, exports) {
             },
             {}
         ],
         9: [
-            function (require, module, exports) {
+            function (_dereq_, module, exports) {
                 (function (definition) {
                     if (typeof define == 'function') {
                         define(definition);
