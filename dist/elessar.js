@@ -400,7 +400,7 @@
                             indicator.val(this.abnormalise(options.indicator(this, indicator, function () {
                                 indicator.val(self.abnormalise(options.indicator(self, indicator)));
                             })));
-                            this.$el.append(indicator);
+                            this.$el.append(indicator.$el);
                         }
                     }, function normaliseRaw(value) {
                         return this.options.min + value * (this.options.max - this.options.min);
