@@ -32,8 +32,10 @@
             function (_dereq_, module, exports) {
                 var requestAnimationFrame = _dereq_('./raf');
                 _dereq_('es5-shim');
+                var has = Object.prototype.hasOwnProperty;
                 var Element = Base.extend(function initialize(html) {
                         this.$el = $(html);
+                        this.$data = {};
                         this.$el.data('element', this);
                     }, function draw(css) {
                         var self = this;
@@ -59,6 +61,17 @@
                         return this;
                     }, function remove() {
                         this.$el.remove();
+                    }, function data(key, value) {
+                        var obj = key;
+                        if (typeof key === 'string') {
+                            if (typeof value === 'undefined') {
+                                return this.$data[key];
+                            }
+                            obj = {};
+                            obj[key] = value;
+                        }
+                        $.extend(this.$data, obj);
+                        return this;
                     });
                 module.exports = Element;
             },
@@ -386,7 +399,7 @@
                             indicator.val(this.abnormalise(options.indicator(this, indicator, function () {
                                 indicator.val(self.abnormalise(options.indicator(self, indicator)));
                             })));
-                            this.$el.append(indicator);
+                            this.$el.append(indicator.$el);
                         }
                     }, function normaliseRaw(value) {
                         return this.options.min + value * (this.options.max - this.options.min);
