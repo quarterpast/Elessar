@@ -64,7 +64,7 @@
             },
             {
                 './raf': 5,
-                'es5-shim': 9
+                'es5-shim': 8
             }
         ],
         2: [
@@ -352,7 +352,7 @@
             {
                 './element': 1,
                 './evtx': 2,
-                'es5-shim': 9
+                'es5-shim': 8
             }
         ],
         7: [
@@ -553,11 +553,6 @@
             }
         ],
         8: [
-            function (_dereq_, module, exports) {
-            },
-            {}
-        ],
-        9: [
             function (_dereq_, module, exports) {
                 (function (definition) {
                     if (typeof define == 'function') {
