@@ -332,7 +332,6 @@
                             ev.preventDefault();
                             var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
                             var width = startPosLeft + startWidth - left;
-                            console.log(left, width);
                             if (left < 0) {
                                 left = 0;
                                 width = startPosLeft + startWidth;
