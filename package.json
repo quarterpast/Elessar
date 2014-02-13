@@ -1,6 +1,6 @@
 {
   "name": "elessar",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Draggable multiple range sliders",
   "main": "lib/rangebar.js",
   "author": "Matt Brennan <matt@anqagroup.com>",

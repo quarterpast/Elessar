@@ -177,6 +177,9 @@
                             this.$el.addClass(this.options.rangeClass);
                         if (!this.options.readonly) {
                             this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
+                            this.on('mouseenter touchstart', $.proxy(this.removePhantom, this));
+                            this.on('mousedown touchstart', $.proxy(this.mousedown, this));
+                            this.on('click', $.proxy(this.click, this));
                         } else {
                             this.$el.addClass('elessar-readonly');
                         }
@@ -191,9 +194,6 @@
                         this.hasChanged = false;
                         if (this.options.value)
                             this.val(this.options.value);
-                        this.on('mouseenter touchstart', $.proxy(this.removePhantom, this));
-                        this.on('mousedown touchstart', $.proxy(this.mousedown, this));
-                        this.on('click', $.proxy(this.click, this));
                     }, function removePhantom() {
                         this.parent.removePhantom();
                     }, function val(range, valOpts) {
