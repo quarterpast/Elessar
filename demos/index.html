@@ -21,6 +21,7 @@ $('body').prepend(RangeBar({
   valueParse: function(date) {
     return moment(date).valueOf();
   },
+  readonly: true,
   values: [
     [
       moment().startOf('day').format('LLLL'),
