@@ -466,8 +466,8 @@
                             return this.ranges[range instanceof Phantom ? idx : idx + 1];
                     }, function setVal(ranges) {
                         if (this.ranges.length > ranges.length) {
-                            for (var i = ranges.length, l = this.ranges.length; i < l; ++i) {
-                                this.removeRange(i);
+                            for (var i = ranges.length - 1, l = this.ranges.length - 1; i < l; --l) {
+                                this.removeRange(l);
                             }
                             this.ranges.length = ranges.length;
                         }
