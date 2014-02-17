@@ -8,11 +8,11 @@
   "dependencies": {
     "es5-shim": "~2.1.0",
     "jquery": "~1.11.0-rc1",
-    "estira": "~0.2.0"
+    "estira": "~0.3.0"
   },
   "devDependencies": {
     "browserify": "~3.24.1",
-    "uglify-js2": "~2.1.11",
+    "uglify-js": "~2.4",
     "browserify-shim": "~3.2.2",
     "externalities": "~0.1.6",
     "JSONPathCLI": "~0.1.1",
