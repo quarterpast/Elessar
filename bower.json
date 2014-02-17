@@ -1,6 +1,6 @@
 {
   "name": "elessar",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "Draggable multiple range sliders",
   "authors": [
     "Matt Brennan <matt@anqagroup.com>"
@@ -17,13 +17,10 @@
   "dependencies": {
     "jquery": ">=1.8",
     "es5-shim": "~2.1.0",
-    "estira": "0.2"
+    "estira": "0.3"
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
     "moment": "~2.4.0"
-  },
-  "resolutions": {
-    "estira": "0.2"
   }
 }
