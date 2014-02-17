@@ -33,45 +33,54 @@
                 var requestAnimationFrame = _dereq_('./raf');
                 _dereq_('es5-shim');
                 var has = Object.prototype.hasOwnProperty;
-                var Element = Base.extend(function initialize(html) {
-                        this.$el = $(html);
-                        this.$data = {};
-                        this.$el.data('element', this);
-                    }, function draw(css) {
-                        var self = this;
-                        if (this.drawing)
+                var Element = Base.extend({
+                        initialize: function (html) {
+                            this.$el = $(html);
+                            this.$data = {};
+                            this.$el.data('element', this);
+                        },
+                        draw: function (css) {
+                            var self = this;
+                            if (this.drawing)
+                                return this.$el;
+                            requestAnimationFrame(function () {
+                                self.drawing = false;
+                                self.$el.css(css);
+                            });
+                            this.drawing = true;
                             return this.$el;
-                        requestAnimationFrame(function () {
-                            self.drawing = false;
-                            self.$el.css(css);
-                        });
-                        this.drawing = true;
-                        return this.$el;
-                    }, function on() {
-                        this.$el.on.apply(this.$el, arguments);
-                        return this;
-                    }, function one() {
-                        this.$el.one.apply(this.$el, arguments);
-                        return this;
-                    }, function off() {
-                        this.$el.off.apply(this.$el, arguments);
-                        return this;
-                    }, function trigger() {
-                        this.$el.trigger.apply(this.$el, arguments);
-                        return this;
-                    }, function remove() {
-                        this.$el.remove();
-                    }, function data(key, value) {
-                        var obj = key;
-                        if (typeof key === 'string') {
-                            if (typeof value === 'undefined') {
-                                return this.$data[key];
+                        },
+                        on: function () {
+                            this.$el.on.apply(this.$el, arguments);
+                            return this;
+                        },
+                        one: function () {
+                            this.$el.one.apply(this.$el, arguments);
+                            return this;
+                        },
+                        off: function () {
+                            this.$el.off.apply(this.$el, arguments);
+                            return this;
+                        },
+                        trigger: function () {
+                            this.$el.trigger.apply(this.$el, arguments);
+                            return this;
+                        },
+                        remove: function () {
+                            this.$el.remove();
+                        },
+                        data: function (key, value) {
+                            var obj = key;
+                            if (typeof key === 'string') {
+                                if (typeof value === 'undefined') {
+                                    return this.$data[key];
+                                }
+                                obj = {};
+                                obj[key] = value;
                             }
-                            obj = {};
-                            obj[key] = value;
+                            $.extend(this.$data, obj);
+                            return this;
                         }
-                        $.extend(this.$data, obj);
-                        return this;
                     });
                 module.exports = Element;
             },
@@ -92,15 +101,18 @@
         3: [
             function (_dereq_, module, exports) {
                 var Element = _dereq_('./element');
-                var Indicator = Element.extend(function initialize(options) {
-                        initialize.super$.call(this, '<div class="elessar-indicator">');
-                        if (options.indicatorClass)
-                            this.$el.addClass(options.indicatorClass);
-                        if (options.value)
-                            this.val(options.value);
-                    }, function val(pos) {
-                        this.draw({ left: 100 * pos + '%' });
-                        return this;
+                var Indicator = Element.extend({
+                        initialize: function initialize(options) {
+                            initialize.super$.call(this, '<div class="elessar-indicator">');
+                            if (options.indicatorClass)
+                                this.$el.addClass(options.indicatorClass);
+                            if (options.value)
+                                this.val(options.value);
+                        },
+                        val: function (pos) {
+                            this.draw({ left: 100 * pos + '%' });
+                            return this;
+                        }
                     });
                 module.exports = Indicator;
             },
@@ -110,26 +122,30 @@
             function (_dereq_, module, exports) {
                 var Range = _dereq_('./range');
                 var requestAnimationFrame = _dereq_('./raf');
-                var Phantom = Range.extend(function initialize(options) {
-                        initialize.super$.call(this, $.extend({
-                            readonly: true,
-                            label: '+'
-                        }, options));
-                        this.$el.addClass('elessar-phantom');
-                    }, function mousedown(ev) {
-                        if (ev.which === 1) {
-                            var startX = ev.pageX;
-                            var newRange = this.options.parent.addRange(this.val());
-                            this.remove();
-                            this.options.parent.trigger('addrange', [
-                                newRange.val(),
-                                newRange
-                            ]);
-                            requestAnimationFrame(function () {
-                                newRange.$el.find('.elessar-handle:first-child').trigger(ev.type);
-                            });
+                var Phantom = Range.extend({
+                        initialize: function initialize(options) {
+                            initialize.super$.call(this, $.extend({
+                                readonly: true,
+                                label: '+'
+                            }, options));
+                            this.$el.addClass('elessar-phantom');
+                        },
+                        mousedown: function (ev) {
+                            if (ev.which === 1) {
+                                var startX = ev.pageX;
+                                var newRange = this.options.parent.addRange(this.val());
+                                this.remove();
+                                this.options.parent.trigger('addrange', [
+                                    newRange.val(),
+                                    newRange
+                                ]);
+                                requestAnimationFrame(function () {
+                                    newRange.$el.find('.elessar-handle:first-child').trigger(ev.type);
+                                });
+                            }
+                        },
+                        removePhantom: function () {
                         }
-                    }, function removePhantom() {
                     });
                 module.exports = Phantom;
             },
@@ -168,197 +184,206 @@
                 var Element = _dereq_('./element');
                 var getEvtX = _dereq_('./evtx');
                 _dereq_('es5-shim');
-                var Range = Element.extend(function initialize(options) {
-                        var self = this;
-                        initialize.super$.call(this, '<div class="elessar-range"><span class="elessar-barlabel">');
-                        this.options = options;
-                        this.parent = options.parent;
-                        if (this.options.rangeClass)
-                            this.$el.addClass(this.options.rangeClass);
-                        if (!this.options.readonly) {
-                            this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
-                            this.on('mouseenter touchstart', $.proxy(this.removePhantom, this));
-                            this.on('mousedown touchstart', $.proxy(this.mousedown, this));
-                            this.on('click', $.proxy(this.click, this));
-                        } else {
-                            this.$el.addClass('elessar-readonly');
-                        }
-                        if (typeof this.options.label === 'function') {
-                            this.on('changing', function (ev, range) {
-                                self.$el.find('.elessar-barlabel').text(self.options.label.call(self, range.map($.proxy(self.parent.normalise, self.parent))));
-                            });
-                        } else {
-                            this.$el.find('.elessar-barlabel').text(this.options.label);
-                        }
-                        this.range = [];
-                        this.hasChanged = false;
-                        if (this.options.value)
-                            this.val(this.options.value);
-                    }, function removePhantom() {
-                        this.parent.removePhantom();
-                    }, function val(range, valOpts) {
-                        if (typeof range === 'undefined') {
-                            return this.range;
-                        }
-                        valOpts = $.extend({}, {
-                            dontApplyDelta: false,
-                            trigger: true
-                        }, valOpts || {});
-                        var next = this.parent.nextRange(this.$el), prev = this.parent.prevRange(this.$el), delta = range[1] - range[0], self = this;
-                        if (this.options.snap) {
-                            range = range.map(snap);
-                            delta = snap(delta);
-                        }
-                        if (next && next.val()[0] <= range[1] && prev && prev.val()[1] >= range[0]) {
-                            range[1] = next.val()[0];
-                            range[0] = prev.val()[1];
-                        }
-                        if (next && next.val()[0] < range[1]) {
-                            range[1] = next.val()[0];
-                            if (!valOpts.dontApplyDelta)
-                                range[0] = range[1] - delta;
-                        }
-                        if (prev && prev.val()[1] > range[0]) {
-                            range[0] = prev.val()[1];
-                            if (!valOpts.dontApplyDelta)
-                                range[1] = range[0] + delta;
-                        }
-                        if (range[1] >= 1) {
-                            range[1] = 1;
-                            if (!valOpts.dontApplyDelta)
-                                range[0] = 1 - delta;
-                        }
-                        if (range[0] <= 0) {
-                            range[0] = 0;
-                            if (!valOpts.dontApplyDelta)
-                                range[1] = delta;
-                        }
-                        if (this.options.minSize && range[1] - range[0] < this.options.minSize) {
-                            range[1] = range[0] + this.options.minSize;
-                        }
-                        if (this.range[0] === range[0] && this.range[1] === range[1])
-                            return this.$el;
-                        this.range = range;
-                        if (valOpts.trigger) {
-                            this.$el.triggerHandler('changing', [
-                                range,
-                                this.$el
-                            ]);
-                            hasChanged = true;
-                        }
-                        this.draw({
-                            left: 100 * range[0] + '%',
-                            minWidth: 100 * (range[1] - range[0]) + '%'
-                        });
-                        return this;
-                        function snap(val) {
-                            return Math.round(val / self.options.snap) * self.options.snap;
-                        }
-                        function sign(x) {
-                            return x ? x < 0 ? -1 : 1 : 0;
-                        }
-                    }, function click(ev) {
-                        ev.stopPropagation();
-                        ev.preventDefault();
-                        var self = this;
-                        if (ev.which !== 2 || !this.parent.options.allowDelete)
-                            return;
-                        if (this.deleteConfirm) {
-                            this.parent.removeRange(this);
-                            clearTimeout(this.deleteTimeout);
-                        } else {
-                            this.$el.addClass('elessar-delete-confirm');
-                            this.deleteConfirm = true;
-                            this.deleteTimeout = setTimeout(function () {
-                                self.$el.removeClass('elessar-delete-confirm');
-                                self.deleteConfirm = false;
-                            }, this.parent.options.deleteTimeout);
-                        }
-                    }, function mousedown(ev) {
-                        ev.stopPropagation();
-                        ev.preventDefault();
-                        this.hasChanged = false;
-                        if (ev.which > 1)
-                            return;
-                        if ($(ev.target).is('.elessar-handle:first-child')) {
-                            $('body').addClass('elessar-resizing');
-                            $(document).on('mousemove touchmove', this.resizeLeft(ev));
-                        } else if ($(ev.target).is('.elessar-handle:last-child')) {
-                            $('body').addClass('elessar-resizing');
-                            $(document).on('mousemove touchmove', this.resizeRight(ev));
-                        } else {
-                            $('body').addClass('elessar-dragging');
-                            $(document).on('mousemove touchmove', this.drag(ev));
-                        }
-                        var self = this;
-                        $(document).on('mouseup touchend', function (ev) {
-                            ev.stopPropagation();
-                            ev.preventDefault();
-                            if (hasChanged)
-                                self.trigger('change', [
-                                    self.range,
-                                    self.$el
-                                ]);
-                            $(document).off('mouseup mousemove touchend touchmove');
-                            $('body').removeClass('elessar-resizing elessar-dragging');
-                        });
-                    }, function drag(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
-                        return function (ev) {
-                            ev.stopPropagation();
-                            ev.preventDefault();
-                            var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
-                            if (left >= 0 && left <= parentWidth - startWidth) {
-                                var rangeOffset = left / parentWidth - self.range[0];
-                                self.val([
-                                    left / parentWidth,
-                                    self.range[1] + rangeOffset
-                                ]);
+                var Range = Element.extend({
+                        initialize: function initialize(options) {
+                            var self = this;
+                            initialize.super$.call(this, '<div class="elessar-range"><span class="elessar-barlabel">');
+                            this.options = options;
+                            this.parent = options.parent;
+                            if (this.options.rangeClass)
+                                this.$el.addClass(this.options.rangeClass);
+                            if (!this.options.readonly) {
+                                this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
+                                this.on('mouseenter touchstart', $.proxy(this.removePhantom, this));
+                                this.on('mousedown touchstart', $.proxy(this.mousedown, this));
+                                this.on('click', $.proxy(this.click, this));
                             } else {
-                                mouseOffset = getEvtX('clientX', ev) - self.$el.offset().left;
+                                this.$el.addClass('elessar-readonly');
                             }
-                        };
-                    }, function resizeRight(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width(), minWidth = this.options.minSize * parentWidth;
-                        return function (ev) {
-                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
+                            if (typeof this.options.label === 'function') {
+                                this.on('changing', function (ev, range) {
+                                    self.$el.find('.elessar-barlabel').text(self.options.label.call(self, range.map($.proxy(self.parent.normalise, self.parent))));
+                                });
+                            } else {
+                                this.$el.find('.elessar-barlabel').text(this.options.label);
+                            }
+                            this.range = [];
+                            this.hasChanged = false;
+                            if (this.options.value)
+                                this.val(this.options.value);
+                        },
+                        removePhantom: function () {
+                            this.parent.removePhantom();
+                        },
+                        val: function (range, valOpts) {
+                            if (typeof range === 'undefined') {
+                                return this.range;
+                            }
+                            valOpts = $.extend({}, {
+                                dontApplyDelta: false,
+                                trigger: true
+                            }, valOpts || {});
+                            var next = this.parent.nextRange(this.$el), prev = this.parent.prevRange(this.$el), delta = range[1] - range[0], self = this;
+                            if (this.options.snap) {
+                                range = range.map(snap);
+                                delta = snap(delta);
+                            }
+                            if (next && next.val()[0] <= range[1] && prev && prev.val()[1] >= range[0]) {
+                                range[1] = next.val()[0];
+                                range[0] = prev.val()[1];
+                            }
+                            if (next && next.val()[0] < range[1]) {
+                                range[1] = next.val()[0];
+                                if (!valOpts.dontApplyDelta)
+                                    range[0] = range[1] - delta;
+                            }
+                            if (prev && prev.val()[1] > range[0]) {
+                                range[0] = prev.val()[1];
+                                if (!valOpts.dontApplyDelta)
+                                    range[1] = range[0] + delta;
+                            }
+                            if (range[1] >= 1) {
+                                range[1] = 1;
+                                if (!valOpts.dontApplyDelta)
+                                    range[0] = 1 - delta;
+                            }
+                            if (range[0] <= 0) {
+                                range[0] = 0;
+                                if (!valOpts.dontApplyDelta)
+                                    range[1] = delta;
+                            }
+                            if (this.options.minSize && range[1] - range[0] < this.options.minSize) {
+                                range[1] = range[0] + this.options.minSize;
+                            }
+                            if (this.range[0] === range[0] && this.range[1] === range[1])
+                                return this.$el;
+                            this.range = range;
+                            if (valOpts.trigger) {
+                                this.$el.triggerHandler('changing', [
+                                    range,
+                                    this.$el
+                                ]);
+                                hasChanged = true;
+                            }
+                            this.draw({
+                                left: 100 * range[0] + '%',
+                                minWidth: 100 * (range[1] - range[0]) + '%'
+                            });
+                            return this;
+                            function snap(val) {
+                                return Math.round(val / self.options.snap) * self.options.snap;
+                            }
+                            function sign(x) {
+                                return x ? x < 0 ? -1 : 1 : 0;
+                            }
+                        },
+                        click: function (ev) {
                             ev.stopPropagation();
                             ev.preventDefault();
-                            var width = getEvtX('clientX', ev) - startLeft;
-                            if (width > parentWidth - startPosLeft)
-                                width = parentWidth - startPosLeft;
-                            if (width >= minWidth) {
-                                self.val([
-                                    self.range[0],
-                                    self.range[0] + width / parentWidth
-                                ], { dontApplyDelta: true });
-                            } else if (width <= 10) {
-                                $(document).trigger(opposite);
-                                self.$el.find('.elessar-handle:first-child').trigger(subsequent);
+                            var self = this;
+                            if (ev.which !== 2 || !this.parent.options.allowDelete)
+                                return;
+                            if (this.deleteConfirm) {
+                                this.parent.removeRange(this);
+                                clearTimeout(this.deleteTimeout);
+                            } else {
+                                this.$el.addClass('elessar-delete-confirm');
+                                this.deleteConfirm = true;
+                                this.deleteTimeout = setTimeout(function () {
+                                    self.$el.removeClass('elessar-delete-confirm');
+                                    self.deleteConfirm = false;
+                                }, this.parent.options.deleteTimeout);
                             }
-                        };
-                    }, function resizeLeft(origEv) {
-                        var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width(), minWidth = this.options.minSize * parentWidth;
-                        return function (ev) {
-                            var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
+                        },
+                        mousedown: function (ev) {
                             ev.stopPropagation();
                             ev.preventDefault();
-                            var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
-                            var width = startPosLeft + startWidth - left;
-                            if (left < 0) {
-                                left = 0;
-                                width = startPosLeft + startWidth;
+                            this.hasChanged = false;
+                            if (ev.which > 1)
+                                return;
+                            if ($(ev.target).is('.elessar-handle:first-child')) {
+                                $('body').addClass('elessar-resizing');
+                                $(document).on('mousemove touchmove', this.resizeLeft(ev));
+                            } else if ($(ev.target).is('.elessar-handle:last-child')) {
+                                $('body').addClass('elessar-resizing');
+                                $(document).on('mousemove touchmove', this.resizeRight(ev));
+                            } else {
+                                $('body').addClass('elessar-dragging');
+                                $(document).on('mousemove touchmove', this.drag(ev));
                             }
-                            if (width >= minWidth) {
-                                self.val([
-                                    left / parentWidth,
-                                    self.range[1]
-                                ], { dontApplyDelta: true });
-                            } else if (width <= 10) {
-                                $(document).trigger(opposite);
-                                self.$el.find('.elessar-handle:last-child').trigger(subsequent);
-                            }
-                        };
+                            var self = this;
+                            $(document).on('mouseup touchend', function (ev) {
+                                ev.stopPropagation();
+                                ev.preventDefault();
+                                if (hasChanged)
+                                    self.trigger('change', [
+                                        self.range,
+                                        self.$el
+                                    ]);
+                                $(document).off('mouseup mousemove touchend touchmove');
+                                $('body').removeClass('elessar-resizing elessar-dragging');
+                            });
+                        },
+                        drag: function (origEv) {
+                            var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width();
+                            return function (ev) {
+                                ev.stopPropagation();
+                                ev.preventDefault();
+                                var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
+                                if (left >= 0 && left <= parentWidth - startWidth) {
+                                    var rangeOffset = left / parentWidth - self.range[0];
+                                    self.val([
+                                        left / parentWidth,
+                                        self.range[1] + rangeOffset
+                                    ]);
+                                } else {
+                                    mouseOffset = getEvtX('clientX', ev) - self.$el.offset().left;
+                                }
+                            };
+                        },
+                        resizeRight: function (origEv) {
+                            var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width(), minWidth = this.options.minSize * parentWidth;
+                            return function (ev) {
+                                var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
+                                ev.stopPropagation();
+                                ev.preventDefault();
+                                var width = getEvtX('clientX', ev) - startLeft;
+                                if (width > parentWidth - startPosLeft)
+                                    width = parentWidth - startPosLeft;
+                                if (width >= minWidth) {
+                                    self.val([
+                                        self.range[0],
+                                        self.range[0] + width / parentWidth
+                                    ], { dontApplyDelta: true });
+                                } else if (width <= 10) {
+                                    $(document).trigger(opposite);
+                                    self.$el.find('.elessar-handle:first-child').trigger(subsequent);
+                                }
+                            };
+                        },
+                        resizeLeft: function (origEv) {
+                            var self = this, startLeft = this.$el.offset().left, startPosLeft = this.$el.position().left, mouseOffset = getEvtX('clientX', origEv) ? getEvtX('clientX', origEv) - this.$el.offset().left : 0, startWidth = this.$el.width(), parent = this.options.parent, parentOffset = parent.$el.offset(), parentWidth = parent.$el.width(), minWidth = this.options.minSize * parentWidth;
+                            return function (ev) {
+                                var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
+                                ev.stopPropagation();
+                                ev.preventDefault();
+                                var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
+                                var width = startPosLeft + startWidth - left;
+                                if (left < 0) {
+                                    left = 0;
+                                    width = startPosLeft + startWidth;
+                                }
+                                if (width >= minWidth) {
+                                    self.val([
+                                        left / parentWidth,
+                                        self.range[1]
+                                    ], { dontApplyDelta: true });
+                                } else if (width <= 10) {
+                                    $(document).trigger(opposite);
+                                    self.$el.find('.elessar-handle:last-child').trigger(subsequent);
+                                }
+                            };
+                        }
                     });
                 module.exports = Range;
             },
@@ -375,168 +400,186 @@
                 var Phantom = _dereq_('./phantom');
                 var Indicator = _dereq_('./indicator');
                 var getEvtX = _dereq_('./evtx');
-                var RangeBar = Element.extend(function initialize(options) {
-                        initialize.super$.call(this, '<div class="elessar-rangebar">');
-                        this.options = $.extend({}, RangeBar.defaults, options);
-                        this.options.min = options.valueParse(options.min);
-                        this.options.max = options.valueParse(options.max);
-                        if (this.options.barClass)
-                            this.$el.addClass(this.options.barClass);
-                        this.ranges = [];
-                        this.on('mousemove touchmove', $.proxy(this.mousemove, this));
-                        this.on('mouseleave touchleave', $.proxy(this.removePhantom, this));
-                        if (options.values)
-                            this.setVal(options.values);
-                        for (var i = 0; i < options.bgLabels; ++i) {
-                            this.addLabel(i / options.bgLabels);
-                        }
-                        var self = this;
-                        if (options.indicator) {
-                            var indicator = this.indicator = new Indicator({
-                                    parent: this,
-                                    indicatorClass: options.indicatorClass
-                                });
-                            indicator.val(this.abnormalise(options.indicator(this, indicator, function () {
-                                indicator.val(self.abnormalise(options.indicator(self, indicator)));
-                            })));
-                            this.$el.append(indicator.$el);
-                        }
-                    }, function normaliseRaw(value) {
-                        return this.options.min + value * (this.options.max - this.options.min);
-                    }, function normalise(value) {
-                        return this.options.valueFormat(this.normaliseRaw(value));
-                    }, function abnormaliseRaw(value) {
-                        return (value - this.options.min) / (this.options.max - this.options.min);
-                    }, function abnormalise(value) {
-                        return this.abnormaliseRaw(this.options.valueParse(value));
-                    }, function findGap(range) {
-                        var newIndex;
-                        this.ranges.forEach(function ($r, i) {
-                            if ($r.val()[0] < range[0] && $r.val()[1] < range[1])
-                                newIndex = i + 1;
-                        });
-                        return newIndex;
-                    }, function insertRangeIndex(range, index, avoidList) {
-                        if (!avoidList)
-                            this.ranges.splice(index, 0, range);
-                        if (this.ranges[index - 1]) {
-                            this.ranges[index - 1].$el.after(range.$el);
-                        } else {
-                            this.$el.prepend(range.$el);
-                        }
-                    }, function addRange(range, data) {
-                        var $range = Range({
-                                parent: this,
-                                snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
-                                label: this.options.label,
-                                rangeClass: this.options.rangeClass,
-                                minSize: this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : null,
-                                readonly: this.options.readonly
-                            });
-                        if (this.options.data) {
-                            $range.data(this.options.data.call($range, this));
-                        }
-                        if (data) {
-                            $range.data(data);
-                        }
-                        this.insertRangeIndex($range, this.findGap(range));
-                        $range.val(range);
-                        var self = this;
-                        $range.on('changing', function (ev, nrange, changed) {
-                            ev.stopPropagation();
-                            self.trigger('changing', [
-                                self.val(),
-                                changed
-                            ]);
-                        }).on('change', function (ev, nrange, changed) {
-                            ev.stopPropagation();
-                            self.trigger('change', [
-                                self.val(),
-                                changed
-                            ]);
-                        });
-                        return $range;
-                    }, function prevRange(range) {
-                        var idx = range.index();
-                        if (idx >= 0)
-                            return this.ranges[idx - 1];
-                    }, function nextRange(range) {
-                        var idx = range.index();
-                        if (idx >= 0)
-                            return this.ranges[range instanceof Phantom ? idx : idx + 1];
-                    }, function setVal(ranges) {
-                        if (this.ranges.length > ranges.length) {
-                            for (var i = ranges.length - 1, l = this.ranges.length - 1; i < l; --l) {
-                                this.removeRange(l);
+                var RangeBar = Element.extend({
+                        initialize: function initialize(options) {
+                            initialize.super$.call(this, '<div class="elessar-rangebar">');
+                            this.options = $.extend({}, RangeBar.defaults, options);
+                            this.options.min = options.valueParse(options.min);
+                            this.options.max = options.valueParse(options.max);
+                            if (this.options.barClass)
+                                this.$el.addClass(this.options.barClass);
+                            this.ranges = [];
+                            this.on('mousemove touchmove', $.proxy(this.mousemove, this));
+                            this.on('mouseleave touchleave', $.proxy(this.removePhantom, this));
+                            if (options.values)
+                                this.setVal(options.values);
+                            for (var i = 0; i < options.bgLabels; ++i) {
+                                this.addLabel(i / options.bgLabels);
                             }
-                            this.ranges.length = ranges.length;
-                        }
-                        var self = this;
-                        ranges.forEach(function (range, i) {
-                            if (self.ranges[i]) {
-                                self.ranges[i].val(range.map($.proxy(self.abnormalise, self)));
+                            var self = this;
+                            if (options.indicator) {
+                                var indicator = this.indicator = new Indicator({
+                                        parent: this,
+                                        indicatorClass: options.indicatorClass
+                                    });
+                                indicator.val(this.abnormalise(options.indicator(this, indicator, function () {
+                                    indicator.val(self.abnormalise(options.indicator(self, indicator)));
+                                })));
+                                this.$el.append(indicator.$el);
+                            }
+                        },
+                        normaliseRaw: function (value) {
+                            return this.options.min + value * (this.options.max - this.options.min);
+                        },
+                        normalise: function (value) {
+                            return this.options.valueFormat(this.normaliseRaw(value));
+                        },
+                        abnormaliseRaw: function (value) {
+                            return (value - this.options.min) / (this.options.max - this.options.min);
+                        },
+                        abnormalise: function (value) {
+                            return this.abnormaliseRaw(this.options.valueParse(value));
+                        },
+                        findGap: function (range) {
+                            var newIndex;
+                            this.ranges.forEach(function ($r, i) {
+                                if ($r.val()[0] < range[0] && $r.val()[1] < range[1])
+                                    newIndex = i + 1;
+                            });
+                            return newIndex;
+                        },
+                        insertRangeIndex: function (range, index, avoidList) {
+                            if (!avoidList)
+                                this.ranges.splice(index, 0, range);
+                            if (this.ranges[index - 1]) {
+                                this.ranges[index - 1].$el.after(range.$el);
                             } else {
-                                self.addRange(range.map($.proxy(self.abnormalise, self)));
+                                this.$el.prepend(range.$el);
                             }
-                        });
-                        return this;
-                    }, function val(ranges) {
-                        var self = this;
-                        if (typeof ranges === 'undefined') {
-                            return this.ranges.map(function (range) {
-                                return range.val().map($.proxy(self.normalise, self));
-                            });
-                        }
-                        if (!this.options.readonly)
-                            this.setVal(ranges);
-                        return this;
-                    }, function removePhantom() {
-                        if (this.phantom) {
-                            this.phantom.remove();
-                            this.phantom = null;
-                        }
-                    }, function removeRange(i) {
-                        if (i instanceof Range) {
-                            i = this.ranges.indexOf(i);
-                        }
-                        this.ranges.splice(i, 1)[0].remove();
-                        this.trigger('change', [this.val()]);
-                    }, function calcGap(index) {
-                        var start = this.ranges[index - 1] ? this.ranges[index - 1].val()[1] : 0;
-                        var end = this.ranges[index] ? this.ranges[index].val()[0] : 1;
-                        return this.normaliseRaw(end) - this.normaliseRaw(start);
-                    }, function addLabel(pos) {
-                        var cent = pos * 100, val = this.normalise(pos);
-                        var $el = $('<span class="elessar-label">').css('left', cent + '%').text(val);
-                        if (1 - pos < 0.05) {
-                            $el.css({
-                                left: '',
-                                right: 0
-                            });
-                        }
-                        return $el.appendTo(this.$el);
-                    }, function mousemove(ev) {
-                        var w = this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : 0.05;
-                        var val = (getEvtX('pageX', ev) - this.$el.offset().left) / this.$el.width() - w / 2;
-                        if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.options.readonly) {
-                            if (!this.phantom)
-                                this.phantom = Phantom({
+                        },
+                        addRange: function (range, data) {
+                            var $range = Range({
                                     parent: this,
                                     snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
-                                    label: '+',
+                                    label: this.options.label,
+                                    rangeClass: this.options.rangeClass,
                                     minSize: this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : null,
-                                    rangeClass: this.options.rangeClass
+                                    readonly: this.options.readonly
                                 });
-                            var idx = this.findGap([
-                                    val,
-                                    val + w
+                            if (this.options.data) {
+                                $range.data(this.options.data.call($range, this));
+                            }
+                            if (data) {
+                                $range.data(data);
+                            }
+                            this.insertRangeIndex($range, this.findGap(range));
+                            $range.val(range);
+                            var self = this;
+                            $range.on('changing', function (ev, nrange, changed) {
+                                ev.stopPropagation();
+                                self.trigger('changing', [
+                                    self.val(),
+                                    changed
                                 ]);
-                            if (!this.options.minSize || this.calcGap(idx) >= this.options.minSize) {
-                                this.insertRangeIndex(this.phantom, idx, true);
-                                this.phantom.val([
-                                    val,
-                                    val + w
-                                ], { trigger: false });
+                            }).on('change', function (ev, nrange, changed) {
+                                ev.stopPropagation();
+                                self.trigger('change', [
+                                    self.val(),
+                                    changed
+                                ]);
+                            });
+                            return $range;
+                        },
+                        prevRange: function (range) {
+                            var idx = range.index();
+                            if (idx >= 0)
+                                return this.ranges[idx - 1];
+                        },
+                        nextRange: function (range) {
+                            var idx = range.index();
+                            if (idx >= 0)
+                                return this.ranges[range instanceof Phantom ? idx : idx + 1];
+                        },
+                        setVal: function (ranges) {
+                            if (this.ranges.length > ranges.length) {
+                                for (var i = ranges.length - 1, l = this.ranges.length - 1; i < l; --l) {
+                                    this.removeRange(l);
+                                }
+                                this.ranges.length = ranges.length;
+                            }
+                            var self = this;
+                            ranges.forEach(function (range, i) {
+                                if (self.ranges[i]) {
+                                    self.ranges[i].val(range.map($.proxy(self.abnormalise, self)));
+                                } else {
+                                    self.addRange(range.map($.proxy(self.abnormalise, self)));
+                                }
+                            });
+                            return this;
+                        },
+                        val: function (ranges) {
+                            var self = this;
+                            if (typeof ranges === 'undefined') {
+                                return this.ranges.map(function (range) {
+                                    return range.val().map($.proxy(self.normalise, self));
+                                });
+                            }
+                            if (!this.options.readonly)
+                                this.setVal(ranges);
+                            return this;
+                        },
+                        removePhantom: function () {
+                            if (this.phantom) {
+                                this.phantom.remove();
+                                this.phantom = null;
+                            }
+                        },
+                        removeRange: function (i) {
+                            if (i instanceof Range) {
+                                i = this.ranges.indexOf(i);
+                            }
+                            this.ranges.splice(i, 1)[0].remove();
+                            this.trigger('change', [this.val()]);
+                        },
+                        calcGap: function (index) {
+                            var start = this.ranges[index - 1] ? this.ranges[index - 1].val()[1] : 0;
+                            var end = this.ranges[index] ? this.ranges[index].val()[0] : 1;
+                            return this.normaliseRaw(end) - this.normaliseRaw(start);
+                        },
+                        addLabel: function (pos) {
+                            var cent = pos * 100, val = this.normalise(pos);
+                            var $el = $('<span class="elessar-label">').css('left', cent + '%').text(val);
+                            if (1 - pos < 0.05) {
+                                $el.css({
+                                    left: '',
+                                    right: 0
+                                });
+                            }
+                            return $el.appendTo(this.$el);
+                        },
+                        mousemove: function (ev) {
+                            var w = this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : 0.05;
+                            var val = (getEvtX('pageX', ev) - this.$el.offset().left) / this.$el.width() - w / 2;
+                            if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.options.readonly) {
+                                if (!this.phantom)
+                                    this.phantom = Phantom({
+                                        parent: this,
+                                        snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
+                                        label: '+',
+                                        minSize: this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : null,
+                                        rangeClass: this.options.rangeClass
+                                    });
+                                var idx = this.findGap([
+                                        val,
+                                        val + w
+                                    ]);
+                                if (!this.options.minSize || this.calcGap(idx) >= this.options.minSize) {
+                                    this.insertRangeIndex(this.phantom, idx, true);
+                                    this.phantom.val([
+                                        val,
+                                        val + w
+                                    ], { trigger: false });
+                                }
                             }
                         }
                     });

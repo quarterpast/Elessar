@@ -4,7 +4,7 @@
 <script src="http://momentjs.com/downloads/moment.min.js"></script>
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="https://rawgithub.com/quarterto/Estira/master/index.js"></script>
-<script src="../dist/elessar.js"></script>
+<script src="../dist/elessar.min.js"></script>
 <link rel="stylesheet" type="text/css" href="../elessar.css">
 </head>
 <body>
@@ -21,7 +21,6 @@ $('body').prepend(RangeBar({
   valueParse: function(date) {
     return moment(date).valueOf();
   },
-  readonly: true,
   values: [
     [
       moment().startOf('day').format('LLLL'),
