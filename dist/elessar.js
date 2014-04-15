@@ -125,7 +125,7 @@
                 var Phantom = Range.extend({
                         initialize: function initialize(options) {
                             initialize.super$.call(this, $.extend({
-                                readonly: true,
+                                //readonly: true,
                                 label: '+'
                             }, options));
                             this.$el.addClass('elessar-phantom');
