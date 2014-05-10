@@ -129,6 +129,7 @@
                                 label: '+'
                             }, options));
                             this.$el.addClass('elessar-phantom');
+                            this.on('mousedown touchstart', $.proxy(this.mousedown, this));
                         },
                         mousedown: function (ev) {
                             if (ev.which === 1) {
