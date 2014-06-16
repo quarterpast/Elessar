@@ -15,6 +15,8 @@ npm install elessar
 bower install elessar
 ```
 
+Elessar requires [jQuery](http://jquery.com) and [Estira](/quarterto/Estira). If you're using npm or Bower, they're installed as part of this step. If not: a) why not? they're pretty sweet, b) download them, and I assume you're just using `<script>` tags, so just add `<script>` tags.
+
 
 Using
 -----
