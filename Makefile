@@ -3,7 +3,7 @@ export PATH  := node_modules/.bin:$(PATH)
 
 ENTRY_FILE="./lib/rangebar.js"
 DEPS := $(shell browserify --list $(ENTRY_FILE))
-TEST_FILES = "./test.js"
+TEST_FILES = test.js
 
 all: dist/elessar.js
 min: dist/elessar.min.js
@@ -20,5 +20,5 @@ dist/%.js: $(DEPS)
 clean:
 	rm -rf dist
 
-test: $(DEPS) # :$(TEST_FILES)
+test: $(DEPS) $(TEST_FILES)
 	browserify $(TEST_FILES) | tape-run | tap-spec
