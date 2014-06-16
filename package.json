@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "jquery": "~1.11.0-rc1",
+    "es5-shim": "^3.4.0",
     "estira": "~0.3.0"
   },
   "devDependencies": {
@@ -19,7 +20,7 @@
     "tap-spec": "^0.2.0",
     "tape": "^2.13.3",
     "tape-run": "^0.1.1",
-    "through": "~2.3.4",
+    "through": "~2.3.4"
   },
   "externalities": {
     "globalExport": "RangeBar",

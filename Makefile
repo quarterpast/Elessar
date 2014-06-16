@@ -2,8 +2,9 @@ export SHELL := /bin/bash
 export PATH  := node_modules/.bin:$(PATH)
 
 ENTRY_FILE="./lib/rangebar.js"
-DEPS := $(shell node_modules/.bin/browserify --list $(ENTRY_FILE))
-TEST_FILES = test.js
+DEPS := $(shell browserify --list $(ENTRY_FILE))
+TEST_FILES = "./test.js"
+TRACEUR_RUNTIME := $(shell node -pe "require('es6ify').runtime")
 
 all: dist/elessar.js
 min: dist/elessar.min.js
@@ -20,5 +21,5 @@ dist/%.js: $(DEPS)
 clean:
 	rm -rf dist
 
-test: $(DEPS) $(TEST_FILES)
-	browserify $(TEST_FILES) | tape-run | tap-spec
+test: $(DEPS) # :$(TEST_FILES)
+	browserify -t es6ify $(TRACEUR_RUNTIME) $(TEST_FILES) | tape-run | tap-spec
