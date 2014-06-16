@@ -30,12 +30,12 @@ require(['elessar'], function(RangeBar) { ... });
 <script src="path/to/elessar.js"></script>
 ```
 
-```RangeBar``` is a function which takes an options object and returns a jQuery element, ready to be inserted into the DOM.
+Create a rangebar with `var rangeBar = new RangeBar` then add `rangeBar.$el` to the DOM somewhere.
 
 Options
 -------
 ```javascript
-RangeBar({
+new RangeBar({
   values: [], // array of value pairs; each pair is the min and max of the range it creates
   readonly: false, // whether this bar is read-only
   min: 0, // value at start of bar
