@@ -1,6 +1,7 @@
 var tape = require('tape');
 var $ = require('jquery');
 var RangeBar = require('./lib/rangebar.js');
+var Indicator = require('./lib/indicator.js');
 
 tape.test('RangeBar', function(t) {
 	var r = new RangeBar();
@@ -52,6 +53,30 @@ tape.test('RangeBar', function(t) {
 				'sets the initial value'
 			);
 			t.end();
+		});
+
+		t.test('indicator', function(t) {
+			var r = new RangeBar({
+				indicator: function(rangeBar, indicator, refresh) {
+					t.ok(rangeBar instanceof RangeBar, 'gets passed the rangebar');
+					t.ok(indicator instanceof Indicator, 'gets passed the indicator');
+					t.ok(refresh instanceof Function, 'gets passed a function');
+
+					process.nextTick(function() {
+						t.equal(
+							indicator.val(),
+							rangeBar.abnormalise(10),
+							'return value sets the initial value'
+						);
+
+						t.end();
+					});
+
+					return 10;
+				}
+			});
+
+			t.ok(r.indicator instanceof Indicator, 'adds an indicator');
 		});
 
 		t.end();
