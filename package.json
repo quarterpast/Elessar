@@ -6,16 +6,16 @@
   "author": "Matt Brennan <matt@anqagroup.com>",
   "license": "MIT",
   "dependencies": {
-    "jquery": "~1.11.0-rc1"
+    "jquery": "~1.11.0-rc1",
+    "estira": "~0.3.0"
   },
   "devDependencies": {
     "browserify": "~3.24.1",
+    "uglify-js": "~2.4",
     "browserify-shim": "~3.2.2",
-    "derequire": "~0.6.0",
-    "es6ify": "^1.2.0",
     "externalities": "~0.1.6",
-    "through": "~2.3.4",
-    "uglify-js": "~2.4"
+    "derequire": "~0.6.0",
+    "through": "~2.3.4"
   },
   "externalities": {
     "globalExport": "RangeBar",
@@ -23,6 +23,11 @@
       "commonjs": "jquery",
       "requirejs": "jquery",
       "globalvar": "jQuery"
+    },
+    "estira": {
+      "commonjs": "estira",
+      "requirejs": "estira",
+      "globalvar": "Base"
     }
   }
 }
