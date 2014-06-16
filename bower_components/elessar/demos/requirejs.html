@@ -12,11 +12,13 @@
 require.config({
   paths: {
     "jquery": "../bower_components/jquery/jquery",
-    "elessar": "../",
-    "moment": '../bower_components/moment/moment'
+    "elessar": "../dist/elessar",
+    "moment": '../bower_components/moment/moment',
+    "es5-shim": "../bower_components/es5-shim/es5-shim",
+    "estira": "../bower_components/estira/index"
   }
 });
-require(['jquery', 'elessar/rangebar', 'moment'],
+require(['jquery', 'elessar', 'moment'],
 function($, RangeBar, moment) {
   $('body').prepend(r = RangeBar({
     min: moment().startOf('day').format('LLLL'),
@@ -40,7 +42,7 @@ function($, RangeBar, moment) {
     label: function(a){return JSON.stringify(a)},
     snap: 1000 * 60 * 15,
     minSize: 1000 * 60 * 60
-  })).on('changing', function(ev, ranges) {
+  }).$el).on('changing', function(ev, ranges) {
     $('pre.changing').html(JSON.stringify(ranges,null,2));
   }).on('change', function(ev, ranges) {
     $('pre.changing').after($('<pre>').html('changed'+JSON.stringify(ranges,null,2)));

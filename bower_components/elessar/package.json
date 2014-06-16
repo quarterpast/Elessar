@@ -1,14 +1,29 @@
 {
   "name": "elessar",
-  "version": "1.0.1",
+  "version": "1.4.16",
   "description": "Draggable multiple range sliders",
-  "main": "rangebar.js",
+  "main": "lib/rangebar.js",
   "author": "Matt Brennan <matt@anqagroup.com>",
   "license": "MIT",
   "dependencies": {
-    "jquery-browser": "~1.10.2-1"
+    "es5-shim": "~2.1.0",
+    "jquery": "~1.11.0-rc1"
   },
   "devDependencies": {
-    "browserify": "~2.35.1"
+    "browserify": "~3.24.1",
+    "browserify-shim": "~3.2.2",
+    "derequire": "~0.6.0",
+    "es6ify": "^1.2.0",
+    "externalities": "~0.1.6",
+    "through": "~2.3.4",
+    "uglify-js": "~2.4"
+  },
+  "externalities": {
+    "globalExport": "RangeBar",
+    "jquery": {
+      "commonjs": "jquery",
+      "requirejs": "jquery",
+      "globalvar": "jQuery"
+    }
   }
 }
