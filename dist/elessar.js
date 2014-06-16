@@ -317,7 +317,7 @@
                         $(document).on('mouseup touchend', function (ev) {
                             ev.stopPropagation();
                             ev.preventDefault();
-                            if (this.hasChanged)
+                            if (self.hasChanged)
                                 self.trigger('change', [
                                     self.range,
                                     self.$el
