@@ -24,11 +24,6 @@
       "commonjs": "jquery",
       "requirejs": "jquery",
       "globalvar": "jQuery"
-    },
-    "estira": {
-      "commonjs": "estira",
-      "requirejs": "estira",
-      "globalvar": "Base"
     }
   }
 }
