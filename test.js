@@ -6,6 +6,7 @@ tape.test('RangeBar', function(t) {
 	var r = new RangeBar();
 	t.ok(r.$el, 'has an element');
 	t.ok(r.$el.hasClass('elessar-rangebar'), 'has the rangebar class');
+
 	t.test('sets default options', function(t) {
 		var r = new RangeBar();
 		t.equal(r.options.min, 0, 'max');
@@ -17,5 +18,78 @@ tape.test('RangeBar', function(t) {
 		t.equal(r.options.allowDelete, false, 'allowDelete');
 		t.end();
 	});
+
+	t.test('parses max and min', function(t) {
+		var r = new RangeBar({
+			min: 'value: 10',
+			max: 'value: 20',
+			valueFormat: function(v) {
+				return 'value: ' + v;
+			},
+			valueParse: function(v) {
+				return +(v.substr(7));
+			}
+		});
+
+		t.equal(r.options.min, 10);
+		t.equal(r.options.max, 20);
+
+		t.end();
+	});
+
+	t.test('normalise and abnormalise', function(t) {
+		var r = new RangeBar({
+			min: 'value: 10',
+			max: 'value: 20',
+			valueFormat: function(v) {
+				return 'value: ' + v;
+			},
+			valueParse: function(v) {
+				return +(v.substr(7));
+			}
+		});
+
+		t.equal(
+			r.normaliseRaw(0.1),
+			11,
+			'normaliseRaw maps values [0,1] to [min,max]'
+		);
+
+		t.equal(
+			r.abnormaliseRaw(11),
+			0.1,
+			'abnormaliseRaw maps values [min,max] to [0,1]'
+		);
+
+		t.equal(
+			r.normalise(0.1),
+			'value: 11',
+			'normalise maps and formats values'
+		);
+
+		t.equal(
+			r.abnormalise('value: 11'),
+			0.1,
+			'abnormalise parses and maps values'
+		);
+
+		t.end();
+	});
+
+	t.test('findGap', function(t) {
+		var r = new RangeBar();
+		r.ranges = [
+			{val: function() { return [0.1, 0.2] }},
+			{val: function() { return [0.4, 0.5] }},
+			{val: function() { return [0.7, 0.8] }}
+		];
+
+		t.equal(r.findGap([0, 0.05]), 0);
+		t.equal(r.findGap([0.25, 0.3]), 1);
+		t.equal(r.findGap([0.55, 0.6]), 2);
+		t.equal(r.findGap([0.9, 1]), 3);
+		t.end();
+	});
+
 	t.end();
 });
