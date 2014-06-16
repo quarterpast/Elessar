@@ -21,4 +21,4 @@ clean:
 	rm -rf dist
 
 test: $(DEPS) $(TEST_FILES)
-	browserify $(TEST_FILES) | tape-run | tap-spec
+	browserify -t coverify $(TEST_FILES) | tape-run | coverify | tap-spec

@@ -12,15 +12,16 @@
   },
   "devDependencies": {
     "browserify": "~3.24.1",
-    "uglify-js": "~2.4",
     "browserify-shim": "~3.2.2",
-    "externalities": "~0.1.6",
+    "coverify": "^1.0.7",
     "derequire": "~0.6.0",
     "externalities": "~0.1.6",
+    "istanbul": "^0.2.11",
     "tap-spec": "^0.2.0",
     "tape": "^2.13.3",
     "tape-run": "^0.1.1",
-    "through": "~2.3.4"
+    "through": "~2.3.4",
+    "uglify-js": "~2.4"
   },
   "externalities": {
     "globalExport": "RangeBar",
