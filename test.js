@@ -7,32 +7,52 @@ tape.test('RangeBar', function(t) {
 	t.ok(r.$el, 'has an element');
 	t.ok(r.$el.hasClass('elessar-rangebar'), 'has the rangebar class');
 
-	t.test('sets default options', function(t) {
-		var r = new RangeBar();
-		t.equal(r.options.min, 0, 'max');
-		t.equal(r.options.max, 100, 'min');
-		t.equal(r.options.maxRanges, Infinity, 'maxRanges');
-		t.equal(r.options.readonly, false, 'readonly');
-		t.equal(r.options.bgLabels, 0, 'bgLabels');
-		t.equal(r.options.deleteTimeout, 5000, 'deleteTimeout');
-		t.equal(r.options.allowDelete, false, 'allowDelete');
-		t.end();
-	});
-
-	t.test('parses max and min', function(t) {
-		var r = new RangeBar({
-			min: 'value: 10',
-			max: 'value: 20',
-			valueFormat: function(v) {
-				return 'value: ' + v;
-			},
-			valueParse: function(v) {
-				return +(v.substr(7));
-			}
+	t.test('options', function(t) {
+		t.test('sets default options', function(t) {
+			var r = new RangeBar();
+			t.equal(r.options.min, 0, 'max');
+			t.equal(r.options.max, 100, 'min');
+			t.equal(r.options.maxRanges, Infinity, 'maxRanges');
+			t.equal(r.options.readonly, false, 'readonly');
+			t.equal(r.options.bgLabels, 0, 'bgLabels');
+			t.equal(r.options.deleteTimeout, 5000, 'deleteTimeout');
+			t.equal(r.options.allowDelete, false, 'allowDelete');
+			t.end();
 		});
 
-		t.equal(r.options.min, 10);
-		t.equal(r.options.max, 20);
+		t.test('parses max and min', function(t) {
+			var r = new RangeBar({
+				min: 'value: 10',
+				max: 'value: 20',
+				valueFormat: function(v) {
+					return 'value: ' + v;
+				},
+				valueParse: function(v) {
+					return +(v.substr(7));
+				}
+			});
+
+			t.equal(r.options.min, 10);
+			t.equal(r.options.max, 20);
+
+			t.end();
+		});
+
+		t.test('barClass', function(t) {
+			var r = new RangeBar({barClass: 'test-class'});
+			t.ok(r.$el.hasClass('test-class'), 'adds options.barClass to the element');
+			t.end();
+		});
+
+		t.test('values', function(t) {
+			var r = new RangeBar({values: [[10, 20], [30, 40]]});
+			t.deepEqual(
+				r.val(),
+				[[10, 20], [30, 40]],
+				'sets the initial value'
+			);
+			t.end();
+		});
 
 		t.end();
 	});
