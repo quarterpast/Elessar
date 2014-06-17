@@ -3,6 +3,8 @@ var $ = require('jquery');
 var RangeBar = require('./lib/rangebar.js');
 var Indicator = require('./lib/indicator.js');
 
+require('./elessar.css');
+
 $.fn.isAfter = function(el) {
 	return $(el).nextAll(this).length > 0;
 };
@@ -14,6 +16,15 @@ $.fn.isBefore = function(el) {
 $.fn.contains = function(el) {
 	return this.has(el).length > 0;
 };
+
+function drag(el, pos) {
+	el.mousedown();
+	var e = $.Event('mousemove');
+	e.clientX = pos.x + el.offset().left;
+	e.clientY = pos.y + el.offset().top;
+	$(document).trigger(e);
+	el.mouseup();
+}
 
 tape.test('RangeBar', function(t) {
 	var r = new RangeBar();
@@ -198,8 +209,19 @@ tape.test('RangeBar', function(t) {
 		t.ok(r.$el.contains(r1.$el), 'inserts to dom when avoidList is true');
 		t.equal(r.ranges.length, 0, 'but not to array');
 
-
 		t.end();
+	});
+
+	t.test('dragging', function(t) {
+		var r = new RangeBar({values: [[0, 10]]});
+		r.$el.css({width: '100px'}).appendTo('body');
+		process.nextTick(function() {
+			drag(r.ranges[0].$el, {x: 10, y: 0});
+			process.nextTick(function() {
+				t.deepEqual(r.val(), [[10, 20]], 'dragging updates the value');
+				t.end();
+			});
+		});
 	});
 
 	t.end();

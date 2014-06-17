@@ -14,6 +14,7 @@
     "browserify": "~3.24.1",
     "browserify-shim": "~3.2.2",
     "coverify": "^1.0.7",
+    "cssify": "^0.5.1",
     "derequire": "~0.6.0",
     "externalities": "~0.1.6",
     "istanbul": "^0.2.11",
