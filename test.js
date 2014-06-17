@@ -262,7 +262,7 @@ tape.test('RangeBar', function(t) {
 			waitForAnimation(function() {
 				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
 				waitForAnimation(function() {
-					t.deepEqual(r.val(), [[85, 10]], 'dragging right handle updates the value');
+					t.deepEqual(r.val(), [[85, 100]], 'dragging right handle updates the value');
 					t.end();
 				});
 			});
