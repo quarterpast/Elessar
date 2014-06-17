@@ -232,15 +232,67 @@ tape.test('RangeBar', function(t) {
 	});
 
 	t.test('right resizing', function(t) {
-		var r = new RangeBar({values: [[0, 10]]});
-		r.$el.css({width: '100px'}).appendTo('body');
-		waitForAnimation(function() {
-			drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
+		t.test('to the right', function(t) {
+			var r = new RangeBar({values: [[0, 10]]});
+			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				t.deepEqual(r.val(), [[0, 20]], 'dragging right handle updates the value');
-				t.end();
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
+				waitForAnimation(function() {
+					t.deepEqual(r.val(), [[0, 20]], 'dragging right handle updates the value');
+					t.end();
+				});
 			});
 		});
+		
+		t.test('to the left', function(t) {
+			var r = new RangeBar({values: [[0, 20]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -10, y: 0, rightEdge: true});
+				waitForAnimation(function() {
+					t.deepEqual(r.val(), [[0, 10]], 'dragging right handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the end', function(t) {
+			var r = new RangeBar({values: [[85, 95]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
+				waitForAnimation(function() {
+					t.deepEqual(r.val(), [[85, 10]], 'dragging right handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('to overlap another range', function(t) {
+			var r = new RangeBar({values: [[0, 10], [15, 25]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
+				waitForAnimation(function() {
+					t.deepEqual(r.val(), [[0, 15], [15, 25]], 'dragging right handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the start of the range resizes left', function(t) {
+			var r = new RangeBar({values: [[20, 30]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true});
+				waitForAnimation(function() {
+					t.deepEqual(r.val(), [[10, 20]], 'dragging right handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.end();
 	});
 
 	t.test('left resizing', function(t) {
