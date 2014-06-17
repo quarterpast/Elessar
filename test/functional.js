@@ -92,14 +92,73 @@ function drag(el, pos, cb) {
 
 tape.test('Range bar functional tests', function(t) {
 	t.test('dragging', function(t) {
-		var r = new RangeBar({values: [[0, 10]]});
-		r.$el.css({width: '100px'}).appendTo('body');
-		waitForAnimation(function() {
-			drag(r.ranges[0].$el, {x: 10, y: 0}, function() {
-				t.deepEqual(r.val(), [[10, 20]], 'dragging updates the value');
-				t.end();
+		t.test('to the right', function(t) {
+			var r = new RangeBar({values: [[0, 10]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {x: 10, y: 0}, function() {
+					t.deepEqual(r.val(), [[10, 20]], 'dragging updates the value');
+					t.end();
+				});
 			});
 		});
+		
+		t.test('to the left', function(t) {
+			var r = new RangeBar({values: [[10, 20]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {x: -10, y: 0}, function() {
+					t.deepEqual(r.val(), [[0, 10]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with end', function(t) {
+			var r = new RangeBar({values: [[85, 95]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {x: 10, y: 0, step: true}, function() {
+					t.deepEqual(r.val(), [[90, 100]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with start', function(t) {
+			var r = new RangeBar({values: [[5, 15]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {x: -10, y: 0, step: true}, function() {
+					t.deepEqual(r.val(), [[0, 10]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with another range to the left', function(t) {
+			var r = new RangeBar({values: [[5, 15], [20, 30]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[1].$el, {x: -10, y: 0, step: true}, function() {
+					t.deepEqual(r.val(), [[5, 15],[15,25]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with another range to the right', function(t) {
+			var r = new RangeBar({values: [[5, 15], [20, 30]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {x: 10, y: 0, step: true}, function() {
+					t.deepEqual(r.val(), [[10, 20],[20,30]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.end();
 	});
 
 	t.test('right resizing', function(t) {
