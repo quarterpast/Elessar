@@ -15,10 +15,13 @@ dist/%.js: $(DEPS)
 	mkdir -p $(@D)
 	node brow.js $(ENTRY_FILE) $@
 
-.PHONY: clean test
+.PHONY: clean test coverage
 
 clean:
 	rm -rf dist
 
-test: $(DEPS) $(TEST_FILES)
+coverage: $(DEPS) $(TEST_FILES)
 	browserify -t cssify -t coverify $(TEST_FILES) | tape-run | coverify | tap-spec
+
+test: $(DEPS) $(TEST_FILES)
+	browserify -t cssify $(TEST_FILES) | tape-run | tap-spec
