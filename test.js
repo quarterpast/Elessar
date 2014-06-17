@@ -56,23 +56,37 @@ tape.test('RangeBar', function(t) {
 		});
 
 		t.test('indicator', function(t) {
+			var called = false;
 			var r = new RangeBar({
 				indicator: function(rangeBar, indicator, refresh) {
 					t.ok(rangeBar instanceof RangeBar, 'gets passed the rangebar');
 					t.ok(indicator instanceof Indicator, 'gets passed the indicator');
-					t.ok(refresh instanceof Function, 'gets passed a function');
+					if(called) {
+						t.equal(refresh, undefined, 'no function the second time');
+						process.nextTick(function() {
+							called = true;
+							t.equal(
+								indicator.val(),
+								rangeBar.abnormalise(20),
+								'return value updates the value'
+							);
 
-					process.nextTick(function() {
-						t.equal(
-							indicator.val(),
-							rangeBar.abnormalise(10),
-							'return value sets the initial value'
-						);
+							t.end();
+						});
+					} else {
+						t.ok(refresh instanceof Function, 'gets passed a function the first time');
+						process.nextTick(function() {
+							called = true;
+							t.equal(
+								indicator.val(),
+								rangeBar.abnormalise(10),
+								'return value sets the initial value'
+							);
+							refresh();
+						});
+					}
 
-						t.end();
-					});
-
-					return 10;
+					return called ? 20 : 10;
 				}
 			});
 
