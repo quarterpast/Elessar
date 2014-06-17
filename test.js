@@ -24,13 +24,48 @@ function waitForAnimation(fn) {
 	});
 }
 
+function move(pos) {
+	var e = $.Event('mousemove');
+	e.clientX = pos.x;
+	e.clientY = pos.y;
+	$(document).trigger(e);
+}
+
 function drag(el, pos) {
 	el.mousedown();
-	var e = $.Event('mousemove');
-	e.clientX = pos.x + el.offset().left + (pos.rightEdge ? el.width() : 0);
-	e.clientY = pos.y + el.offset().top + (pos.bottomEdge ? el.height() : 0);
-	$(document).trigger(e);
-	el.mouseup();
+	var moves = [];
+
+	if(pos.step) {
+		var large = Math.abs(pos.x) > Math.abs(pos.y) ? pos.x : pos.y;
+		var xstep = pos.x / large;
+		var ystep = pos.y / large;
+		var xstart = el.offset().left + (pos.rightEdge ? el.width() : 0);
+		var ystart = el.offset().top + (pos.bottomEdge ? el.height() : 0);
+
+		if(large > 0) {
+			for(var x = xstart, y = ystart; x < xstart + pos.x || y < ystart + pos.y; x += xstep, y += ystep) {
+				moves.push({x: x, y: y});
+			}
+		} else {
+			for(var x = xstart, y = ystart; x > xstart + pos.x || y > ystart + pos.y; x -= xstep, y -= ystep) {
+				moves.push({x: x, y: y});
+			}
+		}
+	}
+
+	moves.push({
+		x: pos.x + el.offset().left + (pos.rightEdge ? el.width() : 0),
+		y: pos.y + el.offset().top + (pos.bottomEdge ? el.height() : 0)
+	});
+
+	moves.forEach(move);
+
+	if(!pos.keepMouseDown) {
+		var e = $.Event('mouseup');
+		e.clientX = moves[moves.length - 1].x;
+		e.clientY = moves[moves.length - 1].y;
+		el.trigger(e);
+	}
 }
 
 tape.test('RangeBar', function(t) {
@@ -284,11 +319,13 @@ tape.test('RangeBar', function(t) {
 			var r = new RangeBar({values: [[20, 30]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true, step: true});
+
+				setTimeout(function() {
 					t.deepEqual(r.val(), [[10, 20]], 'dragging right handle updates the value');
 					t.end();
-				});
+				}, 500);
+
 			});
 		});
 
