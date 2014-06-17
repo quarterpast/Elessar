@@ -31,7 +31,18 @@ function move(pos) {
 	$(document).trigger(e);
 }
 
-function drag(el, pos) {
+function step(steps, cb) {
+	if(steps.length) {
+		waitForAnimation(function() {
+			steps[0]();
+			step(steps.slice(1), cb);
+		});
+	} else {
+		cb();
+	}
+}
+
+function drag(el, pos, cb) {
 	el.mousedown();
 	var moves = [];
 
@@ -58,14 +69,19 @@ function drag(el, pos) {
 		y: pos.y + el.offset().top + (pos.bottomEdge ? el.height() : 0)
 	});
 
-	moves.forEach(move);
-
-	if(!pos.keepMouseDown) {
-		var e = $.Event('mouseup');
-		e.clientX = moves[moves.length - 1].x;
-		e.clientY = moves[moves.length - 1].y;
-		el.trigger(e);
-	}
+	step(moves.map(function(pos) {
+		return function() {
+			move(pos);
+		};
+	}), function() {
+		if(!pos.keepMouseDown) {
+			var e = $.Event('mouseup');
+			e.clientX = moves[moves.length - 1].x;
+			e.clientY = moves[moves.length - 1].y;
+			el.trigger(e);
+		}
+		if(cb) cb();
+	});
 }
 
 tape.test('Range bar functional tests', function(t) {
@@ -73,8 +89,7 @@ tape.test('Range bar functional tests', function(t) {
 		var r = new RangeBar({values: [[0, 10]]});
 		r.$el.css({width: '100px'}).appendTo('body');
 		waitForAnimation(function() {
-			drag(r.ranges[0].$el, {x: 10, y: 0});
-			waitForAnimation(function() {
+			drag(r.ranges[0].$el, {x: 10, y: 0}, function() {
 				t.deepEqual(r.val(), [[10, 20]], 'dragging updates the value');
 				t.end();
 			});
@@ -86,8 +101,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[0, 10]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true}, function() {
 					t.deepEqual(r.val(), [[0, 20]], 'dragging right handle updates the value');
 					t.end();
 				});
@@ -98,8 +112,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[0, 20]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -10, y: 0, rightEdge: true});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -10, y: 0, rightEdge: true}, function() {
 					t.deepEqual(r.val(), [[0, 10]], 'dragging right handle updates the value');
 					t.end();
 				});
@@ -110,8 +123,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[85, 95]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true}, function() {
 					t.deepEqual(r.val(), [[85, 100]], 'dragging right handle updates the value');
 					t.end();
 				});
@@ -122,8 +134,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[0, 10], [15, 25]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 10, y: 0, rightEdge: true}, function() {
 					t.deepEqual(r.val(), [[0, 15], [15, 25]], 'dragging right handle updates the value');
 					t.end();
 				});
@@ -134,13 +145,10 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[20, 30]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true, step: true});
-
-				setTimeout(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true, step: true, keepMouseDown: true}, function() {
 					t.deepEqual(r.val(), [[10, 20]], 'dragging right handle updates the value');
 					t.end();
-				}, 500);
-
+				});
 			});
 		});
 
@@ -152,8 +160,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[0, 20]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: 10, y: 0});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: 10, y: 0}, function() {
 					t.deepEqual(r.val(), [[10, 20]], 'dragging left handle updates the value');
 					t.end();
 				});
@@ -164,8 +171,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[20, 30]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: -10, y: 0});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: -10, y: 0}, function() {
 					t.deepEqual(r.val(), [[10, 30]], 'dragging left handle updates the value');
 					t.end();
 				});
@@ -176,8 +182,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[5, 15]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: -10, y: 0});
-				waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: -10, y: 0}, function() {
 					t.deepEqual(r.val(), [[0, 15]], 'dragging left handle updates the value');
 					t.end();
 				});
@@ -188,8 +193,7 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[0, 10], [15, 25]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[1].$el.find('.elessar-handle:first-child'), {x: -10, y: 0});
-				waitForAnimation(function() {
+				drag(r.ranges[1].$el.find('.elessar-handle:first-child'), {x: -10, y: 0}, function() {
 					t.deepEqual(r.val(), [[0, 10], [10, 25]], 'dragging left handle updates the value');
 					t.end();
 				});
@@ -200,13 +204,10 @@ tape.test('Range bar functional tests', function(t) {
 			var r = new RangeBar({values: [[20, 30]]});
 			r.$el.css({width: '100px'}).appendTo('body');
 			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: 20, y: 0, step: true});
-
-				setTimeout(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: 20, y: 0, step: true}, function() {
 					t.deepEqual(r.val(), [[30, 40]], 'dragging left handle updates the value');
 					t.end();
-				}, 500);
-
+				});
 			});
 		});
 
