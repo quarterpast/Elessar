@@ -3,6 +3,18 @@ var $ = require('jquery');
 var RangeBar = require('./lib/rangebar.js');
 var Indicator = require('./lib/indicator.js');
 
+$.fn.isAfter = function(el) {
+	return $(el).nextAll(this).length > 0;
+};
+
+$.fn.isBefore = function(el) {
+	return $(el).prevAll(this).length > 0;
+};
+
+$.fn.contains = function(el) {
+	return this.has(el).length > 0;
+};
+
 tape.test('RangeBar', function(t) {
 	var r = new RangeBar();
 	t.ok(r.$el, 'has an element');
@@ -147,6 +159,46 @@ tape.test('RangeBar', function(t) {
 		t.equal(r.findGap([0.25, 0.3]), 1);
 		t.equal(r.findGap([0.55, 0.6]), 2);
 		t.equal(r.findGap([0.9, 1]), 3);
+		t.end();
+	});
+
+	t.test('insertRangeIndex', function(t) {
+		var r = new RangeBar();
+		function range() {return {$el: $('<div>')}}
+
+		t.test('inserts ranges', function(t) {
+			var r1 = range();
+			r.insertRangeIndex(r1, 0);
+			t.ok(r.$el.contains(r1.$el), 'at start when empty (dom)');
+			t.deepEqual(r.ranges, [r1], 'at start when empty (array)');
+
+			var r2 = range();
+			r.insertRangeIndex(r2, 1);
+			t.ok(r2.$el.isAfter(r1.$el), 'after existing element if exists (dom)');
+			t.deepEqual(r.ranges, [r1, r2], 'after existing element if exists (array)');
+
+			var r3 = range();
+			r.insertRangeIndex(r3, 1);
+			t.ok(r3.$el.isAfter(r1.$el) && r3.$el.isBefore(r2.$el), 'between existing elements (dom)');
+			t.deepEqual(r.ranges, [r1, r3, r2], 'between existing elements (array)');
+
+			var r4 = range();
+			r.insertRangeIndex(r4, 0);
+			t.ok(r4.$el.isBefore(r1.$el), 'before everything when index 0 (dom)');
+			t.deepEqual(r.ranges, [r4, r1, r3, r2], 'before everything when index 0 (array)');
+
+			// clean up
+			r.ranges = [];
+			r.$el.empty();
+			t.end();
+		});
+
+		var r1 = range();
+		r.insertRangeIndex(r1, 0, true);
+		t.ok(r.$el.contains(r1.$el), 'inserts to dom when avoidList is true');
+		t.equal(r.ranges.length, 0, 'but not to array');
+
+
 		t.end();
 	});
 
