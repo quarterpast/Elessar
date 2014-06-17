@@ -42,6 +42,12 @@ function step(steps, cb) {
 	}
 }
 
+var end = tape.Test.prototype.end;
+tape.Test.prototype.end = function() {
+	$('body').empty();
+	end.apply(this, arguments);
+}
+
 function drag(el, pos, cb) {
 	el.mousedown();
 	var moves = [];
