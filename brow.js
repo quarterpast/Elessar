@@ -2,17 +2,13 @@ const browserify = require('browserify'),
       externalities = require('externalities'),
       derequire = require('derequire'),
       through = require('through'),
-      fs = require('fs'),
-      es6ify = require('es6ify');
+      fs = require('fs');
 
 var input  = process.argv[2],
     output = process.argv[3];
 
-var b = browserify();
-b.add(es6ify.runtime)
-  .transform(externalities.pre(b))
-  .transform(es6ify)
-  .require(input, {entry: true});
+var b = browserify(input);
+b.transform(externalities.pre(b));
 
 b.bundle()
 .pipe(externalities.post())
