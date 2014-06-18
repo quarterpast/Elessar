@@ -44,5 +44,8 @@
       "ipad/6",
       "android-browser/latest"
     ]
+  },
+  "browserify": {
+    "transform": ["cssify"]
   }
 }

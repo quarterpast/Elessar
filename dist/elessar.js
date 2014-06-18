@@ -109,8 +109,11 @@
                                 this.val(options.value);
                         },
                         val: function (pos) {
-                            this.draw({ left: 100 * pos + '%' });
-                            return this;
+                            if (pos) {
+                                this.value = pos;
+                                this.draw({ left: 100 * pos + '%' });
+                            }
+                            return this.value;
                         }
                     });
                 module.exports = Indicator;
@@ -128,7 +131,7 @@
                                 label: '+'
                             }, options));
                             this.$el.addClass('elessar-phantom');
-                            this.on('mousedown touchstart', $.proxy(this.mousedown, this));
+                            this.on('mousedown.elessar touchstart.elessar', $.proxy(this.mousedown, this));
                         },
                         mousedown: function (ev) {
                             if (ev.which === 1) {
@@ -194,8 +197,8 @@
                                 this.$el.addClass(this.options.rangeClass);
                             if (!this.options.readonly) {
                                 this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
-                                this.on('mouseenter touchstart', $.proxy(this.removePhantom, this));
-                                this.on('mousedown touchstart', $.proxy(this.mousedown, this));
+                                this.on('mouseenter.elessar touchstart.elessar', $.proxy(this.removePhantom, this));
+                                this.on('mousedown.elessar touchstart.elessar', $.proxy(this.mousedown, this));
                                 this.on('click', $.proxy(this.click, this));
                             } else {
                                 this.$el.addClass('elessar-readonly');
@@ -303,13 +306,13 @@
                                 return;
                             if ($(ev.target).is('.elessar-handle:first-child')) {
                                 $('body').addClass('elessar-resizing');
-                                $(document).on('mousemove touchmove', this.resizeLeft(ev));
+                                $(document).on('mousemove.elessar touchmove.elessar', this.resizeLeft(ev));
                             } else if ($(ev.target).is('.elessar-handle:last-child')) {
                                 $('body').addClass('elessar-resizing');
-                                $(document).on('mousemove touchmove', this.resizeRight(ev));
+                                $(document).on('mousemove.elessar touchmove.elessar', this.resizeRight(ev));
                             } else {
                                 $('body').addClass('elessar-dragging');
-                                $(document).on('mousemove touchmove', this.drag(ev));
+                                $(document).on('mousemove.elessar touchmove.elessar', this.drag(ev));
                             }
                             var self = this;
                             $(document).on('mouseup touchend', function (ev) {
@@ -320,7 +323,7 @@
                                         self.range,
                                         self.$el
                                     ]);
-                                $(document).off('mouseup mousemove touchend touchmove');
+                                $(document).off('mouseup.elessar mousemove.elessar touchend.elessar touchmove.elessar');
                                 $('body').removeClass('elessar-resizing elessar-dragging');
                             });
                         },
@@ -329,15 +332,17 @@
                             return function (ev) {
                                 ev.stopPropagation();
                                 ev.preventDefault();
-                                var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
-                                if (left >= 0 && left <= parentWidth - startWidth) {
-                                    var rangeOffset = left / parentWidth - self.range[0];
-                                    self.val([
-                                        left / parentWidth,
-                                        self.range[1] + rangeOffset
-                                    ]);
-                                } else {
-                                    mouseOffset = getEvtX('clientX', ev) - self.$el.offset().left;
+                                if (getEvtX('clientX', ev)) {
+                                    var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
+                                    if (left >= 0 && left <= parentWidth - startWidth) {
+                                        var rangeOffset = left / parentWidth - self.range[0];
+                                        self.val([
+                                            left / parentWidth,
+                                            self.range[1] + rangeOffset
+                                        ]);
+                                    } else {
+                                        mouseOffset = getEvtX('clientX', ev) - self.$el.offset().left;
+                                    }
                                 }
                             };
                         },
@@ -347,17 +352,19 @@
                                 var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                                 ev.stopPropagation();
                                 ev.preventDefault();
-                                var width = getEvtX('clientX', ev) - startLeft;
-                                if (width > parentWidth - startPosLeft)
-                                    width = parentWidth - startPosLeft;
-                                if (width >= minWidth) {
-                                    self.val([
-                                        self.range[0],
-                                        self.range[0] + width / parentWidth
-                                    ], { dontApplyDelta: true });
-                                } else if (width <= 10) {
-                                    $(document).trigger(opposite);
-                                    self.$el.find('.elessar-handle:first-child').trigger(subsequent);
+                                if (getEvtX('clientX', ev)) {
+                                    var width = getEvtX('clientX', ev) - startLeft;
+                                    if (width > parentWidth - startPosLeft)
+                                        width = parentWidth - startPosLeft;
+                                    if (width >= minWidth) {
+                                        self.val([
+                                            self.range[0],
+                                            self.range[0] + width / parentWidth
+                                        ], { dontApplyDelta: true });
+                                    } else if (width <= 10) {
+                                        $(document).trigger(opposite + '.elessar');
+                                        self.$el.find('.elessar-handle:first-child').trigger(subsequent + '.elessar');
+                                    }
                                 }
                             };
                         },
@@ -367,20 +374,22 @@
                                 var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                                 ev.stopPropagation();
                                 ev.preventDefault();
-                                var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
-                                var width = startPosLeft + startWidth - left;
-                                if (left < 0) {
-                                    left = 0;
-                                    width = startPosLeft + startWidth;
-                                }
-                                if (width >= minWidth) {
-                                    self.val([
-                                        left / parentWidth,
-                                        self.range[1]
-                                    ], { dontApplyDelta: true });
-                                } else if (width <= 10) {
-                                    $(document).trigger(opposite);
-                                    self.$el.find('.elessar-handle:last-child').trigger(subsequent);
+                                if (getEvtX('clientX', ev)) {
+                                    var left = getEvtX('clientX', ev) - parentOffset.left - mouseOffset;
+                                    var width = startPosLeft + startWidth - left;
+                                    if (left < 0) {
+                                        left = 0;
+                                        width = startPosLeft + startWidth;
+                                    }
+                                    if (width >= minWidth) {
+                                        self.val([
+                                            left / parentWidth,
+                                            self.range[1]
+                                        ], { dontApplyDelta: true });
+                                    } else if (width <= 10) {
+                                        $(document).trigger(opposite + '.elessar');
+                                        self.$el.find('.elessar-handle:last-child').trigger(subsequent + '.elessar');
+                                    }
                                 }
                             };
                         }
@@ -403,15 +412,16 @@
                 _dereq_('es5-shim');
                 var RangeBar = Element.extend({
                         initialize: function initialize(options) {
+                            options = options || {};
                             initialize.super$.call(this, '<div class="elessar-rangebar">');
                             this.options = $.extend({}, RangeBar.defaults, options);
-                            this.options.min = options.valueParse(options.min);
-                            this.options.max = options.valueParse(options.max);
+                            this.options.min = this.options.valueParse(this.options.min);
+                            this.options.max = this.options.valueParse(this.options.max);
                             if (this.options.barClass)
                                 this.$el.addClass(this.options.barClass);
                             this.ranges = [];
-                            this.on('mousemove touchmove', $.proxy(this.mousemove, this));
-                            this.on('mouseleave touchleave', $.proxy(this.removePhantom, this));
+                            this.on('mousemove.elessar touchmove.elessar', $.proxy(this.mousemove, this));
+                            this.on('mouseleave.elessar touchleave.elessar', $.proxy(this.removePhantom, this));
                             if (options.values)
                                 this.setVal(options.values);
                             for (var i = 0; i < options.bgLabels; ++i) {
@@ -442,7 +452,7 @@
                             return this.abnormaliseRaw(this.options.valueParse(value));
                         },
                         findGap: function (range) {
-                            var newIndex;
+                            var newIndex = 0;
                             this.ranges.forEach(function ($r, i) {
                                 if ($r.val()[0] < range[0] && $r.val()[1] < range[1])
                                     newIndex = i + 1;
