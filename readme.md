@@ -4,6 +4,9 @@ Elessar
 Draggable multiple range sliders
 ![elessar draggable range demo](demo.gif)
 
+[![browser support](https://ci.testling.com/quarterto/Elessar.png)
+](https://ci.testling.com/quarterto/Elessar)
+
 Installation
 ------------
 Elessar is available via npm and Bower, and as [standalone files](/dist):
