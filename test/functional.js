@@ -368,19 +368,17 @@ tape.test('Range bar functional tests', function(t) {
 					y: r.$el.offset().top + r.$el.height() / 2
 				}, r.$el);
 
-				waitForAnimation(function() {
-					r.$el.find('.elessar-phantom').btnClick();
-	
-					waitForAnimation(function() {
-						t.rangebarValuesEqual(
-							r.val(),
-							[[50,60]],
-							'creates a new range of the minsize'
-						);
+				r.$el.find('.elessar-phantom').btnClick();
 
-						r.$el.find('.elessar-phantom').mouseup();
-						t.end();
-					});
+				waitForAnimation(function() {
+					t.rangebarValuesEqual(
+						r.val(),
+						[[50,60]],
+						'creates a new range of the minsize'
+					);
+
+					r.$el.find('.elessar-phantom').mouseup();
+					t.end();
 				});
 			});
 			
@@ -427,6 +425,46 @@ tape.test('Range bar functional tests', function(t) {
 					t.end();
 				});
 			});
+
+			t.test('when available space is less than the minsize', function(t) {
+				var r = new RangeBar({values: [[0, 10],[12, 22]], minSize: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({
+					x: r.$el.offset().left + 11,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				t.ok(
+					!r.$el.contains('.elessar-phantom'),
+					'doesn\'t add a phantom'
+				);
+
+				t.end();
+			});
+
+			t.test('when available space is smaller than default', function(t) {
+				var r = new RangeBar({values: [[0, 10],[12, 22]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({
+					x: r.$el.offset().left + 11,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+
+				r.$el.find('.elessar-phantom').btnClick();
+
+				waitForAnimation(function() {
+					t.rangebarValuesEqual(
+						r.val(),
+						[[0, 10],[10,12],[12, 22]],
+						'fills the available space'
+					);
+
+					r.$el.find('.elessar-phantom').mouseup();
+					t.end();
+				});
+			});
+
 
 			t.end();
 		});
