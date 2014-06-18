@@ -400,6 +400,7 @@
                 var Phantom = _dereq_('./phantom');
                 var Indicator = _dereq_('./indicator');
                 var getEvtX = _dereq_('./evtx');
+                _dereq_('es5-shim');
                 var RangeBar = Element.extend({
                         initialize: function initialize(options) {
                             initialize.super$.call(this, '<div class="elessar-rangebar">');
@@ -605,7 +606,8 @@
                 './evtx': 2,
                 './indicator': 3,
                 './phantom': 4,
-                './range': 6
+                './range': 6,
+                'es5-shim': 8
             }
         ],
         8: [
