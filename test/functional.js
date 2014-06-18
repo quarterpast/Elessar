@@ -543,6 +543,75 @@ tape.test('Range bar functional tests', function(t) {
 		t.end();
 	});
 
+	t.test('top resizing', function(t) {
+		t.test('downwards', function(t) {
+			var r = new RangeBar({values: [[0, 20]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: 10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 20]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to the top', function(t) {
+			var r = new RangeBar({values: [[20, 30]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 30]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the end', function(t) {
+			var r = new RangeBar({values: [[5, 15]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 15]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('to overlap another range', function(t) {
+			var r = new RangeBar({values: [[0, 10], [15, 25]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[1].$el.find('.elessar-handle:first-child'), {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 10], [10, 25]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the end of the range resizes right', function(t) {
+			var r = new RangeBar({values: [[20, 30]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: 20, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[30, 40]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('doesn\'t resize below minimum size', function(t) {
+			var r = new RangeBar({values: [[20, 40]], minSize: 10, vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: 15, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[30, 40]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.end();
+	});
 
 	t.end();
 });
