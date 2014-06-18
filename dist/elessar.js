@@ -117,6 +117,7 @@
                                 } else {
                                     this.draw({ left: 100 * pos + '%' });
                                 }
+                                this.value = pos;
                             }
                             return this.value;
                         }
@@ -282,11 +283,11 @@
                             }
                             var start = 100 * range[0] + '%', size = 100 * (range[1] - range[0]) + '%';
                             this.draw(this.parent.options.vertical ? {
-                                left: start,
-                                minWidth: size
-                            } : {
                                 top: start,
                                 minHeight: size
+                            } : {
+                                left: start,
+                                minWidth: size
                             });
                             return this;
                             function snap(val) {
@@ -325,7 +326,7 @@
                                 $(document).on('mousemove.elessar touchmove.elessar', this.resizeStart(ev));
                             } else if ($(ev.target).is('.elessar-handle:last-child')) {
                                 $('body').addClass('elessar-resizing');
-                                $(document).on('mousemove.elessar touchmove.elessar', this.resizeStart(ev));
+                                $(document).on('mousemove.elessar touchmove.elessar', this.resizeEnd(ev));
                             } else {
                                 $('body').addClass('elessar-dragging');
                                 $(document).on('mousemove.elessar touchmove.elessar', this.drag(ev));
@@ -349,7 +350,7 @@
                             return function (ev) {
                                 ev.stopPropagation();
                                 ev.preventDefault();
-                                var mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), ev);
+                                var mousePos = getEventProperty(self.ifVertical('clientY', 'clientX'), ev);
                                 if (mousePos) {
                                     var start = mousePos - parentStart - mouseOffset;
                                     if (start >= 0 && start <= parentSize - beginSize) {
@@ -365,12 +366,12 @@
                             };
                         },
                         resizeEnd: function (origEv) {
-                            var self = this, beginStart = this.startProp('offset'), beginPosStart = this.startProp('position'), mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), origEv), mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), parent = this.options.parent, parentStart = parent.startProp('offset'), parentSize = parent.totalSize(), minSize = this.options.minSize * parentWidth;
+                            var self = this, beginStart = this.startProp('offset'), beginPosStart = this.startProp('position'), mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), origEv), mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), parent = this.options.parent, parentStart = parent.startProp('offset'), parentSize = parent.totalSize(), minSize = this.options.minSize * parentSize;
                             return function (ev) {
                                 var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                                 ev.stopPropagation();
                                 ev.preventDefault();
-                                var mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), ev);
+                                var mousePos = getEventProperty(self.ifVertical('clientY', 'clientX'), ev);
                                 var size = mousePos - beginStart;
                                 if (mousePos) {
                                     if (size > parentSize - beginPosStart)
@@ -393,7 +394,7 @@
                                 var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                                 ev.stopPropagation();
                                 ev.preventDefault();
-                                var mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), ev);
+                                var mousePos = getEventProperty(self.ifVertical('clientY', 'clientX'), ev);
                                 var start = mousePos - parentStart - mouseOffset;
                                 var size = beginPosStart + beginSize - start;
                                 if (mousePos) {
