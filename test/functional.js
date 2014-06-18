@@ -18,17 +18,23 @@ $.fn.contains = function(el) {
 	return this.has(el).length > 0;
 };
 
+$.fn.btnClick = function(which) {
+	var e = $.Event('mousedown');
+	e.which = which || 1;
+	this.trigger(e);
+}
+
 function waitForAnimation(fn) {
 	raf(function() {
 		process.nextTick(fn);
 	});
 }
 
-function move(pos) {
+function move(pos, el) {
 	var e = $.Event('mousemove');
-	e.clientX = pos.x;
-	e.clientY = pos.y;
-	$(document).trigger(e);
+	e.clientX = e.pageX = pos.x;
+	e.clientY = e.pageY = pos.y;
+	$(el || document).trigger(e);
 }
 
 function step(steps, cb) {
@@ -44,14 +50,13 @@ function step(steps, cb) {
 
 var end = tape.Test.prototype.end;
 tape.Test.prototype.end = function() {
-	$('body').empty();
+	$('body').empty().removeClass();
 	end.apply(this, arguments);
 }
 
 function valuesEqual(a, b) {
-	return a.every(function(av, i) {
+	return a.length === b.length && a.every(function(av, i) {
 		var bv = b[i];
-
 		return Math.abs(av[0] - bv[0]) < 1e-10 && Math.abs(av[1] - bv[1]) < 1e-10
 	});
 }
@@ -314,6 +319,116 @@ tape.test('Range bar functional tests', function(t) {
 					t.end();
 				});
 			});
+		});
+
+		t.end();
+	});
+
+	t.test('phantoms', function(t) {
+		t.test('hovering on a blank area', function(t) {
+			var r = new RangeBar();
+			r.$el.css({width: '100px'}).appendTo('body');
+			move({x: 50, y: r.$el.offset().top + r.$el.height() / 2}, r.$el);
+			t.ok(
+				r.$el.contains('.elessar-phantom'),
+				'creates a phantom range'
+			);
+
+			t.end();
+		});
+
+		t.test('clicking the phantom', function(t) {
+			t.test('with no minSize', function(t) {
+				var r = new RangeBar();
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({
+					x: r.$el.offset().left + 52.5,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				r.$el.find('.elessar-phantom').btnClick();
+
+				waitForAnimation(function() {
+					t.rangebarValuesEqual(
+						r.val(),
+						[[50,55]],
+						'creates a new range'
+					);
+
+					r.$el.find('.elessar-phantom').mouseup();
+					t.end();
+				});
+			});
+			
+			t.test('with a minSize', function(t) {
+				var r = new RangeBar({minSize: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({
+					x: r.$el.offset().left + 55,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				waitForAnimation(function() {
+					r.$el.find('.elessar-phantom').btnClick();
+	
+					waitForAnimation(function() {
+						t.rangebarValuesEqual(
+							r.val(),
+							[[50,60]],
+							'creates a new range of the minsize'
+						);
+
+						r.$el.find('.elessar-phantom').mouseup();
+						t.end();
+					});
+				});
+			});
+			
+			t.test('next to the end', function(t) {
+				var r = new RangeBar();
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({
+					x: r.$el.offset().left + 98,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				r.$el.find('.elessar-phantom').btnClick();
+
+				waitForAnimation(function() {
+					t.rangebarValuesEqual(
+						r.val(),
+						[[95,100]],
+						'creates a new range at the end'
+					);
+
+					r.$el.find('.elessar-phantom').mouseup();
+					t.end();
+				});
+			});
+			
+			t.test('next to the start', function(t) {
+				var r = new RangeBar();
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({
+					x: r.$el.offset().left + 2,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				r.$el.find('.elessar-phantom').btnClick();
+
+				waitForAnimation(function() {
+					t.rangebarValuesEqual(
+						r.val(),
+						[[0,5]],
+						'creates a new range at the start'
+					);
+
+					r.$el.find('.elessar-phantom').mouseup();
+					t.end();
+				});
+			});
+
+			t.end();
 		});
 
 		t.end();
