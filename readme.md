@@ -53,7 +53,8 @@ new RangeBar({
   bgLabels: 0, // number of value labels to write in the background of the bar
   indicator: null, // pass a function(RangeBar, Indicator, Function?) Value to calculate where to put a current indicator, calling the function whenever you want the position to be recalculated
   allowDelete: false, // set to true to enable double-middle-click-to-delete
-  deleteTimeout: 5000 // maximum time in ms between middle clicks
+  deleteTimeout: 5000, // maximum time in ms between middle clicks
+  vertical: false // if true the rangebar is aligned vertically, and given the class elessar-vertical
 });
 ```
 
