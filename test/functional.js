@@ -471,7 +471,76 @@ tape.test('Range bar functional tests', function(t) {
 
 		t.end();
 	});
-	
+
+	t.test('vertical dragging', function(t) {
+		t.test('downwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[0, 10]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: 10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 20]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('upwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[10, 20]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 10]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with end', function(t) {
+			var r = new RangeBar({vertical: true, values: [[85, 95]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: 10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[90, 100]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with start', function(t) {
+			var r = new RangeBar({vertical: true, values: [[5, 15]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: -10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 10]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with another range upwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[5, 15], [20, 30]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[1].$el, {y: -10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[5, 15],[15,25]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with another range downwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[5, 15], [20, 30]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: 10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 20],[20,30]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.end();
+	});
 	
 	t.test('bottom resizing', function(t) {
 		t.test('downwards', function(t) {
