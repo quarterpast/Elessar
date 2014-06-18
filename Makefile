@@ -21,7 +21,7 @@ clean:
 	rm -rf dist
 
 coverage: $(DEPS) $(TEST_FILES)
-	browserify -t cssify -t coverify $(TEST_FILES) | testling | coverify | tap-spec
+	browserify -t coverify $(TEST_FILES) | testling | coverify | tap-spec
 
 test: $(DEPS) $(TEST_FILES)
-	browserify -t cssify $(TEST_FILES) | testling | tap-spec
+	browserify $(TEST_FILES) | testling | tap-spec
