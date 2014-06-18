@@ -57,7 +57,7 @@ tape.Test.prototype.end = function() {
 function valuesEqual(a, b) {
 	return a.length === b.length && a.every(function(av, i) {
 		var bv = b[i];
-		return Math.abs(av[0] - bv[0]) < 1e-10 && Math.abs(av[1] - bv[1]) < 1e-10
+		return Math.abs(av[0] - bv[0]) < 0.01 && Math.abs(av[1] - bv[1]) < 0.01
 	});
 }
 
