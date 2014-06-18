@@ -472,5 +472,215 @@ tape.test('Range bar functional tests', function(t) {
 		t.end();
 	});
 
+	t.test('vertical dragging', function(t) {
+		t.test('downwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[0, 10]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: 10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 20]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('upwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[10, 20]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 10]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with end', function(t) {
+			var r = new RangeBar({vertical: true, values: [[85, 95]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: 10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[90, 100]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with start', function(t) {
+			var r = new RangeBar({vertical: true, values: [[5, 15]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: -10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 10]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with another range upwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[5, 15], [20, 30]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[1].$el, {y: -10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[5, 15],[15,25]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to collide with another range downwards', function(t) {
+			var r = new RangeBar({vertical: true, values: [[5, 15], [20, 30]]});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {y: 10, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 20],[20,30]], 'dragging updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.end();
+	});
+	
+	t.test('bottom resizing', function(t) {
+		t.test('downwards', function(t) {
+			var r = new RangeBar({values: [[0, 10]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {y: 10, x: 0, bottomEdge: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 20]], 'dragging bottom handle updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('upwards', function(t) {
+			var r = new RangeBar({values: [[0, 20]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {y: -10, x: 0, bottomEdge: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 10]], 'dragging bottom handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the end', function(t) {
+			var r = new RangeBar({values: [[85, 95]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {y: 10, x: 0, bottomEdge: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[85, 100]], 'dragging bottom handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('to overlap another range', function(t) {
+			var r = new RangeBar({values: [[0, 10], [15, 25]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {y: 10, x: 0, bottomEdge: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 15], [15, 25]], 'dragging bottom handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the start of the range resizes upwards', function(t) {
+			var r = new RangeBar({values: [[20, 30]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {y: -20, x: 0, bottomEdge: true, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 20]], 'dragging bottom handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('doesn\'t resize below minimum size', function(t) {
+			var r = new RangeBar({values: [[20, 40]], minSize: 10, vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {y: -15, x: 0, bottomEdge: true, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[20, 30]], 'dragging bottom handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.end();
+	});
+
+	t.test('top resizing', function(t) {
+		t.test('downwards', function(t) {
+			var r = new RangeBar({values: [[0, 20]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: 10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 20]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+		
+		t.test('to the top', function(t) {
+			var r = new RangeBar({values: [[20, 30]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[10, 30]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the end', function(t) {
+			var r = new RangeBar({values: [[5, 15]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 15]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('to overlap another range', function(t) {
+			var r = new RangeBar({values: [[0, 10], [15, 25]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[1].$el.find('.elessar-handle:first-child'), {y: -10, x: 0}, function() {
+					t.rangebarValuesEqual(r.val(), [[0, 10], [10, 25]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('beyond the end of the range resizes right', function(t) {
+			var r = new RangeBar({values: [[20, 30]], vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: 20, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[30, 40]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.test('doesn\'t resize below minimum size', function(t) {
+			var r = new RangeBar({values: [[20, 40]], minSize: 10, vertical: true});
+			r.$el.css({height: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {y: 15, x: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[30, 40]], 'dragging top handle updates the value');
+					t.end();
+				});
+			});
+		});
+
+		t.end();
+	});
+
 	t.end();
 });
