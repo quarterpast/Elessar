@@ -20,7 +20,7 @@
     "istanbul": "^0.2.11",
     "tap-spec": "^0.2.0",
     "tape": "^2.13.3",
-    "tape-run": "^0.1.1",
+    "testling": "^1.6.1",
     "through": "~2.3.4",
     "uglify-js": "~2.4"
   },
