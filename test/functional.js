@@ -203,7 +203,6 @@ tape.test('Range bar functional tests', function(t) {
 			});
 		});
 
-
 		t.end();
 	});
 
