@@ -83,3 +83,10 @@ Event that triggers after the user has finished changing a range. Useful for upd
 Licence
 -------
 [MIT](licence.md)
+
+Flattr
+------
+
+If Elessar has made your life easier, consider sending me a small donation.
+
+[![Flattr this](//api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=quarterto&url=https%3A%2F%2Fgithub.com%2Fquarterto%2FElessar)
