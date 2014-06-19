@@ -2,20 +2,25 @@ var Element = require('./element');
 var Range = require('./range');
 var Phantom = require('./phantom');
 var Indicator = require('./indicator');
-var getEvtX = require('./evtx');
+var getEventProperty = require('./eventprop');
+var vertical = require('./vertical');
 var $ = require('jquery');
 
-class RangeBar extends Element {
-  constructor(options) {
-    super('<div class="elessar-rangebar">');
+require('es5-shim');
+
+var RangeBar = Element.extend(vertical).extend({
+  initialize: function initialize(options) {
+    options = options || {};
+    initialize.super$.call(this, '<div class="elessar-rangebar">');
     this.options = $.extend({}, RangeBar.defaults, options);
-    this.options.min = options.valueParse(options.min);
-    this.options.max = options.valueParse(options.max);
+    this.options.min = this.options.valueParse(this.options.min);
+    this.options.max = this.options.valueParse(this.options.max);
     if(this.options.barClass) this.$el.addClass(this.options.barClass);
+    if(this.options.vertical) this.$el.addClass('elessar-vertical');
 
     this.ranges = [];
-    this.on('mousemove touchmove', $.proxy(this.mousemove, this));
-    this.on('mouseleave touchleave', $.proxy(this.removePhantom, this));
+    this.on('mousemove.elessar touchmove.elessar', $.proxy(this.mousemove, this));
+    this.on('mouseleave.elessar touchleave.elessar', $.proxy(this.removePhantom, this));
 
     if(options.values) this.setVal(options.values);
 
@@ -27,6 +32,7 @@ class RangeBar extends Element {
     if(options.indicator) {
       var indicator = this.indicator = new Indicator({
         parent: this,
+        vertical: this.options.vertical,
         indicatorClass: options.indicatorClass
       });
       indicator.val(this.abnormalise(options.indicator(this, indicator, function() {
@@ -34,34 +40,34 @@ class RangeBar extends Element {
       })));
       this.$el.append(indicator.$el);
     }
-  }
+  },
 
-  normaliseRaw (value) {
+  normaliseRaw: function (value) {
     return this.options.min + value * (this.options.max - this.options.min);
-  }
+  },
 
-  normalise (value) {
+  normalise: function (value) {
     return this.options.valueFormat(this.normaliseRaw(value));
-  }
+  },
 
-  abnormaliseRaw (value) {
+  abnormaliseRaw: function (value) {
     return (value - this.options.min)/(this.options.max - this.options.min);
-  }
+  },
 
-  abnormalise (value) {
+  abnormalise: function (value) {
     return this.abnormaliseRaw(this.options.valueParse(value));
-  }
+  },
 
-  findGap(range) {
-    var newIndex;
+  findGap: function(range) {
+    var newIndex = 0;
     this.ranges.forEach(function($r, i) {
       if($r.val()[0] < range[0] && $r.val()[1] < range[1]) newIndex = i + 1;
     });
 
     return newIndex;
-  }
+  },
 
-  insertRangeIndex(range, index, avoidList) {
+  insertRangeIndex: function(range, index, avoidList) {
     if(!avoidList) this.ranges.splice(index, 0, range);
 
     if(this.ranges[index - 1]) {
@@ -69,10 +75,10 @@ class RangeBar extends Element {
     } else {
       this.$el.prepend(range.$el);
     }
-  }
+  },
 
-  addRange(range, data) {
-    var $range = new Range({
+  addRange: function(range, data) {
+    var $range = Range({
       parent: this,
       snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
       label: this.options.label,
@@ -102,19 +108,19 @@ class RangeBar extends Element {
       self.trigger('change', [self.val(), changed]);
     });
     return $range;
-  }
+  },
 
-  prevRange(range) {
+  prevRange: function(range) {
     var idx = range.index();
     if(idx >= 0) return this.ranges[idx - 1];
-  }
+  },
 
-  nextRange(range) {
+  nextRange: function(range) {
     var idx = range.index();
     if(idx >= 0) return this.ranges[range instanceof Phantom ? idx : idx + 1];
-  }
+  },
 
-  setVal(ranges) {
+  setVal: function(ranges) {
     if (this.ranges.length > ranges.length) {
       for (var i = ranges.length-1, l = this.ranges.length-1; i < l; --l) {
         this.removeRange(l);
@@ -133,9 +139,9 @@ class RangeBar extends Element {
     });
 
     return this;
-  }
+  },
 
-  val(ranges) {
+  val: function(ranges) {
     var self = this;
     if(typeof ranges === 'undefined') {
       return this.ranges.map(function(range) {
@@ -143,34 +149,41 @@ class RangeBar extends Element {
       });
     }
 
-    if(!this.options.readonly) this.setVal(ranges);
+    if(!this.readonly()) this.setVal(ranges);
     return this;
-  }
+  },
 
-  removePhantom() {
+  removePhantom: function() {
     if(this.phantom) {
       this.phantom.remove();
       this.phantom = null;
     }
-  }
+  },
 
-  removeRange(i) {
+  removeRange: function(i, noTrigger) {
     if(i instanceof Range) {
       i = this.ranges.indexOf(i);
     }
     this.ranges.splice(i,1)[0].remove();
-    this.trigger('change', [this.val()]);
-  }
+    if(!noTrigger) {
+      this.trigger('change', [this.val()]);
+    }
+  },
 
-  calcGap(index) {
+  repositionRange: function(range, val) {
+    this.removeRange(range, true);
+    this.insertRangeIndex(range, this.findGap(val));
+  },
+
+  calcGap: function(index) {
     var start = this.ranges[index - 1] ? this.ranges[index - 1].val()[1] : 0;
     var end = this.ranges[index] ? this.ranges[index].val()[0] : 1;
     return this.normaliseRaw(end) - this.normaliseRaw(start);
-  }
+  },
 
-  addLabel(pos) {
+  addLabel: function(pos) {
     var cent = pos * 100, val = this.normalise(pos);
-    var $el = $('<span class="elessar-label">').css('left', cent+'%').text(val);
+    var $el = $('<span class="elessar-label">').css(this.startEdge(), cent+'%').text(val);
     if(1 - pos < 0.05) {
       $el.css({
         left: '',
@@ -178,13 +191,21 @@ class RangeBar extends Element {
       });
     }
     return $el.appendTo(this.$el);
-  }
+  },
 
-  mousemove(ev) {
+  readonly: function() {
+    if(typeof this.options.readonly === 'function') {
+      return this.options.readonly.call(this);
+    }
+    return this.options.readonly;
+  },
+
+  mousemove: function(ev) {
     var w = this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : 0.05;
-    var val = (getEvtX('pageX', ev) - this.$el.offset().left)/this.$el.width() - w/2;
-    if(ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.options.readonly) {
-      if(!this.phantom) this.phantom = new Phantom({
+    var pageStart = getEventProperty(this.ifVertical('pageY','pageX'), ev);
+    var val = (pageStart - this.startProp('offset'))/this.totalSize() - w/2;
+    if(ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.readonly()) {
+      if(!this.phantom) this.phantom = Phantom({
         parent: this,
         snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
         label: "+",
@@ -199,19 +220,19 @@ class RangeBar extends Element {
       }
     }
   }
-}
+});
 
 RangeBar.defaults = {
   min: 0,
   max: 100,
-  valueFormat(a) {return a;},
-  valueParse(a) {return a;},
+  valueFormat: function (a) {return a;},
+  valueParse: function (a) {return a;},
   maxRanges: Infinity,
   readonly: false,
   bgLabels: 0,
   deleteTimeout: 5000,
-  allowDelete: false
+  allowDelete: false,
+  vertical: false
 };
 
 module.exports = RangeBar;
-

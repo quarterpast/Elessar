@@ -1,6 +1,6 @@
 {
   "name": "elessar",
-  "version": "1.4.16",
+  "version": "1.6.0",
   "description": "Draggable multiple range sliders",
   "authors": [
     "Matt Brennan <matt@anqagroup.com>"
@@ -15,21 +15,23 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": ">=1.8"
+    "jquery": ">=1.8",
+    "es5-shim": "~3.4.0",
+    "estira": "0.3"
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
     "moment": "~2.4.0"
   },
   "homepage": "https://github.com/quarterto/Elessar",
-  "_release": "1.4.16",
+  "_release": "1.6.0",
   "_resolution": {
     "type": "version",
-    "tag": "1.4.16",
-    "commit": "5ebf0dbb1ee89d0ec04f5c3a8a8c6b17a72ce987"
+    "tag": "1.6.0",
+    "commit": "b104ee063662ce53ab1272e0a4ca0e84799d1de2"
   },
   "_source": "git://github.com/quarterto/Elessar.git",
-  "_target": "1.4.16",
+  "_target": "1.6.0",
   "_originalSource": "elessar",
   "_direct": true
 }

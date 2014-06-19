@@ -2,17 +2,17 @@ var $ = require('jquery');
 var Range = require('./range');
 var requestAnimationFrame = require('./raf');
 
-class Phantom extends Range {
-  constructor(options) {
-    super($.extend({
+var Phantom = Range.extend({
+  initialize: function initialize(options) {
+    initialize.super$.call(this, $.extend({
       readonly: true,
       label: '+'
     }, options));
     this.$el.addClass('elessar-phantom');
-    this.on('mousedown touchstart', $.proxy(this.mousedown, this));
-  }
+    this.on('mousedown.elessar touchstart.elessar', $.proxy(this.mousedown, this));
+  },
 
-  mousedown(ev) {
+  mousedown: function(ev) {
     if(ev.which === 1) { // left mouse button
       var startX = ev.pageX;
       var newRange = this.options.parent.addRange(this.val());
@@ -22,11 +22,11 @@ class Phantom extends Range {
         newRange.$el.find('.elessar-handle:first-child').trigger(ev.type);
       });
     }
-  }
+  },
 
-  removePhantom() {
+  removePhantom: function() {
     // NOOP
   }
-}
+});
 
 module.exports = Phantom;
