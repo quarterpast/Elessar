@@ -205,7 +205,7 @@
                             this.parent = options.parent;
                             if (this.options.rangeClass)
                                 this.$el.addClass(this.options.rangeClass);
-                            if (!this.options.readonly) {
+                            if (!this.readonly()) {
                                 this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
                                 this.on('mouseenter.elessar touchstart.elessar', $.proxy(this.removePhantom, this));
                                 this.on('mousedown.elessar touchstart.elessar', $.proxy(this.mousedown, this));
@@ -231,6 +231,12 @@
                         removePhantom: function () {
                             this.parent.removePhantom();
                         },
+                        readonly: function () {
+                            if (typeof this.options.readonly === 'function') {
+                                return this.options.readonly.call(this.parent, this);
+                            }
+                            return this.options.readonly;
+                        },
                         val: function (range, valOpts) {
                             if (typeof range === 'undefined') {
                                 return this.range;
@@ -249,14 +255,22 @@
                                 range[0] = prev.val()[1];
                             }
                             if (next && next.val()[0] < range[1]) {
-                                range[1] = next.val()[0];
-                                if (!valOpts.dontApplyDelta)
-                                    range[0] = range[1] - delta;
+                                if (next.val()[1] >= range[0]) {
+                                    range[1] = next.val()[0];
+                                    if (!valOpts.dontApplyDelta)
+                                        range[0] = range[1] - delta;
+                                } else {
+                                    this.parent.repositionRange(this, range);
+                                }
                             }
                             if (prev && prev.val()[1] > range[0]) {
-                                range[0] = prev.val()[1];
-                                if (!valOpts.dontApplyDelta)
-                                    range[1] = range[0] + delta;
+                                if (prev.val()[0] <= range[1]) {
+                                    range[0] = prev.val()[1];
+                                    if (!valOpts.dontApplyDelta)
+                                        range[1] = range[0] + delta;
+                                } else {
+                                    this.parent.repositionRange(this, range);
+                                }
                             }
                             if (range[1] >= 1) {
                                 range[1] = 1;
@@ -267,6 +281,21 @@
                                 range[0] = 0;
                                 if (!valOpts.dontApplyDelta)
                                     range[1] = delta;
+                            }
+                            if (this.parent.options.bound) {
+                                var bound = this.parent.options.bound(this);
+                                if (bound) {
+                                    if (bound.upper && range[1] > this.parent.abnormalise(bound.upper)) {
+                                        range[1] = this.parent.abnormalise(bound.upper);
+                                        if (!valOpts.dontApplyDelta)
+                                            range[0] = range[1] - delta;
+                                    }
+                                    if (bound.lower && range[0] < this.parent.abnormalise(bound.lower)) {
+                                        range[0] = this.parent.abnormalise(bound.lower);
+                                        if (!valOpts.dontApplyDelta)
+                                            range[1] = range[0] + delta;
+                                    }
+                                }
                             }
                             if (this.options.minSize && range[1] - range[0] < this.options.minSize) {
                                 range[1] = range[0] + this.options.minSize;
@@ -561,7 +590,7 @@
                                     return range.val().map($.proxy(self.normalise, self));
                                 });
                             }
-                            if (!this.options.readonly)
+                            if (!this.readonly())
                                 this.setVal(ranges);
                             return this;
                         },
@@ -571,12 +600,18 @@
                                 this.phantom = null;
                             }
                         },
-                        removeRange: function (i) {
+                        removeRange: function (i, noTrigger) {
                             if (i instanceof Range) {
                                 i = this.ranges.indexOf(i);
                             }
                             this.ranges.splice(i, 1)[0].remove();
-                            this.trigger('change', [this.val()]);
+                            if (!noTrigger) {
+                                this.trigger('change', [this.val()]);
+                            }
+                        },
+                        repositionRange: function (range, val) {
+                            this.removeRange(range, true);
+                            this.insertRangeIndex(range, this.findGap(val));
                         },
                         calcGap: function (index) {
                             var start = this.ranges[index - 1] ? this.ranges[index - 1].val()[1] : 0;
@@ -594,11 +629,17 @@
                             }
                             return $el.appendTo(this.$el);
                         },
+                        readonly: function () {
+                            if (typeof this.options.readonly === 'function') {
+                                return this.options.readonly.call(this);
+                            }
+                            return this.options.readonly;
+                        },
                         mousemove: function (ev) {
                             var w = this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : 0.05;
                             var pageStart = getEventProperty(this.ifVertical('pageY', 'pageX'), ev);
                             var val = (pageStart - this.startProp('offset')) / this.totalSize() - w / 2;
-                            if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.options.readonly) {
+                            if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.readonly()) {
                                 if (!this.phantom)
                                     this.phantom = Phantom({
                                         parent: this,
