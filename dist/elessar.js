@@ -620,12 +620,15 @@
                         },
                         addLabel: function (pos) {
                             var cent = pos * 100, val = this.normalise(pos);
-                            var $el = $('<span class="elessar-label">').css(this.startEdge(), cent + '%').text(val);
+                            var $el = $('<span class="elessar-label">').css(this.edge('start'), cent + '%').text(val);
                             if (1 - pos < 0.05) {
-                                $el.css({
+                                $el.css(this.ifVertical({
+                                    top: '',
+                                    bottom: 0
+                                }, {
                                     left: '',
                                     right: 0
-                                });
+                                }));
                             }
                             return $el.appendTo(this.$el);
                         },
