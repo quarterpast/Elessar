@@ -873,7 +873,40 @@ tape.test('Range bar functional tests', function(t) {
 				t.end();
 			});
 		});
-		
+
+		t.test('string label', function(t) {
+			var r = new RangeBar({
+				bgMark: {
+					count: 5,
+					label: 'foo'
+				}
+			});
+
+			r.$el.find('.elessar-label').each(function(i) {
+				t.equal($(this).text(), 'foo');
+			});
+
+			t.end();
+		});
+
+		t.test('function label', function(t) {
+			var r = new RangeBar({
+				bgMark: {
+					count: 5,
+					label: function(val) {
+						return 'foo ' + val
+					}
+				}
+			});
+
+			r.$el.find('.elessar-label').each(function(i) {
+				t.equal($(this).text(), 'foo ' + (i * 20));
+			});
+
+			t.end();
+		});
+
+
 
 		t.end();
 	});
