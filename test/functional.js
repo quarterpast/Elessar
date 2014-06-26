@@ -57,13 +57,27 @@ tape.Test.prototype.end = function() {
 function valuesEqual(a, b) {
 	return a.length === b.length && a.every(function(av, i) {
 		var bv = b[i];
-		return Math.abs(av[0] - bv[0]) < 1e-10 && Math.abs(av[1] - bv[1]) < 1e-10
+		return floatEqual(av[0], bv[0]) && floatEqual(av[1], bv[1]);
 	});
+}
+
+function floatEqual(a, b) {
+	return Math.abs(a - b) < 1e-10
 }
 
 tape.Test.prototype.rangebarValuesEqual = function(a, b, msg, extra) {
 	this._assert(valuesEqual(a, b), {
 			message : msg || 'rangebar values should be equal',
+			operator : 'equal',
+			actual : a,
+			expected : b,
+			extra : extra
+	});
+}
+
+tape.Test.prototype.floatEqual = function(a, b, msg, extra) {
+	this._assert(floatEqual(a, b), {
+			message : msg || 'floats should be equal',
 			operator : 'equal',
 			actual : a,
 			expected : b,
@@ -803,5 +817,100 @@ tape.test('Range bar functional tests', function(t) {
 		t.end();
 	});
 
+	t.test('marks', function(t) {
+		t.test('behave like labels with count', function(t) {
+			var r = new RangeBar({
+				bgMark: {
+					count: 5
+				}
+			});
+			r.$el.css({width: '100px'}).appendTo('body');
+
+			t.equals(r.$el.find('.elessar-label').length, 5, 'adds `count` marks');
+
+			waitForAnimation(function() {
+				r.$el.find('.elessar-label').each(function(i) {
+					t.floatEqual($(this).offset().left - r.$el.offset().left, i * 20);
+					t.floatEqual(parseFloat($(this).text()), i * 20);
+				});
+
+				t.end();
+			});
+		});
+
+		t.test('labels falls back to marks', function(t) {
+			var r = new RangeBar({
+				bgLabels: 5
+			});
+			r.$el.css({width: '100px'}).appendTo('body');
+
+			t.equals(r.$el.find('.elessar-label').length, 5, 'adds `count` marks');
+
+			waitForAnimation(function() {
+				r.$el.find('.elessar-label').each(function(i) {
+					t.floatEqual($(this).offset().left - r.$el.offset().left, i * 20);
+					t.floatEqual(parseFloat($(this).text()), i * 20);
+				});
+
+				t.end();
+			});
+		});
+
+		t.test('interval', function(t) {
+			var r = new RangeBar({
+				bgMark: { interval: 30 }
+			});
+			r.$el.css({width: '100px'}).appendTo('body');
+
+			t.equals(r.$el.find('.elessar-label').length, 4, 'adds `(max - min)/interval` marks');
+
+			waitForAnimation(function() {
+				r.$el.find('.elessar-label').each(function(i) {
+					t.floatEqual($(this).offset().left - r.$el.offset().left, i * 30);
+					t.floatEqual(parseFloat($(this).text()), i * 30);
+				});
+
+				t.end();
+			});
+		});
+
+		t.test('string label', function(t) {
+			var r = new RangeBar({
+				bgMark: {
+					count: 5,
+					label: 'foo'
+				}
+			});
+
+			r.$el.find('.elessar-label').each(function(i) {
+				t.equal($(this).text(), 'foo');
+			});
+
+			t.end();
+		});
+
+		t.test('function label', function(t) {
+			var r = new RangeBar({
+				bgMark: {
+					count: 5,
+					label: function(val) {
+						return 'foo ' + val
+					}
+				}
+			});
+
+			r.$el.find('.elessar-label').each(function(i) {
+				t.equal($(this).text(), 'foo ' + (i * 20));
+			});
+
+			t.end();
+		});
+
+
+
+		t.end();
+	});
+
 	t.end();
 });
+

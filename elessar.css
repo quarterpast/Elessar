@@ -21,6 +21,7 @@
   right: 0;
   top: auto;
   bottom: auto;
+  cursor: ns-resize;
 }
 .elessar-vertical .elessar-handle:first-child {
   top: 0;
@@ -96,7 +97,11 @@ body.elessar-resizing,
 body.elessar-resizing .bar,
 body.elessar-resizing .handle {
   cursor: ew-resize !important;
-
+}
+body.elessar-resizing.elessar-resizing-vertical,
+body.elessar-resizing.elessar-resizing-vertical .bar,
+body.elessar-resizing.elessar-resizing-vertical .handle {
+  cursor: ns-resize !important;
 }
 body.elessar-dragging,
 body.elessar-dragging .bar,

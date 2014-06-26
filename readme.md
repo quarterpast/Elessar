@@ -50,12 +50,17 @@ new RangeBar({
   snap: 0, // clamps range ends to multiples of this value (in bar units)
   minSize: 0, // smallest allowed range (in bar units)
   maxRanges: Infinity, // maximum number of ranges allowed on the bar
-  bgLabels: 0, // number of value labels to write in the background of the bar
+  bgMarks: {
+    count: 0, // number of value labels to write in the background of the bar
+    interval: Infinity, // provide instead of count to specify the space between labels
+    label: id // string or function to write as the text of a label. functions are called with normalised values.
+  },
   indicator: null, // pass a function(RangeBar, Indicator, Function?) Value to calculate where to put a current indicator, calling the function whenever you want the position to be recalculated
   allowDelete: false, // set to true to enable double-middle-click-to-delete
   deleteTimeout: 5000, // maximum time in ms between middle clicks
   vertical: false, // if true the rangebar is aligned vertically, and given the class elessar-vertical
-  bounds: null // a function that provides an upper or lower bound when a range is being dragged. call with the range that is being moved, should return an object with an upper or lower key
+  bounds: null, // a function that provides an upper or lower bound when a range is being dragged. call with the range that is being moved, should return an object with an upper or lower key
+  htmlLabel: false // if true, range labels are written as html
 });
 ```
 
@@ -83,3 +88,10 @@ Event that triggers after the user has finished changing a range. Useful for upd
 Licence
 -------
 [MIT](licence.md)
+
+Flattr
+------
+
+If Elessar has made your life easier, consider sending me a small donation.
+
+[![Flattr this](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=quarterto&url=https%3A%2F%2Fgithub.com%2Fquarterto%2FElessar)
