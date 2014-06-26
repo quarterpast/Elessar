@@ -202,7 +202,36 @@ tape.test('Range bar functional tests', function(t) {
 				});
 			});
 		});
+
+		t.test('past another range to the right and back', function(t) {
+			var r = new RangeBar({values: [[5, 15], [20, 30]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
+
+					drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'and back');
+						t.end();
+					});
+				});
+			});
+		});
 		
+		t.test('past another range to the left and back', function(t) {
+			var r = new RangeBar({values: [[20, 30],[55,65]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'swaps the ranges');
+
+					drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'and back');
+						t.end();
+					});
+				});
+			});
+		});
 
 		t.test('with an upper bound', function(t) {
 			var r = new RangeBar({
