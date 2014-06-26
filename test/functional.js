@@ -803,5 +803,28 @@ tape.test('Range bar functional tests', function(t) {
 		t.end();
 	});
 
+	t.test('marks', function(t) {
+		t.test('behave like labels with count', function(t) {
+			var r = new RangeBar({
+				bgMark: {
+					count: 5
+				}
+			});
+			r.$el.css({width: '100px'}).appendTo('body');
+
+			t.equals(r.$el.find('.elessar-label').length, 5, 'adds `count` marks');
+
+			waitForAnimation(function() {
+				r.$el.find('.elessar-label').each(function(i) {
+					t.equals($(this).css('left'), i * 20 + 'px');
+				});
+
+				t.end();
+			});
+		});
+		t.end();
+	});
+
 	t.end();
 });
+
