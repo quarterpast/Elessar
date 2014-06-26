@@ -210,9 +210,11 @@ tape.test('Range bar functional tests', function(t) {
 				drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
 					t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
 
-					drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
-						t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'and back');
-						t.end();
+					waitForAnimation(function() {
+						drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
+							t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'and back');
+							t.end();
+						});
 					});
 				});
 			});
@@ -225,9 +227,11 @@ tape.test('Range bar functional tests', function(t) {
 				drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
 					t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'swaps the ranges');
 
-					drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
-						t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'and back');
-						t.end();
+					waitForAnimation(function() {
+						drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
+							t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'and back');
+							t.end();
+						});
 					});
 				});
 			});
