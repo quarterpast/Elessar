@@ -55,7 +55,8 @@ new RangeBar({
   allowDelete: false, // set to true to enable double-middle-click-to-delete
   deleteTimeout: 5000, // maximum time in ms between middle clicks
   vertical: false, // if true the rangebar is aligned vertically, and given the class elessar-vertical
-  bounds: null // a function that provides an upper or lower bound when a range is being dragged. call with the range that is being moved, should return an object with an upper or lower key
+  bounds: null, // a function that provides an upper or lower bound when a range is being dragged. call with the range that is being moved, should return an object with an upper or lower key
+  htmlLabel: false // if true, range labels are written as html
 });
 ```
 
