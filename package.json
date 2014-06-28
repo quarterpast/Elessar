@@ -7,7 +7,8 @@
   "license": "MIT",
   "dependencies": {
     "jquery": "~1.11.0-rc1",
-    "estira": "~0.3.0"
+    "estira": "~0.3.0",
+    "es5-shim": "^3.4.0"
   },
   "devDependencies": {
     "browserify": "~3.24.1",
