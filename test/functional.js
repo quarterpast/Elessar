@@ -494,6 +494,31 @@ tape.test('Range bar functional tests', function(t) {
 					t.end();
 				});
 			});
+
+			t.test('fires change', function(t) {
+				t.plan(1);
+				var r = new RangeBar();
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({
+					x: r.$el.offset().left + 52.5,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				var timeout = setTimeout(function() {
+					t.fail('timed out');
+				}, 2000);
+
+				r.on('change', function() {
+					clearTimeout(timeout);
+					t.pass('fires an event');
+				});
+
+				r.$el.find('.elessar-phantom').btnClick();
+
+				waitForAnimation(function() {
+					r.ranges[0].$el.mouseup();
+				});
+			});
 			
 			t.test('with a minSize', function(t) {
 				var r = new RangeBar({minSize: 10});
