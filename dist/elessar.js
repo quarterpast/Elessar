@@ -685,6 +685,15 @@
                                         val,
                                         val + w
                                     ]);
+                                var self = this;
+                                this.one('addrange', function (ev, val, range) {
+                                    range.one('mouseup', function () {
+                                        self.trigger('change', [
+                                            self.val(),
+                                            range
+                                        ]);
+                                    });
+                                });
                                 if (!this.options.minSize || this.calcGap(idx) >= this.options.minSize) {
                                     this.insertRangeIndex(this.phantom, idx, true);
                                     this.phantom.val([
