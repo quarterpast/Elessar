@@ -136,13 +136,13 @@
                 var Mark = Element.extend({
                         initialize: function initialize(options) {
                             initialize.super$.call(this, '<div class="elessar-label">');
-                            this.$el.css(options.parent.edge('start'), options.value * 100 + '%');
+                            this.$el.css(options.perant.edge('start'), options.value * 100 + '%');
                             if (typeof options.label === 'function') {
-                                this.$el.text(options.label.call(this, options.parent.normalise(options.value)));
+                                this.$el.text(options.label.call(this, options.perant.normalise(options.value)));
                             } else if (typeof options.label === 'string') {
                                 this.$el.text(options.label);
                             } else {
-                                this.$el.text(options.parent.normalise(options.value));
+                                this.$el.text(options.perant.normalise(options.value));
                             }
                         }
                     });
@@ -166,9 +166,9 @@
                         mousedown: function (ev) {
                             if (ev.which === 1) {
                                 var startX = ev.pageX;
-                                var newRange = this.options.parent.addRange(this.val());
+                                var newRange = this.options.perant.addRange(this.val());
                                 this.remove();
-                                this.options.parent.trigger('addrange', [
+                                this.options.perant.trigger('addrange', [
                                     newRange.val(),
                                     newRange
                                 ]);
@@ -223,7 +223,7 @@
                             var self = this;
                             initialize.super$.call(this, '<div class="elessar-range"><span class="elessar-barlabel">');
                             this.options = options;
-                            this.parent = options.parent;
+                            this.perant = options.perant;
                             if (this.options.rangeClass)
                                 this.$el.addClass(this.options.rangeClass);
                             if (!this.readonly()) {
@@ -236,7 +236,7 @@
                             }
                             if (typeof this.options.label === 'function') {
                                 this.on('changing', function (ev, range) {
-                                    self.writeLabel(self.options.label.call(self, range.map($.proxy(self.parent.normalise, self.parent))));
+                                    self.writeLabel(self.options.label.call(self, range.map($.proxy(self.perant.normalise, self.perant))));
                                 });
                             } else {
                                 this.writeLabel(this.options.label);
@@ -250,14 +250,14 @@
                             this.$el.find('.elessar-barlabel')[this.options.htmlLabel ? 'html' : 'text'](text);
                         },
                         isVertical: function () {
-                            return this.parent.options.vertical;
+                            return this.perant.options.vertical;
                         },
                         removePhantom: function () {
-                            this.parent.removePhantom();
+                            this.perant.removePhantom();
                         },
                         readonly: function () {
                             if (typeof this.options.readonly === 'function') {
-                                return this.options.readonly.call(this.parent, this);
+                                return this.options.readonly.call(this.perant, this);
                             }
                             return this.options.readonly;
                         },
@@ -269,7 +269,7 @@
                                 dontApplyDelta: false,
                                 trigger: true
                             }, valOpts || {});
-                            var next = this.parent.nextRange(this.$el), prev = this.parent.prevRange(this.$el), delta = range[1] - range[0], self = this;
+                            var next = this.perant.nextRange(this.$el), prev = this.perant.prevRange(this.$el), delta = range[1] - range[0], self = this;
                             if (this.options.snap) {
                                 range = range.map(snap);
                                 delta = snap(delta);
@@ -284,7 +284,7 @@
                                     if (!valOpts.dontApplyDelta)
                                         range[0] = range[1] - delta;
                                 } else {
-                                    this.parent.repositionRange(this, range);
+                                    this.perant.repositionRange(this, range);
                                 }
                             }
                             if (prev && prev.val()[1] > range[0]) {
@@ -293,7 +293,7 @@
                                     if (!valOpts.dontApplyDelta)
                                         range[1] = range[0] + delta;
                                 } else {
-                                    this.parent.repositionRange(this, range);
+                                    this.perant.repositionRange(this, range);
                                 }
                             }
                             if (range[1] >= 1) {
@@ -306,16 +306,16 @@
                                 if (!valOpts.dontApplyDelta)
                                     range[1] = delta;
                             }
-                            if (this.parent.options.bound) {
-                                var bound = this.parent.options.bound(this);
+                            if (this.perant.options.bound) {
+                                var bound = this.perant.options.bound(this);
                                 if (bound) {
-                                    if (bound.upper && range[1] > this.parent.abnormalise(bound.upper)) {
-                                        range[1] = this.parent.abnormalise(bound.upper);
+                                    if (bound.upper && range[1] > this.perant.abnormalise(bound.upper)) {
+                                        range[1] = this.perant.abnormalise(bound.upper);
                                         if (!valOpts.dontApplyDelta)
                                             range[0] = range[1] - delta;
                                     }
-                                    if (bound.lower && range[0] < this.parent.abnormalise(bound.lower)) {
-                                        range[0] = this.parent.abnormalise(bound.lower);
+                                    if (bound.lower && range[0] < this.perant.abnormalise(bound.lower)) {
+                                        range[0] = this.perant.abnormalise(bound.lower);
                                         if (!valOpts.dontApplyDelta)
                                             range[1] = range[0] + delta;
                                     }
@@ -335,7 +335,7 @@
                                 this.hasChanged = true;
                             }
                             var start = 100 * range[0] + '%', size = 100 * (range[1] - range[0]) + '%';
-                            this.draw(this.parent.options.vertical ? {
+                            this.draw(this.perant.options.vertical ? {
                                 top: start,
                                 minHeight: size
                             } : {
@@ -354,10 +354,10 @@
                             ev.stopPropagation();
                             ev.preventDefault();
                             var self = this;
-                            if (ev.which !== 2 || !this.parent.options.allowDelete)
+                            if (ev.which !== 2 || !this.perant.options.allowDelete)
                                 return;
                             if (this.deleteConfirm) {
-                                this.parent.removeRange(this);
+                                this.perant.removeRange(this);
                                 clearTimeout(this.deleteTimeout);
                             } else {
                                 this.$el.addClass('elessar-delete-confirm');
@@ -365,7 +365,7 @@
                                 this.deleteTimeout = setTimeout(function () {
                                     self.$el.removeClass('elessar-delete-confirm');
                                     self.deleteConfirm = false;
-                                }, this.parent.options.deleteTimeout);
+                                }, this.perant.options.deleteTimeout);
                             }
                         },
                         mousedown: function (ev) {
@@ -399,17 +399,17 @@
                         },
                         drag: function (origEv) {
                             var self = this, beginStart = this.startProp('offset'), beginPosStart = this.startProp('position'), mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), origEv);
-                            mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), parent = this.options.parent, parentStart = parent.startProp('offset'), parentSize = parent.totalSize();
+                            mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), perant = this.options.perant, perantStart = perant.startProp('offset'), perantSize = perant.totalSize();
                             return function (ev) {
                                 ev.stopPropagation();
                                 ev.preventDefault();
                                 var mousePos = getEventProperty(self.ifVertical('clientY', 'clientX'), ev);
                                 if (mousePos) {
-                                    var start = mousePos - parentStart - mouseOffset;
-                                    if (start >= 0 && start <= parentSize - beginSize) {
-                                        var rangeOffset = start / parentSize - self.range[0];
+                                    var start = mousePos - perantStart - mouseOffset;
+                                    if (start >= 0 && start <= perantSize - beginSize) {
+                                        var rangeOffset = start / perantSize - self.range[0];
                                         self.val([
-                                            start / parentSize,
+                                            start / perantSize,
                                             self.range[1] + rangeOffset
                                         ]);
                                     } else {
@@ -419,7 +419,7 @@
                             };
                         },
                         resizeEnd: function (origEv) {
-                            var self = this, beginStart = this.startProp('offset'), beginPosStart = this.startProp('position'), mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), origEv), mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), parent = this.options.parent, parentStart = parent.startProp('offset'), parentSize = parent.totalSize(), minSize = this.options.minSize * parentSize;
+                            var self = this, beginStart = this.startProp('offset'), beginPosStart = this.startProp('position'), mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), origEv), mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), perant = this.options.perant, perantStart = perant.startProp('offset'), perantSize = perant.totalSize(), minSize = this.options.minSize * perantSize;
                             return function (ev) {
                                 var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                                 ev.stopPropagation();
@@ -427,12 +427,12 @@
                                 var mousePos = getEventProperty(self.ifVertical('clientY', 'clientX'), ev);
                                 var size = mousePos - beginStart;
                                 if (mousePos) {
-                                    if (size > parentSize - beginPosStart)
-                                        size = parentSize - beginPosStart;
+                                    if (size > perantSize - beginPosStart)
+                                        size = perantSize - beginPosStart;
                                     if (size >= minSize) {
                                         self.val([
                                             self.range[0],
-                                            self.range[0] + size / parentSize
+                                            self.range[0] + size / perantSize
                                         ], { dontApplyDelta: true });
                                     } else if (size <= 10) {
                                         $(document).trigger(opposite + '.elessar');
@@ -442,13 +442,13 @@
                             };
                         },
                         resizeStart: function (origEv) {
-                            var self = this, beginStart = this.startProp('offset'), beginPosStart = this.startProp('position'), mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), origEv), mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), parent = this.options.parent, parentStart = parent.startProp('offset'), parentSize = parent.totalSize(), minSize = this.options.minSize * parentSize;
+                            var self = this, beginStart = this.startProp('offset'), beginPosStart = this.startProp('position'), mousePos = getEventProperty(this.ifVertical('clientY', 'clientX'), origEv), mouseOffset = mousePos ? mousePos - beginStart : 0, beginSize = this.totalSize(), perant = this.options.perant, perantStart = perant.startProp('offset'), perantSize = perant.totalSize(), minSize = this.options.minSize * perantSize;
                             return function (ev) {
                                 var opposite = ev.type === 'touchmove' ? 'touchend' : 'mouseup', subsequent = ev.type === 'touchmove' ? 'touchstart' : 'mousedown';
                                 ev.stopPropagation();
                                 ev.preventDefault();
                                 var mousePos = getEventProperty(self.ifVertical('clientY', 'clientX'), ev);
-                                var start = mousePos - parentStart - mouseOffset;
+                                var start = mousePos - perantStart - mouseOffset;
                                 var size = beginPosStart + beginSize - start;
                                 if (mousePos) {
                                     if (start < 0) {
@@ -457,7 +457,7 @@
                                     }
                                     if (size >= minSize) {
                                         self.val([
-                                            start / parentSize,
+                                            start / perantSize,
                                             self.range[1]
                                         ], { dontApplyDelta: true });
                                     } else if (size <= 10) {
@@ -511,7 +511,7 @@
                                         this.$el.append(new Mark({
                                             label: options.bgMark.label,
                                             value: i / options.bgMark.count,
-                                            parent: this
+                                            perant: this
                                         }).$el);
                                     }
                                 } else if (options.bgMark.interval) {
@@ -519,7 +519,7 @@
                                         this.$el.append(new Mark({
                                             label: options.bgMark.label,
                                             value: i,
-                                            parent: this
+                                            perant: this
                                         }).$el);
                                     }
                                 }
@@ -527,7 +527,7 @@
                             var self = this;
                             if (options.indicator) {
                                 var indicator = this.indicator = new Indicator({
-                                        parent: this,
+                                        perant: this,
                                         vertical: this.options.vertical,
                                         indicatorClass: options.indicatorClass
                                     });
@@ -568,7 +568,7 @@
                         },
                         addRange: function (range, data) {
                             var $range = Range({
-                                    parent: this,
+                                    perant: this,
                                     snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
                                     label: this.options.label,
                                     rangeClass: this.options.rangeClass,
@@ -675,7 +675,7 @@
                             if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.readonly()) {
                                 if (!this.phantom)
                                     this.phantom = Phantom({
-                                        parent: this,
+                                        perant: this,
                                         snap: this.options.snap ? this.abnormaliseRaw(this.options.snap + this.options.min) : null,
                                         label: '+',
                                         minSize: this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : null,
