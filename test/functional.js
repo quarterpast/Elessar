@@ -284,22 +284,64 @@ tape.test('Range bar functional tests', function(t) {
 		});
 
 		t.test('fires change', function(t) {
-			t.plan(1);
-			var r = new RangeBar({values: [[10, 20]]});
-			r.$el.css({width: '100px'}).appendTo('body');
+			t.test('for a range somewhere in the middle', function(t) {
+				t.plan(1);
+				var r = new RangeBar({values: [[10, 20]]});
+				r.$el.css({width: '100px'}).appendTo('body');
 
-			var timeout = setTimeout(function() {
-				t.fail('timed out');
-			}, 2000);
+				var timeout = setTimeout(function() {
+					t.fail('timed out');
+				}, 2000);
 
-			r.on('change', function() {
-				clearTimeout(timeout);
-				t.pass('fires an event');
+				r.on('change', function() {
+					clearTimeout(timeout);
+					t.pass('fires an event');
+				});
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 10, y: 0});
+				});
 			});
 
-			waitForAnimation(function() {
-				drag(r.ranges[0].$el, {x: 10, y: 0});
+			t.test('for a range at the start', function(t) {
+				t.plan(1);
+				var r = new RangeBar({values: [[0, 10]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				var timeout = setTimeout(function() {
+					t.fail('timed out');
+				}, 2000);
+
+				r.on('change', function() {
+					clearTimeout(timeout);
+					t.pass('fires an event');
+				});
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 10, y: 0});
+				});
 			});
+
+			t.test('for a range at the end', function(t) {
+				t.plan(1);
+				var r = new RangeBar({values: [[90, 100]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				var timeout = setTimeout(function() {
+					t.fail('timed out');
+				}, 2000);
+
+				r.on('change', function() {
+					clearTimeout(timeout);
+					t.pass('fires an event');
+				});
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: -10, y: 0});
+				});
+			});
+
+			t.end();
 		});
 
 		t.end();
