@@ -385,7 +385,7 @@
                                 $(document).on('mousemove.elessar touchmove.elessar', this.drag(ev));
                             }
                             var self = this;
-                            $(document).on('mouseup touchend', function (ev) {
+                            $(document).one('mouseup touchend', function (ev) {
                                 ev.stopPropagation();
                                 ev.preventDefault();
                                 if (self.hasChanged)
