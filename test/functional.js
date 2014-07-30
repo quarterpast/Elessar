@@ -196,14 +196,39 @@ tape.test('Range bar functional tests', function(t) {
 		});
 
 		t.test('past another range to the right', function(t) {
-			var r = new RangeBar({values: [[5, 15], [20, 30]]});
-			r.$el.css({width: '100px'}).appendTo('body');
-			waitForAnimation(function() {
-				drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
-					t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
-					t.end();
+			t.test('swaps the ranges', function(t) {
+				var r = new RangeBar({values: [[5, 15], [20, 30]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
+						t.end();
+					});
 				});
 			});
+
+			t.test('fires the change event once', function(t) {
+				t.plan(1);
+
+				var r = new RangeBar({values: [[5, 15], [20, 30]]}), once = true;
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				var timeout = setTimeout(function() {
+					t.fail('timed out');
+				}, 10000);
+
+				r.on('change', function() {
+					clearTimeout(timeout);
+					t.ok(once, 'fired ' + (once ? '' : 'more than ') + 'once');
+					once = false;
+				});
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 50, y: 0, step: true});
+				});
+			});
+
+			t.end();
 		});
 
 		t.test('past another range to the left', function(t) {
@@ -218,49 +243,20 @@ tape.test('Range bar functional tests', function(t) {
 		});
 
 		t.test('past another range to the right and back', function(t) {
-			t.test('swaps the ranges', function(t) {
-				var r = new RangeBar({values: [[5, 15], [20, 30]]});
-				r.$el.css({width: '100px'}).appendTo('body');
-				waitForAnimation(function() {
-					drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
-						t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
+			var r = new RangeBar({values: [[5, 15], [20, 30]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+			waitForAnimation(function() {
+				drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
+					t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
 
-						waitForAnimation(function() {
-							drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
-								t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'and back');
-								t.end();
-							});
+					waitForAnimation(function() {
+						drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
+							t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'and back');
+							t.end();
 						});
 					});
 				});
 			});
-			t.test('fires the change event once', function(t) {
-				t.plan(1);
-
-				var r = new RangeBar({values: [[5, 15], [20, 30]]}), once = true;
-				r.$el.css({width: '100px'}).appendTo('body');
-
-				var timeout = setTimeout(function() {
-					t.fail('timed out');
-				}, 10000);
-
-				waitForAnimation(function() {
-					drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
-						t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
-
-						waitForAnimation(function() {
-							drag(r.ranges[1].$el, {x: -50, y: 0, step: true});
-							r.on('change', function() {
-								clearTimeout(timeout);
-								t.ok(once, 'fired ' + (once ? '' : 'more than ') + 'once');
-								once = false;
-							});
-						});
-					});
-				});
-			});
-
-			t.end();
 		});
 		
 		t.test('past another range to the left and back', function(t) {
