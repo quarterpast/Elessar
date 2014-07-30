@@ -384,14 +384,15 @@
                                 $(document).on('mousemove.elessar touchmove.elessar', this.drag(ev));
                             }
                             var self = this;
-                            $(document).one('mouseup touchend', function (ev) {
+                            $(document).one('mouseup.elessar touchend.elessar', function (ev) {
                                 ev.stopPropagation();
                                 ev.preventDefault();
-                                if (self.hasChanged)
+                                if (self.hasChanged && !self.swapping)
                                     self.trigger('change', [
                                         self.range,
                                         self.$el
                                     ]);
+                                self.swapping = false;
                                 $(document).off('mouseup.elessar mousemove.elessar touchend.elessar touchmove.elessar');
                                 $('body').removeClass('elessar-resizing elessar-dragging elessar-resizing-vertical elessar-dragging-vertical');
                             });
@@ -434,6 +435,7 @@
                                             self.range[0] + size / perantSize
                                         ], { dontApplyDelta: true });
                                     } else if (size <= 10) {
+                                        self.swapping = true;
                                         $(document).trigger(opposite + '.elessar');
                                         self.$el.find('.elessar-handle:first-child').trigger(subsequent + '.elessar');
                                     }
@@ -460,8 +462,9 @@
                                             self.range[1]
                                         ], { dontApplyDelta: true });
                                     } else if (size <= 10) {
-                                        $(document).trigger(opposite);
-                                        self.$el.find('.elessar-handle:last-child').trigger(subsequent);
+                                        self.swapping = true;
+                                        $(document).trigger(opposite + '.elessar');
+                                        self.$el.find('.elessar-handle:last-child').trigger(subsequent + '.elessar');
                                     }
                                 }
                             };
