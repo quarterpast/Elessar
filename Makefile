@@ -1,8 +1,8 @@
-export SHELL := /bin/bash
+SHELL := /bin/bash
 export PATH  := node_modules/.bin:$(PATH)
 
 ENTRY_FILE="./lib/rangebar.js"
-DEPS := $(shell browserify --list $(ENTRY_FILE))
+DEPS := $(shell node_modules/.bin/browserify --list $(ENTRY_FILE))
 TEST_FILES = $(wildcard test/*.js)
 
 all: dist/elessar.js
