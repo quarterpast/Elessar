@@ -196,14 +196,39 @@ tape.test('Range bar functional tests', function(t) {
 		});
 
 		t.test('past another range to the right', function(t) {
-			var r = new RangeBar({values: [[5, 15], [20, 30]]});
-			r.$el.css({width: '100px'}).appendTo('body');
-			waitForAnimation(function() {
-				drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
-					t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
-					t.end();
+			t.test('swaps the ranges', function(t) {
+				var r = new RangeBar({values: [[5, 15], [20, 30]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[20, 30],[55,65]], 'swaps the ranges');
+						t.end();
+					});
 				});
 			});
+
+			t.test('fires the change event once', function(t) {
+				t.plan(1);
+
+				var r = new RangeBar({values: [[5, 15], [20, 30]]}), once = true;
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				var timeout = setTimeout(function() {
+					t.fail('timed out');
+				}, 10000);
+
+				r.on('change', function() {
+					clearTimeout(timeout);
+					t.ok(once, 'fired ' + (once ? '' : 'more than ') + 'once');
+					once = false;
+				});
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 50, y: 0, step: true});
+				});
+			});
+
+			t.end();
 		});
 
 		t.test('past another range to the left', function(t) {
@@ -392,15 +417,40 @@ tape.test('Range bar functional tests', function(t) {
 			});
 		});
 
-		t.test('beyond the start of the range resizes left', function(t) {
-			var r = new RangeBar({values: [[20, 30]]});
-			r.$el.css({width: '100px'}).appendTo('body');
-			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true, step: true}, function() {
-					t.rangebarValuesEqual(r.val(), [[10, 20]], 'dragging right handle updates the value');
-					t.end();
+		t.test('beyond the start of the range', function(t) {
+			t.test('resizes left', function(t) {
+				var r = new RangeBar({values: [[20, 30]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[10, 20]], 'dragging right handle updates the value');
+						t.end();
+					});
 				});
 			});
+
+			t.test('fires change event once', function(t) {
+				t.plan(1);
+
+				var r = new RangeBar({values: [[20, 30]]}), once = true;
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				var timeout = setTimeout(function() {
+					t.fail('event timed out');
+				}, 5000);
+
+				r.on('change', function() {
+					t.ok(once, 'fired ' + (once ? '' : 'more than ') + 'once');
+					clearTimeout(timeout);
+					once = false;
+				});
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -20, y: 0, rightEdge: true, step: true});
+				});
+			});
+
+			t.end();
 		});
 
 		t.test('doesn\'t resize below minimum size', function(t) {
@@ -478,15 +528,40 @@ tape.test('Range bar functional tests', function(t) {
 			});
 		});
 
-		t.test('beyond the end of the range resizes right', function(t) {
-			var r = new RangeBar({values: [[20, 30]]});
-			r.$el.css({width: '100px'}).appendTo('body');
-			waitForAnimation(function() {
-				drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: 20, y: 0, step: true}, function() {
-					t.rangebarValuesEqual(r.val(), [[30, 40]], 'dragging left handle updates the value');
-					t.end();
+		t.test('beyond the end of the range', function(t) {
+			t.test('resizes right', function(t) {
+				var r = new RangeBar({values: [[20, 30]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: 20, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[30, 40]], 'dragging left handle updates the value');
+						t.end();
+					});
 				});
 			});
+
+			t.test('fires change event once', function(t) {
+				t.plan(1);
+
+				var r = new RangeBar({values: [[20, 30]]}), once = true;
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				var timeout = setTimeout(function() {
+					t.fail('event timed out');
+				}, 5000);
+
+				r.on('change', function() {
+					t.ok(once, 'fired ' + (once ? '' : 'more than ') + 'once');
+					clearTimeout(timeout);
+					once = false;
+				});
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: 20, y: 0, rightEdge: true, step: true});
+				});
+			});
+
+			t.end();
 		});
 
 		t.test('doesn\'t resize below minimum size', function(t) {
