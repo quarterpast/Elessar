@@ -278,7 +278,7 @@
                                 range[0] = prev.val()[1];
                             }
                             if (next && next.val()[0] < range[1]) {
-                                if (next.val()[1] >= range[0]) {
+                                if (!this.perant.options.allowSwap || next.val()[1] >= range[0]) {
                                     range[1] = next.val()[0];
                                     if (!valOpts.dontApplyDelta)
                                         range[0] = range[1] - delta;
@@ -287,7 +287,7 @@
                                 }
                             }
                             if (prev && prev.val()[1] > range[0]) {
-                                if (prev.val()[0] <= range[1]) {
+                                if (!this.perant.options.allowSwap || prev.val()[0] <= range[1]) {
                                     range[0] = prev.val()[1];
                                     if (!valOpts.dontApplyDelta)
                                         range[1] = range[0] + delta;
@@ -319,9 +319,6 @@
                                             range[1] = range[0] + delta;
                                     }
                                 }
-                            }
-                            if (this.options.minSize && range[1] - range[0] < this.options.minSize) {
-                                range[1] = range[0] + this.options.minSize;
                             }
                             if (this.range[0] === range[0] && this.range[1] === range[1])
                                 return this.$el;
@@ -720,7 +717,8 @@
                     deleteTimeout: 5000,
                     allowDelete: false,
                     vertical: false,
-                    htmlLabel: false
+                    htmlLabel: false,
+                    allowSwap: true
                 };
                 module.exports = RangeBar;
             },
