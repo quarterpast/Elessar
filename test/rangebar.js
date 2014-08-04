@@ -3,6 +3,7 @@ var $ = require('jquery');
 var RangeBar = require('../lib/rangebar.js');
 var Indicator = require('../lib/indicator.js');
 var raf = require('../lib/raf.js');
+require('./utils.js');
 
 tape.test('RangeBar', function(t) {
 	var r = new RangeBar();
@@ -186,6 +187,17 @@ tape.test('RangeBar', function(t) {
 		r.insertRangeIndex(r1, 0, true);
 		t.ok(r.$el.contains(r1.$el), 'inserts to dom when avoidList is true');
 		t.equal(r.ranges.length, 0, 'but not to array');
+
+		t.end();
+	});
+
+	t.test('minSize', function(t) {
+		var r = new RangeBar({minSize: 10});
+		t.test('is ignored for val', function(t) {
+			r.val([[0,5]]);
+			t.rangebarValuesEqual(r.val(), [[0,5]]);
+			t.end();
+		});
 
 		t.end();
 	});

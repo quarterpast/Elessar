@@ -3,7 +3,7 @@ export PATH  := node_modules/.bin:$(PATH)
 
 ENTRY_FILE="./lib/rangebar.js"
 DEPS := $(shell node_modules/.bin/browserify --list $(ENTRY_FILE))
-TEST_FILES = $(wildcard test/*.js)
+TEST_FILES = $(filter-out test/utils.js, $(wildcard test/*.js))
 
 all: dist/elessar.js
 min: dist/elessar.min.js
