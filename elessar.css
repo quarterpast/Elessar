@@ -45,6 +45,7 @@
 }
 .elessar-range {
   position: absolute;
+  cursor: pointer;
   cursor: -webkit-grab;
   cursor: -moz-grab;
   cursor: grab;
@@ -81,6 +82,12 @@
   height: 30px;
   line-height: 30px;
   background: #ccc;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .elessar-delete-confirm {
   background: red;
@@ -106,6 +113,7 @@ body.elessar-resizing.elessar-resizing-vertical .handle {
 body.elessar-dragging,
 body.elessar-dragging .bar,
 body.elessar-dragging .handle {
+  cursor: move !important;
   cursor: -webkit-grabbing !important;
   cursor: -moz-grabbing !important;
   cursor: grabbing !important;
