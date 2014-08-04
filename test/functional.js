@@ -90,6 +90,17 @@ tape.test('Range bar functional tests', function(t) {
 				});
 			});
 
+			t.test('doesn\'t swap if allowSwap is false', function(t) {
+				var r = new RangeBar({values: [[5, 15], [20, 30]], allowSwap: false});
+				r.$el.css({width: '100px'}).appendTo('body');
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 50, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[10, 20],[20, 30]], 'swaps the ranges');
+						t.end();
+					});
+				});
+			});
+
 			t.test('fires the change event once', function(t) {
 				t.plan(1);
 
@@ -115,14 +126,29 @@ tape.test('Range bar functional tests', function(t) {
 		});
 
 		t.test('past another range to the left', function(t) {
-			var r = new RangeBar({values: [[20, 30],[55,65]]});
-			r.$el.css({width: '100px'}).appendTo('body');
-			waitForAnimation(function() {
-				drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
-					t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'swaps the ranges');
-					t.end();
+			t.test('swaps the ranges', function(t) {
+				var r = new RangeBar({values: [[20, 30],[55,65]]});
+				r.$el.css({width: '100px'}).appendTo('body');
+				waitForAnimation(function() {
+					drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[5, 15], [20, 30]], 'swaps the ranges');
+						t.end();
+					});
 				});
 			});
+			
+			t.test('doesn\'t swap if allowSwap is false', function(t) {
+				var r = new RangeBar({values: [[20, 30],[55,65]], allowSwap: false});
+				r.$el.css({width: '100px'}).appendTo('body');
+				waitForAnimation(function() {
+					drag(r.ranges[1].$el, {x: -50, y: 0, step: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[20, 30],[30, 40]], 'swaps the ranges');
+						t.end();
+					});
+				});
+			});
+
+			t.end();
 		});
 
 		t.test('past another range to the right and back', function(t) {
