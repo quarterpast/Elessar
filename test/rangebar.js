@@ -192,9 +192,22 @@ tape.test('RangeBar', function(t) {
 	});
 
 	t.test('minSize', function(t) {
-		var r = new RangeBar({minSize: 10});
 		t.test('is ignored for val', function(t) {
+			var r = new RangeBar({minSize: 10});
 			r.val([[0,5]]);
+			t.rangebarValuesEqual(r.val(), [[0,5]]);
+			t.end();
+		});
+
+		t.test('is ignored setting initial value', function(t) {
+			var r = new RangeBar({minSize: 10, values: [[0,5]]});
+			t.rangebarValuesEqual(r.val(), [[0,5]]);
+			t.end();
+		});
+
+		t.test('is ignored adding range manually', function(t) {
+			var r = new RangeBar({minSize: 10});
+			r.addRange([0,0.05]);
 			t.rangebarValuesEqual(r.val(), [[0,5]]);
 			t.end();
 		});
