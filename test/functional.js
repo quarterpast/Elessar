@@ -586,7 +586,6 @@ tape.test('Range bar functional tests', function(t) {
 			t.end();
 		});
 
-
 		t.end();
 	});
 
@@ -602,6 +601,39 @@ tape.test('Range bar functional tests', function(t) {
 
 			t.end();
 		});
+
+		t.test('with snap', function(t) {
+			t.test('keeps the value at 0 mod snap', function(t) {
+				var r = new RangeBar({snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({x: 52 + r.$el.offset().left, y: r.$el.offset().top + r.$el.height() / 2}, r.$el);
+
+				waitForAnimation(function() {
+					t.floatEqual(
+						r.$el.find('.elessar-phantom').position().left,
+						50
+					);
+					t.end();
+				});
+			});
+
+			t.test('doesn\'t do weird stuff when hovering exactly to middle', function(t) {
+				var r = new RangeBar({snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({x: 50 + r.$el.offset().left, y: r.$el.offset().top + r.$el.height() / 2}, r.$el);
+
+				waitForAnimation(function() {
+					t.floatEqual(
+						r.$el.find('.elessar-phantom').position().left,
+						50
+					);
+					t.end();
+				});
+			});
+
+			t.end();
+		});
+
 
 		t.test('clicking the phantom', function(t) {
 			t.test('with no minSize', function(t) {
