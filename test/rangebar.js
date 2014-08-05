@@ -215,5 +215,29 @@ tape.test('RangeBar', function(t) {
 		t.end();
 	});
 
+	t.test('snap', function(t) {
+		t.test('is ignored for val', function(t) {
+			var r = new RangeBar({snap: 10});
+			r.val([[5, 15]]);
+			t.rangebarValuesEqual(r.val(), [[5, 15]]);
+			t.end();
+		});
+
+		t.test('is ignored setting initial value', function(t) {
+			var r = new RangeBar({snap: 10, values: [[5, 15]]});
+			t.rangebarValuesEqual(r.val(), [[5, 15]]);
+			t.end();
+		});
+
+		t.test('is ignored adding range manually', function(t) {
+			var r = new RangeBar({snap: 10});
+			r.addRange([0.05,0.15]);
+			t.rangebarValuesEqual(r.val(), [[5, 15]]);
+			t.end();
+		});
+
+		t.end();
+	});
+
 	t.end();
 });
