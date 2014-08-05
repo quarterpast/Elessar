@@ -424,7 +424,7 @@ tape.test('Range bar functional tests', function(t) {
 				r.$el.css({width: '100px'}).appendTo('body');
 
 				waitForAnimation(function() {
-					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 16, y: 0}, function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 16, y: 0, rightEdge: true}, function() {
 						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
 						t.end();
 					});
@@ -436,7 +436,7 @@ tape.test('Range bar functional tests', function(t) {
 				r.$el.css({width: '100px'}).appendTo('body');
 
 				waitForAnimation(function() {
-					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 15, y: 0}, function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 15, y: 0, rightEdge: true}, function() {
 						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
 						t.end();
 					});
