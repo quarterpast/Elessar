@@ -417,6 +417,36 @@ tape.test('Range bar functional tests', function(t) {
 			});
 		});
 
+
+		t.test('with snap', function(t) {
+			t.test('keeps the value at 0 mod snap', function(t) {
+				var r = new RangeBar({values: [[0, 10]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 16, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.test('doesn\'t do weird stuff when dragging exactly to middle', function(t) {
+				var r = new RangeBar({values: [[0, 10]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 15, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.end();
+		});
+
+
 		t.end();
 	});
 
@@ -527,6 +557,35 @@ tape.test('Range bar functional tests', function(t) {
 				});
 			});
 		});
+
+		t.test('with snap', function(t) {
+			t.test('keeps the value at 0 mod snap', function(t) {
+				var r = new RangeBar({values: [[20,30]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: -16, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.test('doesn\'t do weird stuff when dragging exactly to middle', function(t) {
+				var r = new RangeBar({values: [[20, 30]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -15, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.end();
+		});
+
 
 		t.end();
 	});
