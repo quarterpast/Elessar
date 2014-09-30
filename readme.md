@@ -50,7 +50,7 @@ new RangeBar({
   snap: 0, // clamps range ends to multiples of this value (in bar units)
   minSize: 0, // smallest allowed range (in bar units)
   maxRanges: Infinity, // maximum number of ranges allowed on the bar
-  bgMarks: {
+  bgMark: {
     count: 0, // number of value labels to write in the background of the bar
     interval: Infinity, // provide instead of count to specify the space between labels
     label: id // string or function to write as the text of a label. functions are called with normalised values.
