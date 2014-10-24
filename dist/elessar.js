@@ -504,9 +504,10 @@
                                 options.bgMark = { count: options.bgLabels };
                             }
                             if (options.bgMark) {
+                                this.$markContainer = $('<div class="elessar-labels">').appendTo(this.$el);
                                 if (options.bgMark.count) {
                                     for (var i = 0; i < options.bgMark.count; ++i) {
-                                        this.$el.append(new Mark({
+                                        this.$markContainer.append(new Mark({
                                             label: options.bgMark.label,
                                             value: i / options.bgMark.count,
                                             perant: this
@@ -514,7 +515,7 @@
                                     }
                                 } else if (options.bgMark.interval) {
                                     for (var i = this.abnormalise(this.options.min); i < this.abnormalise(this.options.max); i += this.abnormalise(options.bgMark.interval)) {
-                                        this.$el.append(new Mark({
+                                        this.$markContainer.append(new Mark({
                                             label: options.bgMark.label,
                                             value: i,
                                             perant: this
