@@ -278,6 +278,34 @@ tape.test('Range bar functional tests', function(t) {
 			t.end();
 		});
 
+		t.test('with snap', function(t) {
+			t.test('keeps the value at 0 mod snap', function(t) {
+				var r = new RangeBar({values: [[0, 10]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 16, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[20, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.test('keeps width when dragging exactly to middle', function(t) {
+				var r = new RangeBar({values: [[0, 10]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el, {x: 15, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[20, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.end();
+		});
+
 		t.end();
 	});
 
@@ -388,6 +416,36 @@ tape.test('Range bar functional tests', function(t) {
 				});
 			});
 		});
+
+
+		t.test('with snap', function(t) {
+			t.test('keeps the value at 0 mod snap', function(t) {
+				var r = new RangeBar({values: [[0, 10]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 16, y: 0, rightEdge: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.test('doesn\'t do weird stuff when dragging exactly to middle', function(t) {
+				var r = new RangeBar({values: [[0, 10]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: 15, y: 0, rightEdge: true}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.end();
+		});
+
 
 		t.end();
 	});
@@ -500,6 +558,34 @@ tape.test('Range bar functional tests', function(t) {
 			});
 		});
 
+		t.test('with snap', function(t) {
+			t.test('keeps the value at 0 mod snap', function(t) {
+				var r = new RangeBar({values: [[20,30]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:first-child'), {x: -16, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.test('doesn\'t do weird stuff when dragging exactly to middle', function(t) {
+				var r = new RangeBar({values: [[20, 30]], snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				waitForAnimation(function() {
+					drag(r.ranges[0].$el.find('.elessar-handle:last-child'), {x: -15, y: 0}, function() {
+						t.rangebarValuesEqual(r.val(), [[0, 30]], 'dragging updates the value');
+						t.end();
+					});
+				});
+			});
+
+			t.end();
+		});
+
 		t.end();
 	});
 
@@ -515,6 +601,39 @@ tape.test('Range bar functional tests', function(t) {
 
 			t.end();
 		});
+
+		t.test('with snap', function(t) {
+			t.test('keeps the value at 0 mod snap', function(t) {
+				var r = new RangeBar({snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({x: 52 + r.$el.offset().left, y: r.$el.offset().top + r.$el.height() / 2}, r.$el);
+
+				waitForAnimation(function() {
+					t.floatEqual(
+						r.$el.find('.elessar-phantom').position().left,
+						50
+					);
+					t.end();
+				});
+			});
+
+			t.test('doesn\'t do weird stuff when hovering exactly to middle', function(t) {
+				var r = new RangeBar({snap: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+				move({x: 50 + r.$el.offset().left, y: r.$el.offset().top + r.$el.height() / 2}, r.$el);
+
+				waitForAnimation(function() {
+					t.floatEqual(
+						r.$el.find('.elessar-phantom').position().left,
+						50
+					);
+					t.end();
+				});
+			});
+
+			t.end();
+		});
+
 
 		t.test('clicking the phantom', function(t) {
 			t.test('with no minSize', function(t) {
@@ -669,6 +788,28 @@ tape.test('Range bar functional tests', function(t) {
 				});
 			});
 
+			t.test('with snap but next to an unsnapped range', function(t) {
+				var r = new RangeBar({snap: 10, values: [[5, 15]], minSize: 10});
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				move({
+					x: r.$el.offset().left + 16,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				r.$el.find('.elessar-phantom').btnClick();
+
+				waitForAnimation(function() {
+					t.rangebarValuesEqual(
+						r.val(),
+						[[5, 15],[15, 25]],
+						'gets as close as it can'
+					);
+
+					r.$el.find('.elessar-phantom').mouseup();
+					t.end();
+				});
+			});
 
 			t.end();
 		});
