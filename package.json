@@ -14,14 +14,15 @@
     "coverify": "^1.0.7",
     "cssify": "^0.5.1",
     "derequire": "~0.6.0",
+    "estira": "~0.3.0",
     "externalities": "~0.1.6",
     "istanbul": "^0.2.11",
+    "semver": "^4.1.0",
     "tap-spec": "^0.2.0",
     "tape": "^2.13.3",
     "testling": "^1.6.1",
     "through": "~2.3.4",
-    "uglify-js": "~2.4",
-    "estira": "~0.3.0"
+    "uglify-js": "~2.4"
   },
   "externalities": {
     "globalExport": "RangeBar",
