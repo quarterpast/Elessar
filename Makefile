@@ -15,7 +15,7 @@ dist/%.js: $(DEPS)
 	mkdir -p $(@D)
 	node brow.js $(ENTRY_FILE) $@
 
-.PHONY: clean test coverage
+.PHONY: clean test coverage release
 
 clean:
 	rm -rf dist
@@ -25,3 +25,11 @@ coverage: $(DEPS) $(TEST_FILES)
 
 test: $(DEPS) $(TEST_FILES)
 	browserify $(TEST_FILES) | testling | tap-spec
+
+release:
+	git pull
+	git push origin {develop,master}
+	git push --tags
+	git checkout `git describe master --abbrev=0`
+	npm publ
+	git checkout -
