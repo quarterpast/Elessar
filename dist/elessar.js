@@ -671,7 +671,9 @@
                             var w = this.options.minSize ? this.abnormaliseRaw(this.options.minSize + this.options.min) : 0.05;
                             var pageStart = getEventProperty(this.ifVertical('pageY', 'pageX'), ev);
                             var val = (pageStart - this.startProp('offset')) / this.totalSize() - w / 2;
-                            if (ev.target === ev.currentTarget && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.readonly()) {
+                            var direct = ev.target === ev.currentTarget;
+                            var phantom = $(ev.target).is('.elessar-phantom');
+                            if ((direct || phantom) && this.ranges.length < this.options.maxRanges && !$('body').is('.elessar-dragging, .elessar-resizing') && !this.readonly()) {
                                 if (!this.phantom)
                                     this.phantom = Phantom({
                                         perant: this,
