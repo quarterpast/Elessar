@@ -516,6 +516,18 @@ tape.test('Range bar functional tests', function(t) {
 			t.end();
 		});
 
+		t.test('hovering on a range', function(t) {
+			var r = new RangeBar();
+			r.$el.css({width: '100px', val: [[50, 55]]}).appendTo('body');
+			move({x: 50, y: r.$el.offset().top + r.$el.height() / 2}, r.$el.find('.elessar-range'));
+			t.ok(
+				!r.$el.contains('.elessar-phantom'),
+				'doesn\'t create a phantom range'
+			);
+
+			t.end();
+		});
+
 		t.test('clicking the phantom', function(t) {
 			t.test('with no minSize', function(t) {
 				var r = new RangeBar();
