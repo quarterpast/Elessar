@@ -549,22 +549,26 @@ tape.test('Range bar functional tests', function(t) {
 				}, r.$el);
 
 				waitForAnimation(function() {
-					r.$el.find('.elessar-phantom').btnClick();
 
 					move({
-						x: r.$el.offset().left + 53.5,
-						y: 0
+						x: r.$el.offset().left + 54.5,
+						y: r.$el.offset().top + r.$el.height() / 2,
+						step: true
 					}, r.$el);
 
 					waitForAnimation(function() {
-						t.rangebarValuesEqual(
-							r.val(),
-							[[51,56]],
-							'moved the phantom with the mouse'
-						);
+						r.$el.find('.elessar-phantom').btnClick();
 
-						r.$el.find('.elessar-phantom').mouseup();
-						t.end();
+						waitForAnimation(function() {
+							t.rangebarValuesEqual(
+								r.val(),
+								[[52,57]],
+								'moved the phantom with the mouse'
+							);
+
+							r.$el.find('.elessar-phantom').mouseup();
+							t.end();
+						});
 					});
 				});
 			});
