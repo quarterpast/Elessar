@@ -507,13 +507,43 @@ tape.test('Range bar functional tests', function(t) {
 		t.test('hovering on a blank area', function(t) {
 			var r = new RangeBar();
 			r.$el.css({width: '100px'}).appendTo('body');
-			move({x: 50, y: r.$el.offset().top + r.$el.height() / 2}, r.$el);
-			t.ok(
-				r.$el.contains('.elessar-phantom'),
-				'creates a phantom range'
-			);
 
-			t.end();
+			waitForAnimation(function() {
+				move({
+					x: 50,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				waitForAnimation(function() {
+					t.ok(
+						r.$el.contains('.elessar-phantom'),
+						'creates a phantom range'
+					);
+
+					t.end();
+				});
+			});
+		});
+
+		t.test('hovering on a range', function(t) {
+			var r = new RangeBar({values: [[50, 55]]});
+			r.$el.css({width: '100px'}).appendTo('body');
+
+			waitForAnimation(function() {
+				move({
+					x: 50,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el.find('.elessar-range'));
+
+				waitForAnimation(function() {
+					t.ok(
+						!r.$el.contains('.elessar-phantom'),
+						'doesn\'t create a phantom range'
+					);
+
+					t.end();
+				});
+			});
 		});
 
 		t.test('clicking the phantom', function(t) {
@@ -536,6 +566,39 @@ tape.test('Range bar functional tests', function(t) {
 
 					r.$el.find('.elessar-phantom').mouseup();
 					t.end();
+				});
+			});
+
+			t.test('after moving a little', function(t) {
+				var r = new RangeBar();
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				move({
+					x: r.$el.offset().left + 52.5,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				waitForAnimation(function() {
+
+					move({
+						x: r.$el.offset().left + 54.5,
+						y: r.$el.offset().top + r.$el.height() / 2
+					}, r.$el.find('.elessar-phantom'));
+
+					waitForAnimation(function() {
+						r.$el.find('.elessar-phantom').btnClick();
+
+						waitForAnimation(function() {
+							t.rangebarValuesEqual(
+								r.val(),
+								[[52,57]],
+								'moved the phantom with the mouse'
+							);
+
+							r.$el.find('.elessar-phantom').mouseup();
+							t.end();
+						});
+					});
 				});
 			});
 
