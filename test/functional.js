@@ -554,7 +554,7 @@ tape.test('Range bar functional tests', function(t) {
 						x: r.$el.offset().left + 54.5,
 						y: r.$el.offset().top + r.$el.height() / 2,
 						step: true
-					}, r.$el);
+					}, r.$el.find('.elessar-phantom'));
 
 					waitForAnimation(function() {
 						r.$el.find('.elessar-phantom').btnClick();
