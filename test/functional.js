@@ -507,25 +507,43 @@ tape.test('Range bar functional tests', function(t) {
 		t.test('hovering on a blank area', function(t) {
 			var r = new RangeBar();
 			r.$el.css({width: '100px'}).appendTo('body');
-			move({x: 50, y: r.$el.offset().top + r.$el.height() / 2}, r.$el);
-			t.ok(
-				r.$el.contains('.elessar-phantom'),
-				'creates a phantom range'
-			);
 
-			t.end();
+			waitForAnimation(function() {
+				move({
+					x: 50,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				waitForAnimation(function() {
+					t.ok(
+						r.$el.contains('.elessar-phantom'),
+						'creates a phantom range'
+					);
+
+					t.end();
+				});
+			});
 		});
 
 		t.test('hovering on a range', function(t) {
-			var r = new RangeBar();
-			r.$el.css({width: '100px', val: [[50, 55]]}).appendTo('body');
-			move({x: 50, y: r.$el.offset().top + r.$el.height() / 2}, r.$el.find('.elessar-range'));
-			t.ok(
-				!r.$el.contains('.elessar-phantom'),
-				'doesn\'t create a phantom range'
-			);
+			var r = new RangeBar({values: [[50, 55]]});
+			r.$el.css({width: '100px'}).appendTo('body');
 
-			t.end();
+			waitForAnimation(function() {
+				move({
+					x: 50,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el.find('.elessar-range'));
+
+				waitForAnimation(function() {
+					t.ok(
+						!r.$el.contains('.elessar-phantom'),
+						'doesn\'t create a phantom range'
+					);
+
+					t.end();
+				});
+			});
 		});
 
 		t.test('clicking the phantom', function(t) {
@@ -564,8 +582,7 @@ tape.test('Range bar functional tests', function(t) {
 
 					move({
 						x: r.$el.offset().left + 54.5,
-						y: r.$el.offset().top + r.$el.height() / 2,
-						step: true
+						y: r.$el.offset().top + r.$el.height() / 2
 					}, r.$el.find('.elessar-phantom'));
 
 					waitForAnimation(function() {
