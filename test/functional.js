@@ -539,6 +539,36 @@ tape.test('Range bar functional tests', function(t) {
 				});
 			});
 
+			t.test('after moving a little', function(t) {
+				var r = new RangeBar();
+				r.$el.css({width: '100px'}).appendTo('body');
+
+				move({
+					x: r.$el.offset().left + 52.5,
+					y: r.$el.offset().top + r.$el.height() / 2
+				}, r.$el);
+
+				waitForAnimation(function() {
+					r.$el.find('.elessar-phantom').btnClick();
+
+					move({
+						x: r.$el.offset().left + 53.5,
+						y: 0
+					}, r.$el);
+
+					waitForAnimation(function() {
+						t.rangebarValuesEqual(
+							r.val(),
+							[[51,56]],
+							'moved the phantom with the mouse'
+						);
+
+						r.$el.find('.elessar-phantom').mouseup();
+						t.end();
+					});
+				});
+			});
+
 			t.test('fires change', function(t) {
 				t.plan(1);
 				var r = new RangeBar();
