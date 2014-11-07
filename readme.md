@@ -1,5 +1,6 @@
 Elessar
 =======
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/quarterto/Elessar?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Draggable multiple range sliders
 ![elessar draggable range demo](demo.gif)
