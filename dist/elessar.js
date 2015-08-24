@@ -93,7 +93,7 @@
             function (_dereq_, module, exports) {
                 var has = Object.prototype.hasOwnProperty;
                 module.exports = function getEventProperty(prop, event) {
-                    return has.call(event, prop) ? event[prop] : event.originalEvent && has.call(event.originalEvent, 'touches') ? event.originalEvent.touches[0][prop] : 0;
+                    return has.call(event, prop) ? event[prop] : event.originalEvent && event.originalEvent.touches ? event.originalEvent.touches[0][prop] : 0;
                 };
             },
             {}
@@ -787,14 +787,14 @@
                             Base.displayName = 'Base';
                             var attach, prototype = Base.prototype, constructor = Base;
                             attach = function (obj, name, prop, super$, superclass$) {
-                                return obj[name] = typeof prop === 'function' ? function () {
+                                return obj[name] = typeof prop === 'function' ? import$(function () {
                                     var this$ = this;
                                     prop.superclass$ = superclass$;
                                     prop.super$ = function () {
                                         return super$.apply(this$, arguments);
                                     };
                                     return prop.apply(this, arguments);
-                                } : prop;
+                                }, prop) : prop;
                             };
                             Base.extend = function (displayName, proto) {
                                 proto == null && (proto = displayName);
@@ -841,6 +841,13 @@
                             return Base;
                         }();
                     }));
+                    function import$(obj, src) {
+                        var own = {}.hasOwnProperty;
+                        for (var key in src)
+                            if (own.call(src, key))
+                                obj[key] = src[key];
+                        return obj;
+                    }
                     function extend$(sub, sup) {
                         function fun() {
                         }
@@ -849,13 +856,6 @@
                         if (typeof sup.extended == 'function')
                             sup.extended(sub);
                         return sub;
-                    }
-                    function import$(obj, src) {
-                        var own = {}.hasOwnProperty;
-                        for (var key in src)
-                            if (own.call(src, key))
-                                obj[key] = src[key];
-                        return obj;
                     }
                 }.call(this));
             },
