@@ -31,6 +31,7 @@ tag: dist/elessar.js dist/elessar.min.js
 	$(eval VERSION := $(shell node_modules/.bin/semver $(OLD_VERSION) -i $(v)))
 	tin -v $(VERSION)
 	git commit -am $(VERSION)
+	git tag $(VERSION)
 
 release:
 	git pull
