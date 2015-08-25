@@ -92,6 +92,14 @@
 .elessar-delete-confirm {
   background: red;
 }
+.elessar-delete-button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+}
 body.elessar-resizing, body.elessar-dragging {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
