@@ -19,7 +19,7 @@ tape.test('RangeBar', function(t) {
 			t.equal(r.options.readonly, false, 'readonly');
 			t.equal(r.options.bgLabels, 0, 'bgLabels');
 			t.equal(r.options.deleteTimeout, 5000, 'deleteTimeout');
-			t.equal(r.options.allowDelete, false, 'allowDelete');
+			t.equal(r.options.middleClickDelete, false, 'middleClickDelete');
 			t.end();
 		});
 

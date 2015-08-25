@@ -1,5 +1,6 @@
 Elessar
 =======
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/quarterto/Elessar?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Draggable multiple range sliders
 ![elessar draggable range demo](demo.gif)
@@ -56,7 +57,9 @@ new RangeBar({
     label: id // string or function to write as the text of a label. functions are called with normalised values.
   },
   indicator: null, // pass a function(RangeBar, Indicator, Function?) Value to calculate where to put a current indicator, calling the function whenever you want the position to be recalculated
-  allowDelete: false, // set to true to enable double-middle-click-to-delete
+  middleClickDelete: false, // set to true to enable double-middle-click-to-delete
+  deleteConfirmRequired: false, // set to true to enable a confirmation for delete through either double-middle-click or button delete
+  buttonDelete: false,  // set to true to generate a delete button for each range element
   deleteTimeout: 5000, // maximum time in ms between middle clicks
   vertical: false, // if true the rangebar is aligned vertically, and given the class elessar-vertical
   bounds: null, // a function that provides an upper or lower bound when a range is being dragged. call with the range that is being moved, should return an object with an upper or lower key
