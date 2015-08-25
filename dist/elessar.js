@@ -227,17 +227,15 @@
                                 this.$el.addClass(this.options.rangeClass);
                             if (!this.readonly()) {
                                 this.$el.prepend('<div class="elessar-handle">').append('<div class="elessar-handle">');
+                                if (this.perant.options.buttonDelete === true) {
+                                    this.$el.find('.elessar-barlabel').after('<button type="button" class="elessar-delete-button">x</button>');
+                                    this.$el.find('.elessar-delete-button').on('click', $.proxy(this.delete, this));
+                                }
                                 this.on('mouseenter.elessar touchstart.elessar', $.proxy(this.removePhantom, this));
                                 this.on('mousedown.elessar touchstart.elessar', $.proxy(this.mousedown, this));
                                 this.on('click', $.proxy(this.click, this));
                             } else {
                                 this.$el.addClass('elessar-readonly');
-                            }
-                            if (this.perant.options.buttonDelete === true) {
-                                this.$el.prepend('<button type="button" class="elessar-delete-button">x</button>');
-                                this.$el.find('button').on('click', function () {
-                                    this.delete();
-                                }.bind(this));
                             }
                             if (typeof this.options.label === 'function') {
                                 this.on('changing', function (ev, range) {
