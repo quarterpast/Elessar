@@ -9,12 +9,8 @@ Installation
 ------------
 Elessar is available via npm and Bower, and as [standalone files](/dist):
 
-```
-npm install elessar
-```
-```
-bower install elessar
-```
+`npm install elessar` | `bower install elessar`
+----------------------|------------------------
 
 Elessar requires [jQuery](http://jquery.com). If you're using npm or Bower, it's installed as part of this step. If not: a) why not? they're pretty sweet, b) download it, and I assume you're just using `<script>` tags, so just add a `<script>` tag.
 
