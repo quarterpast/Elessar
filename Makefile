@@ -20,11 +20,11 @@ dist/%.js: $(DEPS)
 clean:
 	rm -rf dist
 
-coverage: $(DEPS) $(TEST_FILES)
-	browserify -t cssify -t coverify $(TEST_FILES) | testling | coverify | tap-spec
+test-local: $(DEPS) $(TEST_FILES)
+	zuul --phantom -- $(TEST_FILES) | tap-spec
 
 test: $(DEPS) $(TEST_FILES)
-	browserify -t cssify $(TEST_FILES) | testling | tap-spec
+	zuul -- $(TEST_FILES) | tap-spec
 
 tag: dist/elessar.js dist/elessar.min.js
 	$(eval OLD_VERSION := $(shell git describe master --abbrev=0))
