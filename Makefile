@@ -13,7 +13,7 @@ dist/%.min.js: dist/%.js
 
 dist/%.js: $(DEPS)
 	mkdir -p $(@D)
-	node brow.js $(ENTRY_FILE) $@
+	browserify -t browserify-global-shim $(ENTRY_FILE) -o $@
 
 .PHONY: clean test coverage release
 
@@ -21,10 +21,10 @@ clean:
 	rm -rf dist
 
 coverage: $(DEPS) $(TEST_FILES)
-	browserify -t coverify $(TEST_FILES) | testling | coverify | tap-spec
+	browserify -t cssify -t coverify $(TEST_FILES) | testling | coverify | tap-spec
 
 test: $(DEPS) $(TEST_FILES)
-	browserify $(TEST_FILES) | testling | tap-spec
+	browserify -t cssify $(TEST_FILES) | testling | tap-spec
 
 tag: dist/elessar.js dist/elessar.min.js
 	$(eval OLD_VERSION := $(shell git describe master --abbrev=0))
