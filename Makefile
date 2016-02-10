@@ -24,4 +24,4 @@ test-local: $(DEPS) $(TEST_FILES)
 	zuul --phantom -- $(TEST_FILES) | tap-spec
 
 test: $(DEPS) $(TEST_FILES)
-	zuul -- $(TEST_FILES) | tap-spec
+	zuul -- $(TEST_FILES)
