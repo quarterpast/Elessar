@@ -1,12 +1,12 @@
 {
   "name": "elessar",
-  "version": "1.8.4",
   "description": "Draggable multiple range sliders",
   "main": "lib/rangebar.js",
   "author": "Matt Brennan <matt@anqagroup.com>",
   "license": "MIT",
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "dependencies": {
     "estira": "^0.3.3",
@@ -23,9 +23,14 @@
     "tape": "^2.13.3",
     "testling": "^1.6.1",
     "tin": "^0.5.0",
-    "uglify-js": "^2.4"
+    "uglify-js": "^2.4",
+    "semantic-release": "^4.3.5"
   },
   "browserify-global-shim": {
     "jquery": "$"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quarterto/Elessar.git"
   }
 }
