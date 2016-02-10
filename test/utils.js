@@ -58,7 +58,7 @@ function valuesEqual(a, b) {
 }
 
 function floatEqual(a, b) {
-	return Math.abs(a - b) < 1e-10
+	return Math.abs(a - b) < 1
 }
 
 tape.Test.prototype.rangebarValuesEqual = function(a, b, msg, extra) {

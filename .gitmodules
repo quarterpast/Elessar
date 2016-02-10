@@ -1,4 +1,4 @@
 [submodule "docs"]
 	path = docs
-	url = git@github.com:quarterto/Elessar
+	url = https://github.com/quarterto/Elessar.git
 	branch = gh-pages

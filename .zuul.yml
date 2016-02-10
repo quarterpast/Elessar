@@ -1,0 +1,10 @@
+ui: tape
+browsers:
+  - name: chrome
+    version: latest
+  - name: ie
+    version: 9..latest
+  - name: firefox
+    version: latest
+browserify:
+  - transform: cssify

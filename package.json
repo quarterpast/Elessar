@@ -1,53 +1,36 @@
 {
   "name": "elessar",
-  "version": "1.8.4",
   "description": "Draggable multiple range sliders",
   "main": "lib/rangebar.js",
   "author": "Matt Brennan <matt@anqagroup.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "make test",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  },
   "dependencies": {
-    "jquery": "~1.11.0-rc1"
+    "estira": "^0.3.3",
+    "jquery": "^1.12.0"
   },
   "devDependencies": {
-    "browserify": "~3.24.1",
-    "browserify-shim": "~3.2.2",
-    "coverify": "^1.0.7",
+    "browserify": "^13.0.0",
+    "browserify-global-shim": "^1.0.3",
     "cssify": "^0.5.1",
-    "derequire": "~0.6.0",
-    "estira": "~0.3.0",
-    "externalities": "~0.1.6",
     "istanbul": "^0.2.11",
+    "phantomjs": "^2.1.3",
+    "semantic-release": "^4.3.5",
     "semver": "^4.1.0",
     "tap-spec": "^0.2.0",
     "tape": "^2.13.3",
-    "testling": "^1.6.1",
-    "through": "~2.3.4",
-    "uglify-js": "~2.4"
+    "tin": "^0.5.0",
+    "uglify-js": "^2.4",
+    "zuul": "^3.9.0"
   },
-  "externalities": {
-    "globalExport": "RangeBar",
-    "jquery": {
-      "commonjs": "jquery",
-      "requirejs": "jquery",
-      "globalvar": "jQuery"
-    }
+  "browserify-global-shim": {
+    "jquery": "$"
   },
-  "testling": {
-    "files": "test/*.js",
-    "browsers": [
-      "ie/6..latest",
-      "chrome/22..latest",
-      "firefox/16..latest",
-      "safari/latest",
-      "opera/11.0..latest",
-      "iphone/6",
-      "ipad/6",
-      "android-browser/latest"
-    ]
-  },
-  "browserify": {
-    "transform": [
-      "cssify"
-    ]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quarterto/Elessar.git"
   }
 }
