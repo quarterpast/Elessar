@@ -2,17 +2,21 @@ sudo: false
 language: node_js
 cache:
   directories:
-    - node_modules
+  - node_modules
 notifications:
   email: false
 node_js:
-  - '4'
+- '4'
 before_install:
-  - npm i -g npm@^2.0.0
+- npm i -g npm@^2.0.0
 before_script:
-  - npm prune
+- npm prune
 after_success:
-  - npm run semantic-release
+- npm run semantic-release
 branches:
   except:
-    - "/^v\\d+\\.\\d+\\.\\d+$/"
+  - "/^v\\d+\\.\\d+\\.\\d+$/"
+env:
+  global:
+  - secure: aHGhw+qTXAA06ZMTPdO1AiE52pY2j/6Vhw1iXJjSVZ4U1Qw9LzY0dTX+715HdppFVeVpi46geogEyAM21k1ZEICSNF9r5+RW3Z93fwqIwugnhevJM8SGLZOWf5UXTRIRX8Z2zXTbcyV+tOXBTjI9P78fol7GFHDPYUujxzmztA0=
+  - secure: Jcxl7H/NhcL9RR1JylY24JJQj4t8b3lCAuDmEEHP3Gr4xvVURI75QnukdQgduf9QM7ez9qpXKOZxyykPlDAaLUbLrui0mEFLwlPhxk57pMYiNoRqksc5fdGEaY+U49QHFukzOeBgEfikjgfqjruUCwoE8nDcye/a/dIPMXe3taQ=
