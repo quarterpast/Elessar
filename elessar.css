@@ -55,6 +55,7 @@
   background: blue;
   width: 0;
   z-index: 10;
+  height: 100%;
 }
 .elessar-vertical .elessar-range {
   width: auto;
