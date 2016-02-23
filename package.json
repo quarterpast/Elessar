@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "test": "make test",
+    "prepublish": "make -B all min",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "dependencies": {
