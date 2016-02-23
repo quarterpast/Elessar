@@ -13,7 +13,7 @@ dist/%.min.js: dist/%.js
 
 dist/%.js: $(DEPS)
 	mkdir -p $(@D)
-	browserify -t browserify-global-shim $(ENTRY_FILE) -o $@
+	browserify -t browserify-global-shim -s RangeBar $(ENTRY_FILE) -o $@
 
 .PHONY: clean test test-local
 
