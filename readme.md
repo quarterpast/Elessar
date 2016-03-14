@@ -1,3 +1,8 @@
+Elessar needs you!
+===
+
+Elessar is looking for maintainers. Please head over to #111 if you're interested.
+
 Elessar
 =======
 [![Build Status](https://travis-ci.org/quarterto/Elessar.svg?branch=master)](https://travis-ci.org/quarterto/Elessar)
