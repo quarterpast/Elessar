@@ -3,6 +3,11 @@ Contributing to Elessar
 
 Thanks for your contribution! Let's check a few things before you get started:
 
+Code of Conduct
+---
+
+First and foremost, please read and follow the [Code of Conduct](CODE_OF_CONDUCT.md). This outlines what is and is not acceptible behaviour for participants in the repository, as well as how to raise a complaint.
+
 Writing an issue
 ---
 
