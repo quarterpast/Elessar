@@ -1,7 +1,7 @@
 Elessar needs you!
 ===
 
-Elessar is looking for maintainers. Please head over to #111 if you're interested.
+Elessar is looking for maintainers. Please head over to [#111](issues/111) if you're interested.
 
 Elessar
 =======
