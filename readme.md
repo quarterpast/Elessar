@@ -1,7 +1,7 @@
-Elessar needs you!
+Unmaintained
 ===
 
-Elessar is looking for maintainers. Please head over to [#111](https://github.com/quarterto/Elessar/issues/111) if you're interested.
+I do not have time or inclination to work on Elessar. Do not expect me to respond to your issues or pull requests.
 
 Elessar
 =======
